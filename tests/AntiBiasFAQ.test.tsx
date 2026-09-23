@@ -100,4 +100,31 @@ describe('Composant AntiBiasFAQ', () => {
     expect(servicePublicLink).toBeInTheDocument();
     expect(servicePublicLink).toHaveAttribute('href', expect.stringContaining('service-public.fr'));
   });
+
+  it('affiche la question sur l\'électronique et la fiabilité face à la R5 et permet de consulter les données ADAC', async () => {
+    render(<AntiBiasFAQ />);
+
+    // La question sur l'électronique et la R5 est bien présente
+    const reliabilityBtn = screen.getByRole('button', { name: /plein d'électronique.*r5/i });
+    expect(reliabilityBtn).toBeInTheDocument();
+
+    // Au départ fermée
+    expect(screen.queryByText(/2 000 pièces en mouvement/i)).not.toBeInTheDocument();
+
+    // Clic pour ouvrir
+    fireEvent.click(reliabilityBtn);
+
+    await waitFor(() => {
+      expect(screen.getByText(/2 000 pièces en mouvement/i)).toBeInTheDocument();
+    });
+
+    // Vérifie la mention de la simplicité mécanique et de l'ADAC
+    expect(screen.getByText(/une seule pièce mobile/i)).toBeInTheDocument();
+    expect(screen.getAllByText(/ADAC/i).length).toBeGreaterThanOrEqual(1);
+
+    // Vérifie la présence du lien source ADAC
+    const adacLink = screen.getByRole('link', { name: /ADAC/i });
+    expect(adacLink).toBeInTheDocument();
+    expect(adacLink).toHaveAttribute('href', expect.stringContaining('adac.de'));
+  });
 });

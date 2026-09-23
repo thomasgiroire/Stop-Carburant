@@ -180,3 +180,7 @@ $$
 * **"On va manquer de terres rares !"**
   * *Réponse :* Les batteries lithium-ion (la majorité) ne contiennent pas de terres rares, contrairement à la ligne d'échappement de votre voiture thermique actuelle.
   * *Source :* Agence Internationale de l'Énergie (AIE).
+
+* **"Il y a trop d'électronique, ça va tomber en panne ! Ma bonne vieille R5 tourne comme un charme sans tout ça..."**
+  * *Réponse :* C'est l'inverse : un moteur thermique moderne compte plus de 2 000 pièces mécaniques en mouvement (boîte, embrayage, turbo, distribution...) contre 1 seule pièce mobile dans un moteur électrique. Moins de pièces signifie moins de pannes et un entretien divisé par deux.
+  * *Source :* Bilan officiel des pannes et fiabilité (ADAC).

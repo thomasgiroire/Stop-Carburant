@@ -89,6 +89,7 @@ La section "Preuves & FAQ Anti-Biais" s'appuie exclusivement sur des études vé
 - **Sécurité incendie :** Risque 20 fois inférieur pour un VE comparé aux vapeurs d'hydrocarbures des véhicules thermiques ([MSB - Agence suédoise de protection civile](https://www.msb.se)).
 - **Dette carbone de fabrication :** Rentabilisée dès 30 000 km grâce au mix électrique français décarboné ([Rapports ADEME](https://www.ademe.fr)).
 - **Impact sur le réseau électrique :** Capacité du réseau largement dimensionnée pour la recharge nocturne (15 millions de VE représenteraient moins de 10 % de la production) ([Bilan Prévisionnel RTE](https://www.rte-france.com)).
+- **Fiabilité mécanique & pannes :** Moteur électrique 10× plus simple (1 seule pièce mobile contre 2 000 dans un moteur thermique) et baromètres réels démontrant un taux de panne immobilisante nettement inférieur ([ADAC Pannenstatistik](https://www.adac.de)).
 
 ---
 

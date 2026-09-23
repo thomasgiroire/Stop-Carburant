@@ -102,4 +102,13 @@ export const FAQ_ITEMS: FAQItem[] = [
     sourceUrl: 'https://www.service-public.fr/particuliers/vosdroits/F35320',
     badge: 'Logement & Recharge',
   },
+  {
+    id: 'fiabilite-electronique',
+    myth: '« Il y a plein d\'électronique, ça va tomber en panne ! Ma bonne vieille R5 tourne comme un charme sans tout ça... »',
+    verdict: 'FAUX : MÉCANIQUE 10× PLUS SIMPLE ET MOINS DE PANNES',
+    explanation: 'Si une vieille mécanique paraît familière, un moteur thermique moderne compte plus de 2 000 pièces en mouvement soumises à de fortes contraintes (boîte de vitesses, embrayage, turbo, distribution, injecteurs, vanne EGR, FAP...). En comparaison, un moteur électrique ne possède qu\'une seule pièce mobile (le rotor) : pas de vidange, pas de bougies, pas d\'embrayage, et des freins préservés par la régénération. Quant à la fiabilité générale, le baromètre annuel de dépannage de l\'ADAC (l\'automobile-club européen de référence) confirme que les voitures électriques subissent nettement moins de pannes immobilisantes que leurs équivalents thermiques.',
+    sourceName: 'ADAC — Bilan officiel des pannes et fiabilité (Pannenstatistik)',
+    sourceUrl: 'https://www.adac.de/rund-ums-fahrzeug/unfall-schaden-panne/adac-pannenstatistik/',
+    badge: 'Fiabilité & Statistiques ADAC',
+  },
 ];

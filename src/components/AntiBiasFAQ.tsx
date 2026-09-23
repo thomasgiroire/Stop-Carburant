@@ -19,7 +19,7 @@ export const AntiBiasFAQ: React.FC = () => {
           Trop beau pour être vrai ? Les {FAQ_ITEMS.length} vérités chiffrées
         </h2>
         <p className="text-xs sm:text-sm text-neutral-400 mt-1">
-          Voitures trop chères ? En appartement sans prise ? La taxation arrive ? Ce que disent les données réelles et les études officielles.
+          Voitures trop chères ? Trop d'électronique ? En appartement sans prise ? Ce que disent les données réelles et les études officielles.
         </p>
       </div>
 
