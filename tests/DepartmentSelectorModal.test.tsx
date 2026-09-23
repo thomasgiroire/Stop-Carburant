@@ -144,24 +144,24 @@ describe('DepartmentSelectorModal (Stop-Carburant)', () => {
     expect(screen.getByText('0.88 €/L')).toBeInTheDocument(); // Gironde e85Price
   });
 
-  it('permet de sélectionner un département via le dropdown direct', () => {
-    const handleSelect = vi.fn();
-    const handleClose = vi.fn();
-
+  it('permet d\'effacer la recherche avec le bouton Effacer', () => {
     render(
       <DepartmentSelectorModal
         isOpen={true}
-        onClose={handleClose}
-        onSelectDepartment={handleSelect}
+        onClose={vi.fn()}
+        onSelectDepartment={vi.fn()}
         departmentPricesMap={mockPricesMap}
       />
     );
 
-    const selectEl = screen.getByLabelText(/sélection directe du département/i);
-    expect(selectEl).toBeInTheDocument();
+    const input = screen.getByPlaceholderText(/Numéro ou nom du département/i) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'Gironde' } });
+    expect(input.value).toBe('Gironde');
 
-    fireEvent.change(selectEl, { target: { value: '33' } });
-    expect(handleSelect).toHaveBeenCalledWith('33', 'all');
-    expect(handleClose).toHaveBeenCalled();
+    const clearBtn = screen.getByRole('button', { name: /effacer/i });
+    expect(clearBtn).toBeInTheDocument();
+    fireEvent.click(clearBtn);
+
+    expect(input.value).toBe('');
   });
 });

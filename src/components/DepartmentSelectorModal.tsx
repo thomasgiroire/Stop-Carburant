@@ -141,48 +141,26 @@ export const DepartmentSelectorModal: React.FC<DepartmentSelectorModalProps> = (
             </div>
           </div>
 
-          {/* Recherche & Dropdown rapide du département */}
-          <div className="p-3 sm:p-4 border-b border-neutral-800 shrink-0 bg-neutral-950/40 space-y-2">
-            <div className="flex flex-col sm:flex-row gap-2">
-              {/* Champ de recherche texte */}
-              <div className="relative flex-1">
-                <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400" />
-                <input
-                  type="text"
-                  autoFocus
-                  placeholder="Numéro ou nom du département (ex: 33, Gironde, Paris...)"
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  className="w-full bg-neutral-900 border border-neutral-700/80 rounded-xl pl-10 pr-4 py-2 text-sm text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:border-amber-500 transition-colors"
-                />
-                {search && (
-                  <button
-                    onClick={() => setSearch('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400 hover:text-white"
-                  >
-                    Effacer
-                  </button>
-                )}
-              </div>
-
-              {/* Menu déroulant / Dropdown direct */}
-              <select
-                aria-label="Sélection directe du département"
-                value={selectedDepartmentCode || ''}
-                onChange={(e) => {
-                  const val = e.target.value;
-                  onSelectDepartment(val ? val : null, fuelType);
-                  onClose();
-                }}
-                className="bg-neutral-900 border border-neutral-700/80 rounded-xl px-3 py-2 text-xs sm:text-sm text-neutral-200 focus:outline-none focus:border-amber-500 cursor-pointer sm:max-w-[200px]"
-              >
-                <option value="">🇫🇷 France (Moyenne)</option>
-                {DEPARTMENTS.map((d) => (
-                  <option key={d.code} value={d.code}>
-                    {d.code} - {d.name}
-                  </option>
-                ))}
-              </select>
+          {/* Recherche rapide du département */}
+          <div className="p-3 sm:p-4 border-b border-neutral-800 shrink-0 bg-neutral-950/40">
+            <div className="relative w-full">
+              <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-neutral-400" />
+              <input
+                type="text"
+                autoFocus
+                placeholder="Numéro ou nom du département (ex: 33, Gironde, Paris...)"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full bg-neutral-900 border border-neutral-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:border-amber-500 transition-colors"
+              />
+              {search && (
+                <button
+                  onClick={() => setSearch('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400 hover:text-white"
+                >
+                  Effacer
+                </button>
+              )}
             </div>
           </div>
 
