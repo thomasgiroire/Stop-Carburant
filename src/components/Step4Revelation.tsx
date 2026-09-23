@@ -891,11 +891,6 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                                 ~{activeSimulation.fridayEveningPct}% ({activeSimulation.fridayEveningKm} km)
                               </span>
                             </div>
-                            <p className="text-[11px] opacity-90 leading-relaxed">
-                              {activeSimulation.isComfortSufficient
-                                ? '✓ Confort week-end assuré : vous arrivez le vendredi soir avec au moins 50% de batterie pour partir immédiatement sans contrainte.'
-                                : '⚠️ Attention : vous arrivez le vendredi soir avec moins de 50% de batterie. Une prise renforcée ou une borne est conseillée pour plus de sérénité.'}
-                            </p>
                             <div className="pt-1 border-t border-white/10 flex items-center justify-between text-[11px] text-neutral-300">
                               <span>Récupération nocturne (8h) :</span>
                               <span className="font-mono font-semibold">
