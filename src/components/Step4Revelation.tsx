@@ -23,6 +23,7 @@ import { getTieredEVRecommendations, getDailyUsageAdvice, getVehicleRealConso, E
 import { EnergyPrices, DEFAULT_PRICES } from '../services/energyPrices';
 import { LoanRateMode, calculateEVFinancing, calculateBreakEvenDownPayment } from '../utils/loanCalculations';
 import { EVDatabaseService, OpenDataEVModel } from '../services/evDatabaseService';
+import { getVehicleCorrectionBadge } from '../utils/consumptionCorrection';
 import { EVModelSelectorModal } from './EVModelSelectorModal';
 import { VictoryCelebration } from './VictoryCelebration';
 import { motion, AnimatePresence } from 'motion/react';
@@ -78,6 +79,12 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
       bodyType: car.bodyType,
       realRangeKm: car.realRangeKm,
       realConsoKwh100: car.realConsoKwh100,
+      wltpRangeKm: car.wltpRangeKm,
+      highwayRangeKm: car.highwayRangeKm,
+      highwayConsoKwh100: car.highwayConsoKwh100,
+      rangeDiscountPct: car.rangeDiscountPct,
+      hasDirectIRLTest: car.hasDirectIRLTest,
+      correctionBadge: getVehicleCorrectionBadge(car),
       monthlyFinancing5Years: monthly,
       estimatedMarketPrice: car.estimatedMarketPrice,
       leboncoinSampleText: car.leboncoinSampleText,
@@ -667,7 +674,14 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                       <div className="space-y-2 text-xs pt-1 text-neutral-300">
                         <div className="flex items-center justify-between">
                           <span className="text-neutral-400">Véhicule & autonomie :</span>
-                          <span className="font-semibold text-white">{currentEV.model} ({currentEV.realRangeKm} km réels)</span>
+                          <div className="text-right">
+                            <span className="font-semibold text-white">{currentEV.model} ({currentEV.realRangeKm} km réels)</span>
+                            {currentEV.correctionBadge && (
+                              <div className="text-[10px] text-emerald-400/90 font-medium">
+                                {currentEV.correctionBadge}
+                              </div>
+                            )}
+                          </div>
                         </div>
 
                         <div className="flex items-center justify-between">

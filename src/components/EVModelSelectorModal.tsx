@@ -13,6 +13,7 @@ import {
   Car
 } from 'lucide-react';
 import { EVDatabaseService, OpenDataEVModel } from '../services/evDatabaseService';
+import { getVehicleCorrectionBadge } from '../utils/consumptionCorrection';
 import { LoanRateMode } from '../utils/loanCalculations';
 import { formatCurrency } from '../utils/calculator';
 
@@ -263,6 +264,8 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
                   loanMode
                 );
 
+                const correctionBadge = getVehicleCorrectionBadge(car);
+
                 return (
                   <div
                     key={car.id}
@@ -295,7 +298,7 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
                       </div>
 
                       {/* Badges techniques certifiés */}
-                      <div className="grid grid-cols-3 gap-2 my-3 text-center">
+                      <div className="grid grid-cols-3 gap-2 mt-3 mb-2.5 text-center">
                         <div className="p-2 rounded-xl bg-neutral-900 border border-neutral-800/80">
                           <div className="text-[10px] text-neutral-400 flex items-center justify-center gap-1">
                             <Gauge className="w-3 h-3 text-blue-400" /> Autonomie
@@ -323,6 +326,16 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
                           </div>
                         </div>
                       </div>
+
+                      {/* Traçabilité Données Réelles Certifiées */}
+                      {correctionBadge && (
+                        <div className="flex items-start sm:items-center gap-2 px-2.5 py-1.5 rounded-lg bg-neutral-900/90 border border-neutral-800 text-[10px] sm:text-[11px] text-neutral-400 mb-2.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 mt-1 sm:mt-0"></span>
+                          <span className="leading-snug">
+                            Données réelles certifiées : <strong className="text-white">{car.realRangeKm} km</strong> ({correctionBadge})
+                          </span>
+                        </div>
+                      )}
 
                       {/* Description courte */}
                       <p className="text-xs text-neutral-300 line-clamp-2 mb-2.5">

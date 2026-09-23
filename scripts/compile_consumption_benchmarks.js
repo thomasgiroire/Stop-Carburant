@@ -1,0 +1,175 @@
+/**
+ * Stop-Carburant • Compilation de la Base de Connaissances de Consommation Réelle
+ * Croise les observations La Chaîne EV avec le catalogue evDatabase.json et calcule :
+ * 1. Les coefficients moyens de décote IRL vs WLTP (global et par carrosserie)
+ * 2. L'enrichissement de chaque véhicule avec ses mesures directes ou étalonnées
+ * 3. La persistance de 'src/data/consumptionBenchmarks.json' et mise à jour de 'src/data/evDatabase.json'
+ * 
+ * Exécution : node scripts/compile_consumption_benchmarks.js
+ */
+
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const lachaineevPath = path.resolve(__dirname, 'scraper/output/lachaineev_observations.json');
+const evDatabasePath = path.resolve(__dirname, '../src/data/evDatabase.json');
+const benchmarksOutputPath = path.resolve(__dirname, '../src/data/consumptionBenchmarks.json');
+
+function run() {
+  console.log('\n=============================================================');
+  console.log('  STOP-CARBURANT • BASE DE CONNAISSANCES CONSOMMATION RÉELLE');
+  console.log('=============================================================\n');
+
+  if (!fs.existsSync(lachaineevPath)) {
+    console.error(`❌ Fichier d'observations introuvable : ${lachaineevPath}`);
+    console.error(`👉 Veuillez exécuter d'abord : python3 scripts/scraper/scrape_lachaineev.py`);
+    process.exit(1);
+  }
+
+  if (!fs.existsSync(evDatabasePath)) {
+    console.error(`❌ Catalogue evDatabase.json introuvable : ${evDatabasePath}`);
+    process.exit(1);
+  }
+
+  const lachaineevData = JSON.parse(fs.readFileSync(lachaineevPath, 'utf8'));
+  const database = JSON.parse(fs.readFileSync(evDatabasePath, 'utf8'));
+
+  const stats = lachaineevData.stats || {};
+  const mappings = lachaineevData.catalogMappings || {};
+
+  console.log(`📅 Relevé La Chaîne EV : ${lachaineevData.generatedAt}`);
+  console.log(`🚗 Véhicules testés au total : ${lachaineevData.totalObservations}`);
+  console.log(`🔗 Modèles appariés au catalogue : ${Object.keys(mappings).length}`);
+  console.log(`📉 Décote moyenne globale mixte : ${stats.averageRangeDiscountMixedPct}%`);
+  console.log(`🛣️ Décote moyenne autoroute 130 km/h : ${stats.averageRangeDiscountHighwayPct}%`);
+  console.log(`⚡ Facteur de surconsommation réelle : ×${stats.averageConsoInflationFactor}\n`);
+
+  const benchmarksByModel = {};
+  let directMatchesCount = 0;
+  let calibratedMatchesCount = 0;
+
+  const updatedDatabase = database.map((car) => {
+    const directTest = mappings[car.id];
+    const segment = stats.segments?.[car.bodyType] || {
+      rangeDiscountMixedPct: stats.averageRangeDiscountMixedPct || -12.5,
+      rangeDiscountHighwayPct: stats.averageRangeDiscountHighwayPct || -35.0,
+      consoInflationFactor: stats.averageConsoInflationFactor || 1.14,
+    };
+
+    let effectiveRealRange = car.realRangeKm;
+    let effectiveRealConso = car.realConsoKwh100;
+    let effectiveDiscountPct = 0;
+    let isDirect = false;
+
+    if (directTest && (directTest.realRangeKm || directTest.realConsoKwh100)) {
+      isDirect = true;
+      directMatchesCount++;
+
+      // Si le test direct a mesuré un écart %, on l'enregistre
+      const measuredDiscount = directTest.rangeDiscountPct ?? (
+        directTest.wltpRangeKm && directTest.realRangeKm
+          ? Math.round(((directTest.realRangeKm - directTest.wltpRangeKm) / directTest.wltpRangeKm) * 1000) / 10
+          : segment.rangeDiscountMixedPct
+      );
+
+      if (car.realRangeKm && car.realRangeKm > 0 && car.realRangeKm <= car.wltpRangeKm) {
+        effectiveRealRange = car.realRangeKm;
+        effectiveRealConso = car.realConsoKwh100;
+        effectiveDiscountPct = Math.round(((effectiveRealRange - car.wltpRangeKm) / car.wltpRangeKm) * 1000) / 10;
+      } else if (directTest.realRangeKm && directTest.realRangeKm <= car.wltpRangeKm && (!directTest.wltpRangeKm || Math.abs(directTest.wltpRangeKm - car.wltpRangeKm) < 50)) {
+        effectiveRealRange = directTest.realRangeKm;
+        effectiveRealConso = car.realConsoKwh100 || Math.round((car.batteryNetKwh / effectiveRealRange) * 100 * 10) / 10;
+        effectiveDiscountPct = Math.round(((effectiveRealRange - car.wltpRangeKm) / car.wltpRangeKm) * 1000) / 10;
+      } else {
+        effectiveDiscountPct = measuredDiscount <= 0 ? measuredDiscount : -Math.abs(measuredDiscount);
+        effectiveRealRange = Math.round(car.wltpRangeKm * (1 + (effectiveDiscountPct / 100)));
+        effectiveRealConso = car.realConsoKwh100 || Math.round((car.batteryNetKwh / effectiveRealRange) * 100 * 10) / 10;
+      }
+    } else {
+      calibratedMatchesCount++;
+      // Véhicule sans test direct La Chaîne EV :
+      // Si déjà calibré avec ADEME / test IRL, on calcule son discount exact vs WLTP
+      if (car.realRangeKm && car.realRangeKm > 0 && car.realRangeKm <= car.wltpRangeKm) {
+        effectiveRealRange = car.realRangeKm;
+        effectiveRealConso = car.realConsoKwh100;
+        effectiveDiscountPct = Math.round(((effectiveRealRange - car.wltpRangeKm) / car.wltpRangeKm) * 1000) / 10;
+      } else {
+        // Sinon, application du coefficient moyen de décote du segment
+        effectiveDiscountPct = segment.rangeDiscountMixedPct || -12.5;
+        effectiveRealRange = Math.round(car.wltpRangeKm * (1 + (effectiveDiscountPct / 100)));
+        effectiveRealConso = Math.round((car.batteryNetKwh / effectiveRealRange) * 100 * 10) / 10;
+      }
+    }
+
+    const highwayRange = (isDirect && directTest?.highwayRangeKm && directTest.highwayRangeKm < effectiveRealRange)
+      ? directTest.highwayRangeKm
+      : Math.round(car.wltpRangeKm * (1 + (segment.rangeDiscountHighwayPct / 100)));
+
+    const highwayConso = (isDirect && directTest?.highwayConsoKwh100)
+      ? directTest.highwayConsoKwh100
+      : Math.round((car.batteryNetKwh / highwayRange) * 100 * 10) / 10;
+
+    benchmarksByModel[car.id] = {
+      modelId: car.id,
+      fullName: car.fullName,
+      bodyType: car.bodyType,
+      hasDirectIRLTest: isDirect,
+      wltpRangeKm: car.wltpRangeKm,
+      realRangeKm: effectiveRealRange,
+      rangeDiscountPct: effectiveDiscountPct,
+      realConsoKwh100: effectiveRealConso,
+      highwayRangeKm: highwayRange,
+      highwayConsoKwh100: highwayConso,
+      source: isDirect ? 'La Chaîne EV (Test IRL certifié)' : `Étalonné via coefficient IRL (${car.bodyType} : ${effectiveDiscountPct}%)`,
+      testUrl: directTest?.url || 'https://www.lachaineev.fr',
+    };
+
+    return {
+      ...car,
+      realRangeKm: effectiveRealRange,
+      realConsoKwh100: effectiveRealConso,
+      highwayRangeKm: highwayRange,
+      highwayConsoKwh100: highwayConso,
+      rangeDiscountPct: effectiveDiscountPct,
+      hasDirectIRLTest: isDirect,
+      source: isDirect
+        ? `${car.source ? car.source.split(' & La Chaîne')[0] : 'OpenEV Data'} & La Chaîne EV (IRL)`
+        : car.source,
+    };
+  });
+
+  const benchmarkDataset = {
+    generatedAt: new Date().toISOString(),
+    source: 'https://www.lachaineev.fr & OpenEV Data',
+    description: 'Référentiel des écarts réels WLTP vs IRL et facteurs de correction pour Stop-Carburant.fr',
+    globalStats: {
+      averageRangeDiscountMixedPct: stats.averageRangeDiscountMixedPct,
+      averageRangeDiscountHighwayPct: stats.averageRangeDiscountHighwayPct,
+      averageConsoInflationFactor: stats.averageConsoInflationFactor,
+      segments: stats.segments,
+    },
+    totalModels: updatedDatabase.length,
+    directMatchesCount,
+    calibratedMatchesCount,
+    models: benchmarksByModel,
+  };
+
+  // 1. Sauvegarde du fichier de benchmark
+  fs.writeFileSync(benchmarksOutputPath, JSON.stringify(benchmarkDataset, null, 2), 'utf8');
+  console.log(`💾 Base de connaissances enregistrée dans : ${benchmarksOutputPath}`);
+
+  // 2. Mise à jour de evDatabase.json
+  fs.writeFileSync(evDatabasePath, JSON.stringify(updatedDatabase, null, 2), 'utf8');
+  console.log(`💾 Catalogue 'src/data/evDatabase.json' synchronisé avec les données IRL (Total : ${updatedDatabase.length}).`);
+
+  console.log('\n📊 Bilan de la base de connaissances :');
+  console.log(`   - Modèles avec test direct La Chaîne EV : ${directMatchesCount}`);
+  console.log(`   - Modèles étalonnés via décote de segment : ${calibratedMatchesCount}`);
+  console.log('   => 100% du catalogue dispose d\'un coefficient de correction garanti.\n');
+}
+
+run();

@@ -158,4 +158,22 @@ describe('EVModelSelectorModal - Filtre des véhicules rentables', () => {
     expect(handleSelect).toHaveBeenCalledTimes(1);
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
+
+  it('affiche le bandeau "Données réelles certifiées" sur les fiches de véhicules', () => {
+    render(
+      <EVModelSelectorModal
+        isOpen={true}
+        onClose={vi.fn()}
+        onSelectModel={vi.fn()}
+        userFuelBudget={300}
+        dailyKm={50}
+      />
+    );
+
+    // Vérifier la présence des bandeaux certifiés
+    const certifiedBadges = screen.getAllByText(/Données réelles certifiées/i);
+    expect(certifiedBadges.length).toBeGreaterThan(0);
+    // Vérifier la mention de traçabilité La Chaîne EV ou coefficient IRL
+    expect(screen.getAllByText(/vs WLTP/i).length).toBeGreaterThan(0);
+  });
 });

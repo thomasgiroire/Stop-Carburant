@@ -1,5 +1,6 @@
 import { calculateEVFinancing, LoanRateMode } from './loanCalculations';
 import { EVDatabaseService } from '../services/evDatabaseService';
+import { getVehicleCorrectionBadge } from './consumptionCorrection';
 
 export interface DailyUsageAdvice {
   pattern: 'nocturne_couvre' | 'nocturne_reserve_weekend' | 'batterie_recharge_espacee';
@@ -14,8 +15,14 @@ export interface UsedEVRecommendation {
   bodyType?: 'citadine' | 'compacte' | 'berline' | 'break' | 'suv';
   batteryGrossKwh?: number;
   batteryNetKwh?: number;
+  wltpRangeKm?: number;
   realRangeKm: number;
   realConsoKwh100: number; // Consommation électrique réelle mixte (La Chaîne EV)
+  highwayRangeKm?: number;
+  highwayConsoKwh100?: number;
+  rangeDiscountPct?: number; // % décote WLTP vs réel constaté
+  hasDirectIRLTest?: boolean;
+  correctionBadge?: string;
   monthlyFinancing5Years: number; // Mensualité sur 5 ans (60 mois)
   estimatedMarketPrice: number; // Prix d'achat d'occasion constaté
   leboncoinSampleText: string; // Référence constatée sur Leboncoin
@@ -316,11 +323,16 @@ export const LEBONCOIN_PRICE_SAMPLES: LeboncoinAdSample[] = [
 export interface EVModelData {
   model: string;
   yearRange: string;
-  bodyType?: 'citadine' | 'compacte' | 'berline' | 'suv';
+  bodyType?: 'citadine' | 'compacte' | 'berline' | 'break' | 'suv';
   batteryGrossKwh?: number;
   batteryNetKwh?: number;
+  wltpRangeKm?: number;
   realRangeKm: number;
   realConsoKwh100: number; // Consommation réelle mixte (La Chaîne EV)
+  highwayRangeKm?: number;
+  highwayConsoKwh100?: number;
+  rangeDiscountPct?: number;
+  hasDirectIRLTest?: boolean;
   estimatedMarketPrice: number;
   leboncoinSampleText: string;
   strategyBadge: string;
@@ -337,11 +349,16 @@ export interface EVModelData {
 export const EV_CATALOG: EVModelData[] = EVDatabaseService.getAllModels().map((car) => ({
   model: car.fullName,
   yearRange: car.yearRange,
-  bodyType: car.bodyType,
+  bodyType: car.bodyType as any,
   batteryGrossKwh: car.batteryGrossKwh,
   batteryNetKwh: car.batteryNetKwh,
+  wltpRangeKm: car.wltpRangeKm,
   realRangeKm: car.realRangeKm,
   realConsoKwh100: car.realConsoKwh100,
+  highwayRangeKm: car.highwayRangeKm,
+  highwayConsoKwh100: car.highwayConsoKwh100,
+  rangeDiscountPct: car.rangeDiscountPct,
+  hasDirectIRLTest: car.hasDirectIRLTest,
   estimatedMarketPrice: car.estimatedMarketPrice,
   leboncoinSampleText: car.leboncoinSampleText,
   strategyBadge: car.strategyBadge,
@@ -626,14 +643,22 @@ export function getTieredEVRecommendations(
         : `Modèle le moins cher à financer (~${monthly} €/m)`;
     }
 
+    const correctionBadge = getVehicleCorrectionBadge(car);
+
     return {
       model: car.model,
       yearRange: car.yearRange,
       bodyType: car.bodyType,
       batteryGrossKwh: car.batteryGrossKwh,
       batteryNetKwh: car.batteryNetKwh,
+      wltpRangeKm: car.wltpRangeKm,
       realRangeKm: car.realRangeKm,
       realConsoKwh100: car.realConsoKwh100,
+      highwayRangeKm: car.highwayRangeKm,
+      highwayConsoKwh100: car.highwayConsoKwh100,
+      rangeDiscountPct: car.rangeDiscountPct,
+      hasDirectIRLTest: car.hasDirectIRLTest,
+      correctionBadge,
       monthlyFinancing5Years: monthly,
       estimatedMarketPrice: car.estimatedMarketPrice,
       leboncoinSampleText: car.leboncoinSampleText,

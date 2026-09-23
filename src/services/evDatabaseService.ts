@@ -56,6 +56,10 @@ export interface OpenDataEVModel {
   fastCharge10to80Min: number;
   source: string;
   marketStats?: ModelMarketStats;
+  highwayRangeKm?: number;
+  highwayConsoKwh100?: number;
+  rangeDiscountPct?: number; // % de décote d'autonomie vs WLTP constructeur (ex: -12.5)
+  hasDirectIRLTest?: boolean; // Vrai si mesuré directement par La Chaîne EV, faux si étalonné
 }
 
 export interface EVFilterOptions {

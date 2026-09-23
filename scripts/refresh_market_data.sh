@@ -43,12 +43,20 @@ for arg in "$@"; do
     esac
 done
 
-# 3. Étape 1 : Collecte & Scraping
-echo -e "\n${BOLD}[1/2] Collecte des annonces professionnelles en cours...${NC}"
+# 3. Étape 1 : Collecte & Scraping des Prix Marché
+echo -e "\n${BOLD}[1/4] Collecte des annonces professionnelles (prix marché)...${NC}"
 $PYTHON_BIN scripts/scraper/scrape_market.py "${SCRAPER_ARGS[@]}"
 
-# 4. Étape 2 : Ingestion et contrôle qualité
-echo -e "\n${BOLD}[2/2] Ingestion des prix et vérification des garde-fous...${NC}"
+# 4. Étape 2 : Collecte des Mesures Réelles La Chaîne EV
+echo -e "\n${BOLD}[2/4] Collecte des mesures réelles IRL (La Chaîne EV)...${NC}"
+$PYTHON_BIN scripts/scraper/scrape_lachaineev.py "${SCRAPER_ARGS[@]}"
+
+# 5. Étape 3 : Ingestion des prix et découverte de nouveaux modèles
+echo -e "\n${BOLD}[3/4] Ingestion des prix et vérification des garde-fous...${NC}"
 node scripts/ingest_market_prices.js
 
-echo -e "\n${BOLD}${GREEN}🎉 Pipeline terminé avec succès ! Le catalogue Stop-Carburant est à jour.${NC}\n"
+# 6. Étape 4 : Compilation de la Base de Connaissances & Décotes IRL
+echo -e "\n${BOLD}[4/4] Compilation des benchmarks et calcul des coefficients IRL...${NC}"
+node scripts/compile_consumption_benchmarks.js
+
+echo -e "\n${BOLD}${GREEN}🎉 Pipeline terminé avec succès ! Prix marché et consommations réelles Stop-Carburant sont à jour.${NC}\n"
