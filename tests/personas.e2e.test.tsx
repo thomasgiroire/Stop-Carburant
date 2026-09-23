@@ -165,9 +165,9 @@ describe('Tests E2E — Parcours Utilisateurs réels par Persona (Stop-Carburant
     // Le modèle recommandé couvre largement les 130 km quotidiens
     expect(screen.getByText(/Achetez une Renault Zoé R90 maintenant !/i)).toBeInTheDocument();
 
-    // Le conseil d'utilisation rassure sur la distance quotidienne
-    expect(screen.getByText(/Avec une nuit de sommeil chez vous/i)).toBeInTheDocument();
-    expect(screen.getByText(/couvrir toute votre semaine sans stress/i)).toBeInTheDocument();
+    // Le conseil d'utilisation rassure sur le démarrage sur simple prise + installation équipement
+    expect(screen.getByText(/Démarrez dès le premier jour sur une simple prise standard chez vous sans la moindre crainte/i)).toBeInTheDocument();
+    expect(screen.getByText(/borne 7,4 kW|prise renforcée/i)).toBeInTheDocument();
 
     // Option confort présente
     const comfortBtn = screen.getByRole('button', { name: /Option confort/i });

@@ -781,11 +781,25 @@ export function getDailyUsageAdvice(
   dailyKm: number,
   realRangeKm: number,
   housing: 'maison' | 'appartement' = 'maison',
-  modelName?: string
+  modelName?: string,
+  equipmentType?: 'standard_plug' | 'reinforced_plug' | 'wallbox_7kw'
 ): DailyUsageAdvice {
   const safeDailyKm = Math.max(5, Math.round(dailyKm));
   const safeRange = Math.max(80, Math.round(realRangeKm));
   const consoKwh100 = getVehicleRealConso(modelName);
+
+  // CAS ÉQUIPEMENT DÉDIÉ (Prise renforcée ou borne conseillée/incluse) :
+  // Rassurer sur le démarrage immédiat sans crainte sur prise classique le temps d'installer l'équipement
+  if (housing === 'maison' && equipmentType && equipmentType !== 'standard_plug') {
+    const isWallbox = equipmentType === 'wallbox_7kw';
+    const equipName = isWallbox ? 'une borne 7,4 kW' : 'une prise renforcée';
+    return {
+      pattern: 'nocturne_couvre',
+      badge: isWallbox ? 'Borne 7,4 kW conseillée' : 'Prise renforcée conseillée',
+      title: isWallbox ? 'Installation d\'une borne conseillée' : 'Installation d\'une prise renforcée',
+      text: `Démarrez dès le premier jour sur une simple prise standard chez vous sans la moindre crainte : elle assurera vos trajets le temps d'installer ${equipName} pour couvrir 100% de vos besoins chaque nuit en toute sérénité.`,
+    };
+  }
 
   // Énergie requise chaque jour pour le trajet quotidien (kWh)
   const dailyKwhNeeded = Math.round(((safeDailyKm * consoKwh100) / 100) * 10) / 10;

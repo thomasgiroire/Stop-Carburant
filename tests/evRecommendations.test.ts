@@ -99,6 +99,18 @@ describe('evRecommendations - Éligibilité et messages vulgarisés', () => {
         expect(advice.badge).toBe('Borne à domicile conseillée');
         expect(advice.text).toContain('prise renforcée (Green\'up) ou d\'une borne 7,4 kW');
       });
+
+      it('génère le message rassurant de démarrage sur prise standard si une prise renforcée ou borne est incluse', () => {
+        const adviceReinf = getDailyUsageAdvice(130, 310, 'maison', 'Renault Zoé Intens R110 (Batterie 52 kWh)', 'reinforced_plug');
+        expect(adviceReinf.badge).toBe('Prise renforcée conseillée');
+        expect(adviceReinf.text).toContain('Démarrez dès le premier jour sur une simple prise standard chez vous sans la moindre crainte');
+        expect(adviceReinf.text).toContain('prise renforcée');
+
+        const adviceWallbox = getDailyUsageAdvice(200, 380, 'maison', 'Tesla Model 3', 'wallbox_7kw');
+        expect(adviceWallbox.badge).toBe('Borne 7,4 kW conseillée');
+        expect(adviceWallbox.text).toContain('Démarrez dès le premier jour sur une simple prise standard chez vous sans la moindre crainte');
+        expect(adviceWallbox.text).toContain('borne 7,4 kW');
+      });
     });
 
     describe('Cas Appartement (sans prise à domicile)', () => {
@@ -220,3 +232,4 @@ describe('evRecommendations - Éligibilité et messages vulgarisés', () => {
     });
   });
 });
+

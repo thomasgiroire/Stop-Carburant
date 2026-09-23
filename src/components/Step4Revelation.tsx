@@ -117,8 +117,6 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
   // Recalculer les coûts énergétiques réels à domicile (HP et HC) avec la vraie conso de la voiture
   const simHP = calculateSimulation(fuelBudget, housing, dailyKm, prices, 'HP', vehicleRealConso);
   const simHC = calculateSimulation(fuelBudget, housing, dailyKm, prices, 'HC', vehicleRealConso);
-  const dailyAdvice = currentEV.dailyAdvice ?? getDailyUsageAdvice(dailyKm, currentEV.realRangeKm, housing, currentEV.model);
-
   // Équipement de recharge recommandé et simulation physique avec pertes AC réalistes
   const chargingRec = useMemo(() => {
     return getRecommendedChargingEquipment(
@@ -132,6 +130,16 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
   const activeEquipmentType: ChargingEquipmentType = selectedEquipmentType ?? chargingRec.recommendedType;
   const activeEquipment = CHARGING_EQUIPMENT_OPTIONS[activeEquipmentType];
   const activeSimulation = chargingRec.simulations[activeEquipmentType];
+
+  const dailyAdvice = useMemo(() => {
+    return getDailyUsageAdvice(
+      dailyKm,
+      currentEV.realRangeKm,
+      housing,
+      currentEV.model,
+      activeEquipmentType
+    );
+  }, [dailyKm, currentEV.realRangeKm, housing, currentEV.model, activeEquipmentType]);
 
   // Prix d'achat de référence issu du catalogue officiel pour tous les calculs de financement
   const effectiveMarketPrice = currentEV.estimatedMarketPrice;
