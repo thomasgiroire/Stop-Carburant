@@ -230,6 +230,28 @@ describe('evRecommendations - Éligibilité et messages vulgarisés', () => {
       const bestLargeGap = pickBestEconomicModel(mockCarsLargeGap, 'eco_1pct');
       expect(bestLargeGap.model).toBe('Dacia Spring (27 kWh)');
     });
+
+    it('en appartement pour 180 km/j et 400 € de budget, priorise une routière grande batterie (ID.3 / MG4 / Kona / Tesla) et écarte les petites batteries', async () => {
+      const { calculateSimulation } = await import('../src/utils/calculator');
+      const sim = calculateSimulation(400, 'appartement', 180);
+      const rec = getTieredEVRecommendations(180, sim.carLeaseBudget, 'appartement');
+
+      // Doit proposer une voiture à autonomie >= 320 km pour espacer les recharges
+      expect(rec.recommended.realRangeKm).toBeGreaterThanOrEqual(320);
+      expect(rec.recommended.model).toMatch(/Volkswagen ID\.3|MG4|Hyundai Kona|Kia e-Niro|Tesla/);
+      expect(rec.recommended.model).not.toContain('ë-C4');
+      expect(rec.recommended.model).not.toContain('2008');
+      expect(rec.recommended.model).not.toContain('Zoé');
+
+      // L'option confort est une routière supérieure avec grande autonomie
+      expect(rec.economy.realRangeKm).toBeGreaterThanOrEqual(350);
+      expect(rec.economy.model).toMatch(/Tesla|Hyundai Kona|Kia e-Niro|Scénic|Enyaq/);
+
+      // Le conseil d'usage doit être cohérent avec l'autonomie (absorbe au moins 2 jours si range >= 360 km, sinon 1 recharge par jour)
+      if (rec.recommended.realRangeKm >= 360) {
+        expect(rec.recommended.dailyAdvice?.badge).toContain('tous les 2 jours');
+      }
+    });
   });
 });
 

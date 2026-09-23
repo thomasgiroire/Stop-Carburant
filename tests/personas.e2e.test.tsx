@@ -257,6 +257,27 @@ describe('Tests E2E — Parcours Utilisateurs réels par Persona (Stop-Carburant
     expect(screen.queryByRole('button', { name: /Heures Creuses \(~0,16 €/i })).not.toBeInTheDocument();
   });
 
+  it('E2E Persona Grand Rouleur en appartement (180 km/j, 400 €/m, appartement) : impose une grande routière à forte autonomie (ID.3 / MG4 / Kona / Tesla) et refuse les citadines', async () => {
+    await runPersonaE2EJourney({
+      fuelBudget: 400,
+      dailyKm: 180,
+      housing: 'appartement',
+    });
+
+    // À 180 km/jour en appartement, la recommandation doit impérativement être une routière à grande batterie (>= 320 km)
+    const purchaseTitle = screen.getByRole('heading', { level: 3 });
+    expect(purchaseTitle.textContent).toMatch(/Volkswagen ID\.3|MG4|Hyundai Kona|Kia e-Niro|Tesla/i);
+    expect(purchaseTitle.textContent).not.toContain('Zoé');
+    expect(purchaseTitle.textContent).not.toContain('Spring');
+    expect(purchaseTitle.textContent).not.toContain('ë-C4');
+
+    // Vérifier dans le détail financier
+    const detailsBtn = screen.getByRole('button', { name: /voir le détail des calculs financiers/i });
+    fireEvent.click(detailsBtn);
+
+    expect(screen.getByText(/Coût de recharge \(bornes\) :/i)).toBeInTheDocument();
+  });
+
   // =========================================================================
   // PERSONA 7 : Gérard — Grand Rouleur Interurbain (160 km/j, 290 €/m, maison)
   // =========================================================================

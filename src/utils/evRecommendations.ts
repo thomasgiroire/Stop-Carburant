@@ -402,7 +402,21 @@ export function carCoversDailyNeed(
     }
     return carRangeKm >= safeDailyKm;
   }
-  return carRangeKm >= Math.max(safeDailyKm * 1.25, 140);
+
+  // En appartement (sans prise à domicile) :
+  // Le principe fondamental de la mobilité électrique sans prise est d'éviter la corvée d'une recharge quotidienne.
+  // - Petits trajets (< 80 km/j) : la batterie doit couvrir au moins 140 km (2 à 5 jours selon km).
+  // - Trajets intermédiaires (80 à 139 km/j) : la batterie doit absorber au moins 2 jours de trajets (min 200 km).
+  // - Grands rouleurs (>= 140 km/j) : rouler 140 à 200+ km/j sans prise exige une batterie endurante
+  //   capable d'encaisser au moins 2 jours de trajets sans angoisse (minimum 320 km, plafonné à 400 km réels).
+  if (safeDailyKm < 80) {
+    return carRangeKm >= Math.max(safeDailyKm * 1.25, 140);
+  }
+  if (safeDailyKm < 140) {
+    return carRangeKm >= Math.max(safeDailyKm * 1.5, 200);
+  }
+  const minRequiredApartment = Math.min(Math.max(safeDailyKm * 1.75, 320), 400);
+  return carRangeKm >= minRequiredApartment;
 }
 
 /**
@@ -415,7 +429,7 @@ export function carCoversDailyNeed(
  *   sièges ergonomiques, aides à la conduite niveau 2, suspensions).
  *   On écarte les citadines (Zoé, Spring, Twingo, e-208) pour prioriser les berlines routières
  *   et SUV (Tesla Model 3, MG4 Luxury, VW ID.3, Kona, Model Y...).
- * - >= 200 km/jour : Exigence stricte d'une grande routière (Tesla, Kona, Scénic...) avec autonomie réelle >= 300 km.
+ * - >= 175 km/jour : Exigence stricte d'une routière ou SUV longue distance avec autonomie réelle >= 300 km.
  */
 export function isCarComfortableForDailyKm(
   car: EVModelData,
@@ -442,8 +456,8 @@ export function isCarComfortableForDailyKm(
 
   if (isCityCar) return false;
 
-  // À partir de 200 km/jour : exclure également les compactes à autonomie limitée (< 300 km réels)
-  if (dailyKm >= 200 && car.realRangeKm < 300) {
+  // À partir de 175 km/jour : exclure également les compactes/SUV à autonomie limitée (< 300 km réels)
+  if (dailyKm >= 175 && car.realRangeKm < 300) {
     return false;
   }
 
@@ -838,12 +852,20 @@ export function getDailyUsageAdvice(
     }
 
     // Si gros rouleur sans prise (moins de 5 jours d'autonomie)
-    const daysCount = Math.max(2, commuteDays);
+    if (commuteDays >= 2) {
+      return {
+        pattern: 'batterie_recharge_espacee',
+        badge: `1 recharge tous les ${commuteDays} jours`,
+        title: `1 recharge tous les ${commuteDays} jours`,
+        text: `Même sans prise chez vous, la batterie de ${safeRange} km absorbe ${commuteDays} jours de trajets d'affilée. Une pause recharge de 20 min tous les ${commuteDays} jours (en faisant vos courses ou sur borne publique) couvre tous vos besoins.`,
+      };
+    }
+
     return {
       pattern: 'batterie_recharge_espacee',
-      badge: `1 recharge tous les ${daysCount} jours`,
-      title: `1 recharge tous les ${daysCount} jours`,
-      text: `Même sans prise chez vous, la batterie de ${safeRange} km absorbe ${daysCount} jours de trajets d'affilée. Une pause recharge de 20 min tous les ${daysCount} jours (en faisant vos courses ou sur borne publique) couvre tous vos besoins.`,
+      badge: '1 recharge rapide quotidienne',
+      title: 'Recharge quotidienne sur borne publique',
+      text: `À ${safeDailyKm} km/jour sans prise chez vous, la batterie de ${safeRange} km couvre votre journée de trajets. Une pause recharge rapide de 20 min par jour (en faisant vos courses ou près de votre travail) s'intègre facilement dans votre routine.`,
     };
   }
 
