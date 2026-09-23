@@ -34,10 +34,10 @@ export const FAQ_ITEMS: FAQItem[] = [
     id: 'batteries',
     myth: '« Les batteries sont mortes au bout de 10 ans, il faut repayer 15 000 € ! »',
     verdict: 'FAUX',
-    explanation: 'Les données réelles télémétriques sur des dizaines de milliers de véhicules en circulation démontrent une dégradation moyenne de seulement 1,8 % par an. La batterie est garantie par les constructeurs (8 ans / 160 000 km minimum) et sa durée de vie estimée dépasse 20 ans, survivant généralement au reste de la voiture.',
-    sourceName: 'Geotab — Analyse de la santé des batteries sur 10 000 VE en circulation',
+    explanation: 'Les données réelles télémétriques (Geotab sur 6 000+ véhicules, certificats Aviloo) démontrent une perte moyenne de seulement ~1,4 % à 1,8 % par an. Stop-Carburant intègre d\'ailleurs automatiquement cette décote (SoH moyen de 85 % à 96 % selon le millésime) dans tous ses calculs d\'autonomie d\'occasion. De plus, les constructeurs garantissent la batterie pendant 8 ans ou 160 000 km (seuil mini de 70-75 % de capacité), et un certificat SoH officiel est remis lors de l\'achat d\'occasion.',
+    sourceName: 'Geotab — Analyse de la santé des batteries sur 10 000 VE en circulation & Aviloo',
     sourceUrl: 'https://www.geotab.com/blog/ev-battery-health/',
-    badge: 'Données Télémétriques',
+    badge: 'Données Télémétriques & SoH',
   },
   {
     id: 'incendies',

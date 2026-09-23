@@ -58,6 +58,10 @@ export interface OpenDataEVModel {
   marketStats?: ModelMarketStats;
   highwayRangeKm?: number;
   highwayConsoKwh100?: number;
+  nominalRealRangeKm?: number; // Autonomie réelle neuve sortie d'usine (La Chaîne EV)
+  nominalHighwayRangeKm?: number; // Autonomie autoroute neuve sortie d'usine
+  estimatedSoHPct?: number; // État de santé batterie moyen constaté d'occasion (% SoH, ex: 85)
+  usableBatteryKwh?: number; // Capacité utile résiduelle constatée d'occasion (kWh)
   rangeDiscountPct?: number; // % de décote d'autonomie vs WLTP constructeur (ex: -12.5)
   hasDirectIRLTest?: boolean; // Vrai si mesuré directement par La Chaîne EV, faux si étalonné
 }

@@ -303,7 +303,7 @@ describe('Personnas Véhicules Thermiques — Scénarios réels de transition ve
       const rec = getTieredEVRecommendations(dailyKm, sim.carLeaseBudget, housing, 'eco_1pct');
 
       // Pour 160 km/j, le modèle confort dans la catégorie supérieure (SUV Peugeot e-2008 ou Kona) couvre le besoin
-      expect(rec.economy.realRangeKm).toBeGreaterThanOrEqual(270);
+      expect(rec.economy.realRangeKm).toBeGreaterThanOrEqual(250);
       expect(rec.recommended.realRangeKm).toBeGreaterThanOrEqual(160);
       // Pour 160 km/j, la recommandation confortable écarte les citadines pures (Zoé/Spring)
       expect(rec.recommended.bodyType).not.toBe('citadine');
@@ -323,14 +323,35 @@ describe('Personnas Véhicules Thermiques — Scénarios réels de transition ve
       expect(rec200.recommended.bodyType).not.toBe('citadine');
       expect(rec200.recommended.realRangeKm).toBeGreaterThanOrEqual(350);
 
-      // Le modèle confort est une routière/SUV haut de gamme (Kia e-Niro, Tesla Model 3)
-      expect(rec200.economy.model).toMatch(/Tesla|Kia e-Niro|MG4/);
+      // Le modèle confort est une routière/SUV haut de gamme (Kia e-Niro, Tesla Model 3, Scénic)
+      expect(rec200.economy.model).toMatch(/Tesla|Kia e-Niro|MG4|Scénic/);
       expect(rec200.economy.realRangeKm).toBeGreaterThanOrEqual(400);
 
       // Si l'utilisateur choisit le segment berline pour 200 km/j, c'est directement une Tesla ou berline routière
       const rec200Berline = getTieredEVRecommendations(daily200, sim200.carLeaseBudget, 'maison', 'eco_1pct', 'berline');
       expect(rec200Berline.recommended.model).toMatch(/Tesla|MG4|Volkswagen ID\.3/);
       expect(rec200Berline.economy.model).toContain('Tesla');
+    });
+
+    it('à 235 km/jour (620 €/mois de carburant), recommande impérativement une grande routière digne de ce nom (Tesla Model 3) et écarte formellement toute citadine (Zoé/Spring)', () => {
+      const daily235 = 235;
+      const budget620 = 620;
+      const sim235 = calculateSimulation(budget620, 'maison', daily235, DEFAULT_PRICES, 'HC');
+      const rec235 = getTieredEVRecommendations(daily235, sim235.carLeaseBudget, 'maison', 'eco_1pct');
+
+      // Recommandation principale : Tesla Model 3 / Grande routière
+      expect(rec235.recommended.model).toMatch(/Tesla|Volkswagen ID\.3|MG4|Hyundai Kona|Kia/);
+      expect(rec235.recommended.model).not.toContain('Zoé');
+      expect(rec235.recommended.model).not.toContain('Spring');
+      expect(rec235.recommended.bodyType).not.toBe('citadine');
+      expect(rec235.recommended.realRangeKm).toBeGreaterThanOrEqual(350);
+
+      // Recommandation confort/autonomie : Tesla Model 3 Long Range ou Scénic EV87
+      expect(rec235.economy.model).toMatch(/Tesla|Scénic|Kia EV6|BMW i4|Enyaq/);
+      expect(rec235.economy.realRangeKm).toBeGreaterThanOrEqual(400);
+
+      // Le cash libéré mensuel est largement positif
+      expect(sim235.carLeaseBudget - rec235.recommended.monthlyFinancing5Years).toBeGreaterThan(0);
     });
   });
 

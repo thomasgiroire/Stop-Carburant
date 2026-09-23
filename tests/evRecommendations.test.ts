@@ -28,6 +28,26 @@ describe('evRecommendations - Éligibilité et messages vulgarisés', () => {
       expect(recommendations.recommended.realRangeKm).toBeGreaterThanOrEqual(280);
       expect(recommendations.recommended.model).not.toContain('41 kWh');
     });
+
+    it('en maison avec très grand rouleur (235 km/j, budget 620 €/m), recommande impérativement une berline routière (Tesla) et écarte la Zoé', () => {
+      // Cas utilisateur réel : 235 km/j et 620 €/m de carburant
+      // Zoé et citadines ne couvrent ni l'autonomie ni l'exigence de confort
+      expect(carCoversDailyNeed(204, 235, 'maison')).toBe(false);
+      expect(carCoversDailyNeed(310, 235, 'maison')).toBe(false);
+      expect(carCoversDailyNeed(405, 235, 'maison')).toBe(true);
+      expect(carCoversDailyNeed(483, 235, 'maison')).toBe(true);
+
+      const recommendations = getTieredEVRecommendations(235, 500, 'maison');
+      expect(recommendations.recommended.model).toMatch(/Tesla|Volkswagen ID\.3|MG4|Hyundai Kona|Scénic/);
+      expect(recommendations.recommended.model).not.toContain('Zoé');
+      expect(recommendations.recommended.model).not.toContain('Spring');
+      expect(recommendations.recommended.bodyType).not.toBe('citadine');
+      expect(recommendations.recommended.realRangeKm).toBeGreaterThanOrEqual(350);
+
+      // L'option confort est une routière haut de gamme
+      expect(recommendations.economy.model).toMatch(/Tesla|Scénic|EV6|BMW|Enyaq/);
+      expect(recommendations.economy.realRangeKm).toBeGreaterThanOrEqual(400);
+    });
   });
 
   describe('getDailyUsageAdvice - Messages sans jargon technique', () => {

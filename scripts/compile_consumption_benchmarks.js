@@ -19,6 +19,33 @@ const lachaineevPath = path.resolve(__dirname, 'scraper/output/lachaineev_observ
 const evDatabasePath = path.resolve(__dirname, '../src/data/evDatabase.json');
 const benchmarksOutputPath = path.resolve(__dirname, '../src/data/consumptionBenchmarks.json');
 
+/**
+ * Calcule l'estimation du State of Health (SoH %) moyen constaté sur le marché de l'occasion
+ * selon l'année médiane du modèle et sa technologie thermique de batterie.
+ */
+function calculateEstimatedSoHPct(yearRange, modelId) {
+  const currentYear = 2026;
+  const match = (yearRange || '').match(/(\d{4})\s*-\s*(\d{4})/);
+  const medianYear = match 
+    ? Math.round((parseInt(match[1], 10) + parseInt(match[2], 10)) / 2) 
+    : 2021;
+  const ageYears = Math.max(0.5, currentYear - medianYear);
+  const initialLossPct = 2.5;
+  let annualDegradationRate = 1.35; // Liquide actif régulé standard
+  const lowerId = (modelId || '').toLowerCase();
+  if (lowerId.includes('leaf')) {
+    annualDegradationRate = 2.6; // Refroidissement passif sans clim
+  } else if (lowerId.includes('zoe') || lowerId.includes('twingo') || lowerId.includes('czero')) {
+    annualDegradationRate = 1.8; // Refroidissement air pulsé
+  } else if (lowerId.includes('spring')) {
+    annualDegradationRate = 1.7; // Petite batterie urbaine
+  } else if (lowerId.includes('tesla') || lowerId.includes('model-3') || lowerId.includes('model-y')) {
+    annualDegradationRate = 1.15; // Liquide haute précision
+  }
+  const totalLoss = initialLossPct + (Math.max(0, ageYears - 1) * annualDegradationRate);
+  return Math.max(75, Math.round((100 - totalLoss) * 10) / 10);
+}
+
 function run() {
   console.log('\n=============================================================');
   console.log('  STOP-CARBURANT • BASE DE CONNAISSANCES CONSOMMATION RÉELLE');
@@ -113,16 +140,29 @@ function run() {
       ? directTest.highwayConsoKwh100
       : Math.round((car.batteryNetKwh / highwayRange) * 100 * 10) / 10;
 
+    const estimatedSoHPct = calculateEstimatedSoHPct(car.yearRange, car.id);
+    const usableBatteryKwh = Math.round(car.batteryNetKwh * (estimatedSoHPct / 100) * 10) / 10;
+    const nominalRealRangeKm = effectiveRealRange;
+    const nominalHighwayRangeKm = highwayRange;
+
+    // Autonomie réelle résiduelle constatée d'occasion tenant compte du vieillissement SoH
+    const usedRealRangeKm = Math.round(nominalRealRangeKm * (estimatedSoHPct / 100));
+    const usedHighwayRangeKm = Math.round(nominalHighwayRangeKm * (estimatedSoHPct / 100));
+
     benchmarksByModel[car.id] = {
       modelId: car.id,
       fullName: car.fullName,
       bodyType: car.bodyType,
       hasDirectIRLTest: isDirect,
       wltpRangeKm: car.wltpRangeKm,
-      realRangeKm: effectiveRealRange,
+      nominalRealRangeKm,
+      nominalHighwayRangeKm,
+      estimatedSoHPct,
+      usableBatteryKwh,
+      realRangeKm: usedRealRangeKm,
+      highwayRangeKm: usedHighwayRangeKm,
       rangeDiscountPct: effectiveDiscountPct,
       realConsoKwh100: effectiveRealConso,
-      highwayRangeKm: highwayRange,
       highwayConsoKwh100: highwayConso,
       source: isDirect ? 'La Chaîne EV (Test IRL certifié)' : `Étalonné via coefficient IRL (${car.bodyType} : ${effectiveDiscountPct}%)`,
       testUrl: directTest?.url || 'https://www.lachaineev.fr',
@@ -130,9 +170,13 @@ function run() {
 
     return {
       ...car,
-      realRangeKm: effectiveRealRange,
+      nominalRealRangeKm,
+      nominalHighwayRangeKm,
+      estimatedSoHPct,
+      usableBatteryKwh,
+      realRangeKm: usedRealRangeKm,
+      highwayRangeKm: usedHighwayRangeKm,
       realConsoKwh100: effectiveRealConso,
-      highwayRangeKm: highwayRange,
       highwayConsoKwh100: highwayConso,
       rangeDiscountPct: effectiveDiscountPct,
       hasDirectIRLTest: isDirect,

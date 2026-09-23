@@ -159,7 +159,7 @@ describe('EVModelSelectorModal - Filtre des véhicules rentables', () => {
     expect(handleClose).toHaveBeenCalledTimes(1);
   });
 
-  it('affiche le bandeau "Données réelles certifiées" sur les fiches de véhicules', () => {
+  it('affiche les 3 tuiles de valeurs réalistes transparentes (Option C) sans bandeaux superflus', () => {
     render(
       <EVModelSelectorModal
         isOpen={true}
@@ -170,10 +170,32 @@ describe('EVModelSelectorModal - Filtre des véhicules rentables', () => {
       />
     );
 
-    // Vérifier la présence des bandeaux certifiés
-    const certifiedBadges = screen.getAllByText(/Données réelles certifiées/i);
-    expect(certifiedBadges.length).toBeGreaterThan(0);
-    // Vérifier la mention de traçabilité La Chaîne EV ou coefficient IRL
-    expect(screen.getAllByText(/vs WLTP/i).length).toBeGreaterThan(0);
+    // Vérifier les 3 tuiles réalistes
+    expect(screen.getAllByText(/Autonomie réelle/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Conso réelle/i).length).toBeGreaterThan(0);
+    expect(screen.getAllByText(/Batterie utile/i).length).toBeGreaterThan(0);
+
+    // Vérifier l'absence de bandeau technique lourd ou de jargon WLTP
+    expect(screen.queryByText(/Données réelles certifiées d'occasion/i)).toBeNull();
+    expect(screen.queryByText(/vs WLTP/i)).toBeNull();
+  });
+
+  it('affiche la transparence d\'usure de batterie réaliste sur les fiches de véhicules', () => {
+    render(
+      <EVModelSelectorModal
+        isOpen={true}
+        onClose={vi.fn()}
+        onSelectModel={vi.fn()}
+        userFuelBudget={300}
+        dailyKm={50}
+      />
+    );
+
+    // Vérifier la mention de l'usure déduite sur l'autonomie et la batterie utile
+    const wearBadges = screen.getAllByText(/Usure déduite/i);
+    expect(wearBadges.length).toBeGreaterThanOrEqual(2);
+
+    // Vérifier l'affichage de la consommation réelle aux 100 km
+    expect(screen.getAllByText(/aux 100 km/i).length).toBeGreaterThan(0);
   });
 });

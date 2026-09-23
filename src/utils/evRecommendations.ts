@@ -20,6 +20,10 @@ export interface UsedEVRecommendation {
   realConsoKwh100: number; // Consommation électrique réelle mixte (La Chaîne EV)
   highwayRangeKm?: number;
   highwayConsoKwh100?: number;
+  nominalRealRangeKm?: number;
+  nominalHighwayRangeKm?: number;
+  estimatedSoHPct?: number;
+  usableBatteryKwh?: number;
   rangeDiscountPct?: number; // % décote WLTP vs réel constaté
   hasDirectIRLTest?: boolean;
   correctionBadge?: string;
@@ -189,7 +193,7 @@ export const LEBONCOIN_PRICE_SAMPLES: LeboncoinAdSample[] = [
     year: 2026,
     km: 10,
     location: 'Trégueux (22)',
-    batteryInfo: '27 kWh (230 km WLTP)',
+    batteryInfo: '27 kWh (195 km réels)',
     badge: 'À la une',
     category: '10 000 € à 18 000 €',
   },
@@ -287,7 +291,7 @@ export const LEBONCOIN_PRICE_SAMPLES: LeboncoinAdSample[] = [
     year: 2026,
     km: 3000,
     location: 'SUMA Motors Nevers',
-    batteryInfo: '65 kWh (484 km WLTP)',
+    batteryInfo: '65 kWh (380 km réels)',
     badge: 'Occasion récente',
     category: 'Plus de 19 000 €',
   },
@@ -327,6 +331,10 @@ export interface EVModelData {
   batteryGrossKwh?: number;
   batteryNetKwh?: number;
   wltpRangeKm?: number;
+  nominalRealRangeKm?: number;
+  nominalHighwayRangeKm?: number;
+  estimatedSoHPct?: number;
+  usableBatteryKwh?: number;
   realRangeKm: number;
   realConsoKwh100: number; // Consommation réelle mixte (La Chaîne EV)
   highwayRangeKm?: number;
@@ -353,6 +361,10 @@ export const EV_CATALOG: EVModelData[] = EVDatabaseService.getAllModels().map((c
   batteryGrossKwh: car.batteryGrossKwh,
   batteryNetKwh: car.batteryNetKwh,
   wltpRangeKm: car.wltpRangeKm,
+  nominalRealRangeKm: car.nominalRealRangeKm,
+  nominalHighwayRangeKm: car.nominalHighwayRangeKm,
+  estimatedSoHPct: car.estimatedSoHPct,
+  usableBatteryKwh: car.usableBatteryKwh,
   realRangeKm: car.realRangeKm,
   realConsoKwh100: car.realConsoKwh100,
   highwayRangeKm: car.highwayRangeKm,
@@ -381,8 +393,10 @@ export function carCoversDailyNeed(
     // Une nuit de sommeil standard sur simple prise 2,3 kW recharge ~18,4 kWh, soit environ 120 km
     const standardNightlyKm = 120;
     if (safeDailyKm > standardNightlyKm) {
-      // Le déficit journalier doit être absorbé par la batterie sur les 5 jours de la semaine
-      const weeklyDeficit = (safeDailyKm - standardNightlyKm) * 5;
+      // Pour les trajets intermédiaires (120-180 km/j), une batterie absorbant le déficit hebdo sur prise 2,3 kW est idéale.
+      // Au-delà (>= 180-200 km/j), une prise simple ne peut effacer 1 000+ km/semaine : l'usage repose sur une borne 7,4 kW ou charge rapide.
+      // Le déficit sur prise 2,3 kW est donc plafonné à 400 km réels (seuil des grandes routières), et le critère déterminant est de couvrir le trajet quotidien.
+      const weeklyDeficit = Math.min((safeDailyKm - standardNightlyKm) * 5, 400);
       const minRequiredRange = Math.max(safeDailyKm, weeklyDeficit);
       return carRangeKm >= minRequiredRange;
     }
@@ -401,6 +415,7 @@ export function carCoversDailyNeed(
  *   sièges ergonomiques, aides à la conduite niveau 2, suspensions).
  *   On écarte les citadines (Zoé, Spring, Twingo, e-208) pour prioriser les berlines routières
  *   et SUV (Tesla Model 3, MG4 Luxury, VW ID.3, Kona, Model Y...).
+ * - >= 200 km/jour : Exigence stricte d'une grande routière (Tesla, Kona, Scénic...) avec autonomie réelle >= 300 km.
  */
 export function isCarComfortableForDailyKm(
   car: EVModelData,
@@ -425,7 +440,14 @@ export function isCarComfortableForDailyKm(
                     car.model.includes('Twingo') || 
                     car.model.includes('208');
 
-  return !isCityCar;
+  if (isCityCar) return false;
+
+  // À partir de 200 km/jour : exclure également les compactes à autonomie limitée (< 300 km réels)
+  if (dailyKm >= 200 && car.realRangeKm < 300) {
+    return false;
+  }
+
+  return true;
 }
 
 /**
@@ -528,14 +550,20 @@ export function getTieredEVRecommendations(
   );
 
   // Sécurité si aucune voiture confortable ne couvre l'autonomie requise :
-  // élargir à toutes les voitures couvrantes du catalogue de base
+  // NE JAMAIS réinjecter les citadines quand le profil de roulage exige du confort routier (>= 140 km/j).
+  // On retient d'abord les voitures de catalogToUse qui couvrent au moins le trajet du jour :
   if (coveringCars.length === 0) {
-    coveringCars = baseCatalog.filter((car) =>
-      carCoversDailyNeed(car.realRangeKm, safeDailyKm, housing)
-    );
+    coveringCars = catalogToUse.filter((car) => car.realRangeKm >= safeDailyKm);
   }
 
-  // Sécurité ultime si kilométrage exceptionnel : conserver toutes les voitures du catalogue
+  // Si le kilométrage quotidien est exceptionnel (ex: > autonomie max disponible),
+  // on conserve les véhicules ayant la plus grande autonomie au sein du catalogue confortable :
+  if (coveringCars.length === 0) {
+    const maxRange = Math.max(...catalogToUse.map((c) => c.realRangeKm));
+    coveringCars = catalogToUse.filter((c) => c.realRangeKm >= maxRange - 50);
+  }
+
+  // Repli ultime si aucune sélection n'a été possible
   if (coveringCars.length === 0) {
     coveringCars = [...baseCatalog];
   }
@@ -652,6 +680,10 @@ export function getTieredEVRecommendations(
       batteryGrossKwh: car.batteryGrossKwh,
       batteryNetKwh: car.batteryNetKwh,
       wltpRangeKm: car.wltpRangeKm,
+      nominalRealRangeKm: car.nominalRealRangeKm,
+      nominalHighwayRangeKm: car.nominalHighwayRangeKm,
+      estimatedSoHPct: car.estimatedSoHPct,
+      usableBatteryKwh: car.usableBatteryKwh,
       realRangeKm: car.realRangeKm,
       realConsoKwh100: car.realConsoKwh100,
       highwayRangeKm: car.highwayRangeKm,

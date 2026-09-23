@@ -4,6 +4,7 @@ import {
   applyCorrectionToConstructorData,
   getCorrectedVehicleSpecs,
   getVehicleCorrectionBadge,
+  calculateEstimatedSoHPct,
   CONSUMPTION_BENCHMARKS,
 } from '../src/utils/consumptionCorrection';
 import evDatabase from '../src/data/evDatabase.json';
@@ -55,8 +56,9 @@ describe('Module de correction de consommation et autonomie IRL (La Chaîne EV)'
 
     const specs = getCorrectedVehicleSpecs(peugeot208!);
     expect(specs.hasDirectIRLTest).toBe(true);
-    expect(specs.realRangeKm).toBe(290);
-    expect(specs.badgeText).toContain('IRL certifié');
+    expect(specs.nominalRealRangeKm).toBe(290);
+    expect(specs.realRangeKm).toBe(peugeot208!.realRangeKm);
+    expect(specs.badgeText).toContain('Mesure réelle sur route');
     expect(specs.sourceText).toContain('La Chaîne EV');
   });
 
@@ -74,31 +76,56 @@ describe('Module de correction de consommation et autonomie IRL (La Chaîne EV)'
     expect(specs.hasDirectIRLTest).toBe(false);
     expect(specs.realRangeKm).toBeLessThan(mockNewCar.wltpRangeKm);
     expect(specs.realConsoKwh100).toBeGreaterThan(13);
-    expect(specs.badgeText).toContain('Corrigé IRL');
+    expect(specs.badgeText).toContain('Autonomie réelle étalonnée');
   });
 
-  it('garantit que 100% des véhicules du catalogue officiel disposent de métriques IRL', () => {
+  it('garantit que 100% des véhicules du catalogue officiel disposent de métriques IRL et SoH', () => {
     for (const car of evDatabase) {
       expect(car.realRangeKm).toBeGreaterThan(0);
       expect(car.realConsoKwh100).toBeGreaterThan(0);
       expect(car.rangeDiscountPct).toBeDefined();
       expect(car.rangeDiscountPct).toBeLessThan(0);
       expect(car.realRangeKm).toBeLessThanOrEqual(car.wltpRangeKm);
+      expect(car.estimatedSoHPct).toBeGreaterThanOrEqual(75);
+      expect(car.estimatedSoHPct).toBeLessThanOrEqual(100);
+      expect(car.usableBatteryKwh).toBeLessThanOrEqual(car.batteryNetKwh);
     }
   });
 
-  it('génère un libellé de badge de certification précis selon le type de mesure', () => {
+  it('calcule la dégradation de batterie (SoH) selon l\'ancienneté et la technologie thermique', () => {
+    // Véhicule très récent (2024-2025, ~1-2 ans) : dégradation minime (~97%)
+    const recentSoH = calculateEstimatedSoHPct('2024 - 2025', 'volvo-ex30-51');
+    expect(recentSoH).toBeGreaterThanOrEqual(95);
+
+    // Véhicule intermédiaire liquide (2020-2023, ~4-5 ans) : dégradation modérée (~92-94%)
+    const intermediateSoH = calculateEstimatedSoHPct('2020 - 2023', 'peugeot-e208-50');
+    expect(intermediateSoH).toBeLessThan(recentSoH);
+    expect(intermediateSoH).toBeGreaterThan(88);
+
+    // Véhicule ancien à air pulsé (2017-2019, ~8 ans) : usure plus prononcée (~84-86%)
+    const olderAirSoH = calculateEstimatedSoHPct('2017 - 2019', 'renault-zoe-r90-41');
+    expect(olderAirSoH).toBeLessThan(intermediateSoH);
+    expect(olderAirSoH).toBeGreaterThanOrEqual(80);
+
+    // Véhicule à refroidissement passif (Leaf 2018-2021) : dégradation thermique passive
+    const passiveLeafSoH = calculateEstimatedSoHPct('2018 - 2021', 'nissan-leaf-40');
+    expect(passiveLeafSoH).toBeLessThan(intermediateSoH);
+  });
+
+  it('génère un libellé de badge de certification précis avec transparence SoH', () => {
     const directBadge = getVehicleCorrectionBadge({
       rangeDiscountPct: -8.5,
       hasDirectIRLTest: true,
+      estimatedSoHPct: 85,
     });
-    expect(directBadge).toBe('IRL certifié -8.5% vs WLTP (La Chaîne EV)');
+    expect(directBadge).toBe('Mesure réelle sur route (La Chaîne EV) • Santé batterie ~85%');
 
     const estimatedBadge = getVehicleCorrectionBadge({
       rangeDiscountPct: -9.8,
       hasDirectIRLTest: false,
+      estimatedSoHPct: 92,
     });
-    expect(estimatedBadge).toBe('Étalonné -9.8% vs WLTP (coefficient IRL)');
+    expect(estimatedBadge).toBe('Autonomie réelle étalonnée • Santé batterie ~92%');
 
     const undefinedBadge = getVehicleCorrectionBadge({});
     expect(undefinedBadge).toBeUndefined();

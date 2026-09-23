@@ -243,7 +243,7 @@ describe('Tests E2E — Parcours Utilisateurs réels par Persona (Stop-Carburant
     expect(await screen.findByText(/Achetez une Renault Zoé R90 maintenant !/i)).toBeInTheDocument();
 
     // Le conseil d'utilisation en appartement préconise d'espacer les recharges sur bornes publiques/travail
-    expect(screen.getByText(/Même sans prise chez vous, la batterie de 240 km absorbe 4 jours de trajets/i)).toBeInTheDocument();
+    expect(screen.getByText(/Même sans prise chez vous, la batterie de \d+ km absorbe 4 jours de trajets/i)).toBeInTheDocument();
     expect(screen.getByText(/Une pause recharge de 20 min tous les 4 jours/i)).toBeInTheDocument();
 
     // Vérifier dans le détail que le libellé indique bien la recharge sur bornes publiques
@@ -269,7 +269,7 @@ describe('Tests E2E — Parcours Utilisateurs réels par Persona (Stop-Carburant
 
     // À 160 km/j, exclusion stricte des citadines (Zoé, Spring, e-208)
     const purchaseTitle = screen.getByRole('heading', { level: 3 });
-    expect(purchaseTitle.textContent).toMatch(/Volkswagen ID\.3|MG4|Hyundai Kona|Nissan Leaf/i);
+    expect(purchaseTitle.textContent).toMatch(/Volkswagen ID\.3|MG4|Hyundai Kona|Nissan Leaf|Citroën ë-C4/i);
     expect(purchaseTitle.textContent).not.toContain('Zoé');
     expect(purchaseTitle.textContent).not.toContain('Spring');
 
@@ -307,6 +307,26 @@ describe('Tests E2E — Parcours Utilisateurs réels par Persona (Stop-Carburant
     expect(screen.getByText(/200 km\/jour • ~4800 km\/mois/i)).toBeInTheDocument();
     // Économies d'entretien à 70 €/mois
     expect(screen.getAllByText(/\+70\s*€\s*\/ mois/i).length).toBeGreaterThanOrEqual(1);
+  });
+
+  it('E2E Persona Grand Rouleur Intensif (235 km/j, 620 €/m, maison) : priorise impérativement une Tesla / routière et refuse formellement la Zoé', async () => {
+    await runPersonaE2EJourney({
+      fuelBudget: 620,
+      dailyKm: 235,
+      housing: 'maison',
+    });
+
+    // À 235 km/jour, la recommandation doit impérativement être une Tesla Model 3 ou routière
+    const purchaseTitle = screen.getByRole('heading', { level: 3 });
+    expect(purchaseTitle.textContent).toMatch(/Tesla|Volkswagen ID\.3|MG4|Hyundai Kona|Scénic/i);
+    expect(purchaseTitle.textContent).not.toContain('Zoé');
+    expect(purchaseTitle.textContent).not.toContain('Spring');
+
+    // Dégage un excédent net colossal
+    expect(await screen.findByRole('heading', { level: 2, name: /chaque mois dans votre poche/i })).toBeInTheDocument();
+
+    // Vérification du badge stratégie : jamais une étiquette citadine
+    expect(purchaseTitle.textContent).not.toContain('Citadine');
   });
 
   // =========================================================================

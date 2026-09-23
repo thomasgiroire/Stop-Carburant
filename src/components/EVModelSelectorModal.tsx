@@ -13,7 +13,6 @@ import {
   Car
 } from 'lucide-react';
 import { EVDatabaseService, OpenDataEVModel } from '../services/evDatabaseService';
-import { getVehicleCorrectionBadge } from '../utils/consumptionCorrection';
 import { LoanRateMode } from '../utils/loanCalculations';
 import { formatCurrency } from '../utils/calculator';
 
@@ -264,8 +263,6 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
                   loanMode
                 );
 
-                const correctionBadge = getVehicleCorrectionBadge(car);
-
                 return (
                   <div
                     key={car.id}
@@ -297,45 +294,48 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
                         )}
                       </div>
 
-                      {/* Badges techniques certifiés */}
-                      <div className="grid grid-cols-3 gap-2 mt-3 mb-2.5 text-center">
-                        <div className="p-2 rounded-xl bg-neutral-900 border border-neutral-800/80">
+                      {/* Tuiles de spécifications réelles (valeurs réalistes & transparentes) */}
+                      <div className="grid grid-cols-3 gap-2 mt-3 mb-3 text-center">
+                        <div className="p-2 rounded-xl bg-neutral-900 border border-neutral-800/80 flex flex-col justify-between">
                           <div className="text-[10px] text-neutral-400 flex items-center justify-center gap-1">
-                            <Gauge className="w-3 h-3 text-blue-400" /> Autonomie
+                            <Gauge className="w-3 h-3 text-blue-400" /> Autonomie réelle
                           </div>
-                          <div className="text-xs sm:text-sm font-bold text-white mt-0.5">
+                          <div className="text-xs sm:text-sm font-bold text-white my-0.5">
                             {car.realRangeKm} km
+                          </div>
+                          <div className="text-[9px] text-emerald-400/90 font-medium">
+                            {car.estimatedSoHPct && car.estimatedSoHPct < 99
+                              ? 'Usure déduite'
+                              : 'Usage réel'}
                           </div>
                         </div>
 
-                        <div className="p-2 rounded-xl bg-neutral-900 border border-neutral-800/80">
+                        <div className="p-2 rounded-xl bg-neutral-900 border border-neutral-800/80 flex flex-col justify-between">
                           <div className="text-[10px] text-neutral-400 flex items-center justify-center gap-1">
                             <Zap className="w-3 h-3 text-amber-400" /> Conso réelle
                           </div>
-                          <div className="text-xs sm:text-sm font-bold text-white mt-0.5">
+                          <div className="text-xs sm:text-sm font-bold text-white my-0.5">
                             {car.realConsoKwh100} <span className="text-[10px] font-normal text-neutral-400">kWh</span>
+                          </div>
+                          <div className="text-[9px] text-neutral-500 font-normal">
+                            aux 100 km
                           </div>
                         </div>
 
-                        <div className="p-2 rounded-xl bg-neutral-900 border border-neutral-800/80">
+                        <div className="p-2 rounded-xl bg-neutral-900 border border-neutral-800/80 flex flex-col justify-between">
                           <div className="text-[10px] text-neutral-400 flex items-center justify-center gap-1">
-                            <BatteryCharging className="w-3 h-3 text-emerald-400" /> Batterie
+                            <BatteryCharging className="w-3 h-3 text-emerald-400" /> Batterie utile
                           </div>
-                          <div className="text-xs sm:text-sm font-bold text-white mt-0.5">
-                            {car.batteryNetKwh} <span className="text-[10px] font-normal text-neutral-400">kWh</span>
+                          <div className="text-xs sm:text-sm font-bold text-white my-0.5">
+                            {car.usableBatteryKwh ? `${car.usableBatteryKwh}` : `${car.batteryNetKwh}`} <span className="text-[10px] font-normal text-neutral-400">kWh</span>
+                          </div>
+                          <div className="text-[9px] text-emerald-400/90 font-medium">
+                            {car.estimatedSoHPct && car.estimatedSoHPct < 99
+                              ? 'Usure déduite'
+                              : 'Capacité d\'origine'}
                           </div>
                         </div>
                       </div>
-
-                      {/* Traçabilité Données Réelles Certifiées */}
-                      {correctionBadge && (
-                        <div className="flex items-start sm:items-center gap-2 px-2.5 py-1.5 rounded-lg bg-neutral-900/90 border border-neutral-800 text-[10px] sm:text-[11px] text-neutral-400 mb-2.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0 mt-1 sm:mt-0"></span>
-                          <span className="leading-snug">
-                            Données réelles certifiées : <strong className="text-white">{car.realRangeKm} km</strong> ({correctionBadge})
-                          </span>
-                        </div>
-                      )}
 
                       {/* Description courte */}
                       <p className="text-xs text-neutral-300 line-clamp-2 mb-2.5">

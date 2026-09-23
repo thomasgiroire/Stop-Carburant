@@ -11,6 +11,9 @@ export interface SegmentCorrectionFactors {
 export interface CorrectedVehicleSpecs {
   wltpRangeKm: number;
   realRangeKm: number;
+  nominalRealRangeKm?: number;
+  estimatedSoHPct?: number;
+  usableBatteryKwh?: number;
   realConsoKwh100: number;
   highwayRangeKm: number;
   highwayConsoKwh100: number;
@@ -21,6 +24,33 @@ export interface CorrectedVehicleSpecs {
 }
 
 export const CONSUMPTION_BENCHMARKS = benchmarksData;
+
+/**
+ * Calcule l'estimation du State of Health (SoH %) moyen constaté sur le marché de l'occasion
+ * selon l'année médiane du modèle et sa technologie thermique de batterie.
+ */
+export function calculateEstimatedSoHPct(yearRange?: string, modelId?: string): number {
+  const currentYear = 2026;
+  const match = (yearRange || '').match(/(\d{4})\s*-\s*(\d{4})/);
+  const medianYear = match 
+    ? Math.round((parseInt(match[1], 10) + parseInt(match[2], 10)) / 2) 
+    : 2021;
+  const ageYears = Math.max(0.5, currentYear - medianYear);
+  const initialLossPct = 2.5;
+  let annualDegradationRate = 1.35; // Liquide actif régulé standard
+  const lowerId = (modelId || '').toLowerCase();
+  if (lowerId.includes('leaf')) {
+    annualDegradationRate = 2.6; // Refroidissement passif sans clim
+  } else if (lowerId.includes('zoe') || lowerId.includes('twingo') || lowerId.includes('czero')) {
+    annualDegradationRate = 1.8; // Refroidissement air pulsé
+  } else if (lowerId.includes('spring')) {
+    annualDegradationRate = 1.7; // Petite batterie urbaine
+  } else if (lowerId.includes('tesla') || lowerId.includes('model-3') || lowerId.includes('model-y')) {
+    annualDegradationRate = 1.15; // Liquide haute précision
+  }
+  const totalLoss = initialLossPct + (Math.max(0, ageYears - 1) * annualDegradationRate);
+  return Math.max(75, Math.round((100 - totalLoss) * 10) / 10);
+}
 
 /**
  * Récupère les facteurs de correction statistiques pour un type de carrosserie
@@ -87,20 +117,28 @@ export function getCorrectedVehicleSpecs(
 ): CorrectedVehicleSpecs {
   const modelId = vehicle.id;
   const modelBenchmark = modelId ? (CONSUMPTION_BENCHMARKS.models as Record<string, any>)?.[modelId] : null;
+  const estimatedSoHPct = vehicle.estimatedSoHPct ?? modelBenchmark?.estimatedSoHPct ?? calculateEstimatedSoHPct(vehicle.yearRange, modelId);
+  const battery = vehicle.batteryNetKwh || 50;
+  const usableBatteryKwh = vehicle.usableBatteryKwh ?? modelBenchmark?.usableBatteryKwh ?? (Math.round(battery * (estimatedSoHPct / 100) * 10) / 10);
 
   // 1. Cas : Mesure directe certifiée par La Chaîne EV
   if (vehicle.hasDirectIRLTest || modelBenchmark?.hasDirectIRLTest) {
-    const realRange = vehicle.realRangeKm || modelBenchmark?.realRangeKm || 300;
+    const nominalRealRange = vehicle.nominalRealRangeKm || modelBenchmark?.nominalRealRangeKm || vehicle.realRangeKm || modelBenchmark?.realRangeKm || 300;
+    const realRange = vehicle.realRangeKm || modelBenchmark?.realRangeKm || Math.round(nominalRealRange * (estimatedSoHPct / 100));
     const realConso = vehicle.realConsoKwh100 || modelBenchmark?.realConsoKwh100 || 15.5;
-    const wltp = vehicle.wltpRangeKm || modelBenchmark?.wltpRangeKm || realRange;
-    const discount = vehicle.rangeDiscountPct ?? modelBenchmark?.rangeDiscountPct ?? (Math.round(((realRange - wltp) / wltp) * 1000) / 10);
-    const highwayRange = vehicle.highwayRangeKm || modelBenchmark?.highwayRangeKm || Math.round(realRange * 0.75);
+    const wltp = vehicle.wltpRangeKm || modelBenchmark?.wltpRangeKm || nominalRealRange;
+    const discount = vehicle.rangeDiscountPct ?? modelBenchmark?.rangeDiscountPct ?? (Math.round(((nominalRealRange - wltp) / wltp) * 1000) / 10);
+    const nominalHighwayRange = vehicle.nominalHighwayRangeKm || modelBenchmark?.nominalHighwayRangeKm || vehicle.highwayRangeKm || modelBenchmark?.highwayRangeKm || Math.round(nominalRealRange * 0.75);
+    const highwayRange = vehicle.highwayRangeKm || modelBenchmark?.highwayRangeKm || Math.round(nominalHighwayRange * (estimatedSoHPct / 100));
     const highwayConso = vehicle.highwayConsoKwh100 || modelBenchmark?.highwayConsoKwh100 || Math.round(realConso * 1.3 * 10) / 10;
 
     const formattedDiscount = discount <= 0 ? `${discount}%` : `+${discount}%`;
 
     return {
       wltpRangeKm: wltp,
+      nominalRealRangeKm: nominalRealRange,
+      estimatedSoHPct,
+      usableBatteryKwh,
       realRangeKm: realRange,
       realConsoKwh100: realConso,
       highwayRangeKm: highwayRange,
@@ -108,42 +146,54 @@ export function getCorrectedVehicleSpecs(
       rangeDiscountPct: discount,
       hasDirectIRLTest: true,
       sourceText: 'Mesure directe certifiée La Chaîne EV (Test IRL)',
-      badgeText: `IRL certifié ${formattedDiscount} vs WLTP`,
+      badgeText: 'Mesure réelle sur route (La Chaîne EV)',
     };
   }
 
   // 2. Cas : Véhicule sans mesure directe -> application du coefficient de décote du segment
   const wltp = vehicle.wltpRangeKm || 350;
-  const battery = vehicle.batteryNetKwh || (wltp * 0.16);
   const corrected = applyCorrectionToConstructorData(wltp, battery, vehicle.bodyType);
   const formattedDiscount = corrected.rangeDiscountPct <= 0 ? `${corrected.rangeDiscountPct}%` : `+${corrected.rangeDiscountPct}%`;
+  const nominalRealRange = vehicle.nominalRealRangeKm || corrected.realRangeKm;
+  const nominalHighwayRange = vehicle.nominalHighwayRangeKm || corrected.highwayRangeKm;
+  const realRange = vehicle.realRangeKm || Math.round(nominalRealRange * (estimatedSoHPct / 100));
+  const highwayRange = vehicle.highwayRangeKm || Math.round(nominalHighwayRange * (estimatedSoHPct / 100));
 
   return {
     wltpRangeKm: wltp,
-    realRangeKm: vehicle.realRangeKm || corrected.realRangeKm,
+    nominalRealRangeKm: nominalRealRange,
+    estimatedSoHPct,
+    usableBatteryKwh,
+    realRangeKm: realRange,
     realConsoKwh100: vehicle.realConsoKwh100 || corrected.realConsoKwh100,
-    highwayRangeKm: vehicle.highwayRangeKm || corrected.highwayRangeKm,
+    highwayRangeKm: highwayRange,
     highwayConsoKwh100: vehicle.highwayConsoKwh100 || corrected.highwayConsoKwh100,
     rangeDiscountPct: corrected.rangeDiscountPct,
     hasDirectIRLTest: false,
-    sourceText: `Étalonné via coefficient IRL La Chaîne EV (${vehicle.bodyType || 'segment'} : ${formattedDiscount})`,
-    badgeText: `Corrigé IRL ${formattedDiscount} vs WLTP`,
+    sourceText: `Étalonné via mesures réelles La Chaîne EV (${vehicle.bodyType || 'segment'})`,
+    badgeText: 'Autonomie réelle étalonnée',
   };
 }
 
 /**
- * Génère le libellé du badge de certification IRL pour un véhicule
+ * Génère le libellé de certification de données réelles pour un véhicule.
  * Exemples :
- * - "IRL certifié -8.5% vs WLTP (La Chaîne EV)" si mesure directe
- * - "Étalonné -9.8% vs WLTP (coefficient IRL)" si estimation segment
+ * - "Mesure réelle sur route (La Chaîne EV) • Santé batterie ~85%" si mesure directe
+ * - "Autonomie réelle étalonnée • Santé batterie ~92%" si estimation segment
  */
 export function getVehicleCorrectionBadge(car: {
   rangeDiscountPct?: number;
   hasDirectIRLTest?: boolean;
+  estimatedSoHPct?: number;
 }): string | undefined {
   if (car.rangeDiscountPct === undefined) return undefined;
-  const discountStr = car.rangeDiscountPct <= 0 ? `${car.rangeDiscountPct}%` : `+${car.rangeDiscountPct}%`;
-  return car.hasDirectIRLTest
-    ? `IRL certifié ${discountStr} vs WLTP (La Chaîne EV)`
-    : `Étalonné ${discountStr} vs WLTP (coefficient IRL)`;
+  const baseTestStr = car.hasDirectIRLTest
+    ? 'Mesure réelle sur route (La Chaîne EV)'
+    : 'Autonomie réelle étalonnée';
+
+  if (car.estimatedSoHPct && car.estimatedSoHPct < 99) {
+    return `${baseTestStr} • Santé batterie ~${Math.round(car.estimatedSoHPct)}%`;
+  }
+
+  return baseTestStr;
 }
