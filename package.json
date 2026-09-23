@@ -1,0 +1,50 @@
+{
+  "name": "stop-carburant",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port=3000 --host=0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview",
+    "clean": "rm -rf dist server.js",
+    "dev:docker": "./start.sh",
+    "status": "bash scripts/status.sh",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:docker": "docker compose run --rm test",
+    "setup": "bash setup.sh",
+    "data:build": "node scripts/compile_ev_database.js",
+    "data:market": "node scripts/compile_market_stats.js",
+    "data:ingest": "node scripts/ingest_market_prices.js",
+    "data:refresh": "bash scripts/refresh_market_data.sh",
+    "data:refresh:mock": "bash scripts/refresh_market_data.sh --mock",
+    "data:refresh:docker": "docker compose run --rm scraper"
+  },
+  "dependencies": {
+    "@tailwindcss/vite": "^4.3.3",
+    "@vitejs/plugin-react": "^6.1.1",
+    "lucide-react": "^0.546.0",
+    "react": "^19.0.1",
+    "react-dom": "^19.0.1",
+    "vite": "^8.3.0",
+    "express": "^4.21.2",
+    "dotenv": "^17.2.3",
+    "motion": "^12.23.24"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.14.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "autoprefixer": "^10.4.21",
+    "esbuild": "^0.28.0",
+    "jsdom": "^27.4.0",
+    "tailwindcss": "^4.3.3",
+    "tsx": "^4.21.0",
+    "typescript": "^7.0.2",
+    "vitest": "^4.0.15"
+  }
+}

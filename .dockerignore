@@ -1,0 +1,10 @@
+node_modules
+dist
+build
+coverage
+.git
+.gemini
+.antigravity
+.vscode
+*.log
+.DS_Store

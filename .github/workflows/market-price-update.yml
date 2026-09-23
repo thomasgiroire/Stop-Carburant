@@ -1,0 +1,73 @@
+name: "Actualisation des Prix Marché VE (Manuel)"
+
+on:
+  workflow_dispatch:
+    inputs:
+      source:
+        description: 'Source à scraper (all, renew, spoticar, aramis)'
+        required: false
+        default: 'all'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  scrape-and-update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Récupération du code
+        uses: actions/checkout@v4
+
+      - name: 🐍 Configuration de Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: 'scripts/scraper/requirements.txt'
+
+      - name: 🟢 Configuration de Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: 📦 Installation des dépendances Node
+        run: npm ci
+
+      - name: 🎭 Installation de Playwright & Navigateurs
+        run: |
+          pip install -r scripts/scraper/requirements.txt
+          playwright install --with-deps chromium
+
+      - name: 🚀 Collecte et Ingestion des Prix Marché
+        run: |
+          SOURCE="${{ github.event.inputs.source || 'all' }}"
+          python3 scripts/scraper/scrape_market.py --source "$SOURCE"
+          npm run data:ingest
+
+      - name: 🧪 Validation de non-régression (Tests Vitest & Build)
+        run: |
+          npm run test
+          npm run build
+
+      - name: 📝 Vérification des modifications
+        id: git-diff
+        run: |
+          git diff --quiet src/data/evDatabase.json || echo "changed=true" >> $GITHUB_OUTPUT
+
+      - name: 🚀 Création d'une Pull Request (ou Commit direct)
+        if: steps.git-diff.outputs.changed == 'true'
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: "chore(data): actualisation automatique des prix marché de référence"
+          title: "🤖 Actualisation des prix marché VE (Renew / Spoticar / Aramis)"
+          body: |
+            Cette Pull Request a été générée automatiquement par le pipeline hebdomadaire de veille marché.
+            
+            - **Sources inspectées** : Renault Renew, Stellantis Spoticar, Aramisauto.
+            - **Garde-fous validés** : minimum 3 annonces qualifiées par modèle et variation max de ±20%.
+            - **Validation technique** : 100% des tests unitaires et build Vite validés.
+          branch: "auto/market-prices-update"
+          delete-branch: true

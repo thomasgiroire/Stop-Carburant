@@ -1,0 +1,1247 @@
+{
+  "bmw-i4-edrive40-81": {
+    "modelId": "bmw-i4-edrive40-81",
+    "canonicalName": "Bmw i4 eDrive35 286ch M Sport",
+    "sampleCount": 1,
+    "averagePrice": 49999,
+    "medianPrice": 49999,
+    "averageKm": 12500,
+    "medianKm": 12500,
+    "minPrice": 49999,
+    "maxPrice": 49999,
+    "minKm": 12500,
+    "maxKm": 12500,
+    "sweetSpotPrice": 49999,
+    "sweetSpotKm": 12500,
+    "mostAvailableSummary": "Marché le plus disponible : 49 999 € pour ~12 500 km (1 annonce analysée)",
+    "topAds": [
+      {
+        "id": "3163746529",
+        "title": "Bmw i4 eDrive35 286ch M Sport",
+        "price": 49999,
+        "year": 2025,
+        "km": 12500,
+        "isPro": true,
+        "location": "12500 km",
+        "badge": "À la une",
+        "href": "https://www.leboncoin.fr/ad/voitures/3163746529"
+      }
+    ]
+  },
+  "autre": {
+    "modelId": "autre",
+    "canonicalName": "Ds N°8 Electrique 350ch Long Range Etoile AWD",
+    "sampleCount": 51,
+    "averagePrice": 18923,
+    "medianPrice": 6000,
+    "averageKm": 28295,
+    "medianKm": 13590,
+    "minPrice": 5000,
+    "maxPrice": 77990,
+    "minKm": 470,
+    "maxKm": 202620,
+    "sweetSpotPrice": 6000,
+    "sweetSpotKm": 13590,
+    "mostAvailableSummary": "Marché le plus disponible : 6 000 € pour ~13 590 km (51 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3257484236",
+        "title": "Twizzy",
+        "price": 5000,
+        "year": 2015,
+        "km": 49000,
+        "isPro": false,
+        "location": "49000 km",
+        "badge": "Particulier",
+        "href": "https://www.leboncoin.fr/ad/voitures/3257484236"
+      },
+      {
+        "id": "3257365662",
+        "title": "Voiture sans permis AIMA A520 Électrique – (04/2024)",
+        "price": 5000,
+        "year": 2024,
+        "km": 10500,
+        "isPro": false,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3257365662"
+      },
+      {
+        "id": "3272663685",
+        "title": "Voiture sans permis",
+        "price": 5000,
+        "year": 2023,
+        "km": 470,
+        "isPro": false,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3272663685"
+      },
+      {
+        "id": "3211047895",
+        "title": "Quadricycle électrique BIRÒ BIG L6e avec permis AM",
+        "price": 5250,
+        "year": 2021,
+        "km": 9910,
+        "isPro": true,
+        "location": "Châtillon 92320",
+        "badge": "Pro",
+        "href": "https://www.leboncoin.fr/ad/voitures/3211047895"
+      },
+      {
+        "id": "3271874765",
+        "title": "Renault kangoo électrique 1 ère main batterie inclus",
+        "price": 5300,
+        "year": 2016,
+        "km": 64000,
+        "isPro": true,
+        "location": "64000 km",
+        "badge": "Très bonne affaire",
+        "href": "https://www.leboncoin.fr/ad/voitures/3271874765"
+      }
+    ]
+  },
+  "renault-zoe-r90-41": {
+    "modelId": "renault-zoe-r90-41",
+    "canonicalName": "Renault Zoé",
+    "sampleCount": 23,
+    "averagePrice": 5697,
+    "medianPrice": 5850,
+    "averageKm": 71985,
+    "medianKm": 73200,
+    "minPrice": 5000,
+    "maxPrice": 6250,
+    "minKm": 29664,
+    "maxKm": 96100,
+    "sweetSpotPrice": 5850,
+    "sweetSpotKm": 73200,
+    "mostAvailableSummary": "Marché le plus disponible : 5 850 € pour ~73 200 km (23 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3274592243",
+        "title": "Renault Zoé",
+        "price": 5000,
+        "year": 2015,
+        "km": 73200,
+        "isPro": false,
+        "location": "73200 km",
+        "badge": "Prix équitable",
+        "href": "https://www.leboncoin.fr/ad/voitures/3274592243"
+      },
+      {
+        "id": "3274380167",
+        "title": "Zoé",
+        "price": 5000,
+        "year": 2013,
+        "km": 66000,
+        "isPro": false,
+        "location": "66000 km",
+        "badge": "Particulier",
+        "href": "https://www.leboncoin.fr/ad/voitures/3274380167"
+      },
+      {
+        "id": "3260202768",
+        "title": "Zoe",
+        "price": 5000,
+        "year": 2016,
+        "km": 78000,
+        "isPro": false,
+        "location": "78000 km",
+        "badge": "Particulier",
+        "href": "https://www.leboncoin.fr/ad/voitures/3260202768"
+      },
+      {
+        "id": "3257123304",
+        "title": "Renault Zoé",
+        "price": 5000,
+        "year": 2014,
+        "km": 96000,
+        "isPro": false,
+        "location": "96000 km",
+        "badge": "Particulier",
+        "href": "https://www.leboncoin.fr/ad/voitures/3257123304"
+      },
+      {
+        "id": "3104787928",
+        "title": "RENAULT ZOE Zen CHARGE RAPIDE TYPE 2 /batterie en location / achat batterie possible /",
+        "price": 5200,
+        "year": 2016,
+        "km": 96000,
+        "isPro": false,
+        "location": "96000 km",
+        "badge": "Particulier",
+        "href": "https://www.leboncoin.fr/ad/voitures/3104787928"
+      }
+    ]
+  },
+  "citroen-czero-peugeot-ion": {
+    "modelId": "citroen-czero-peugeot-ion",
+    "canonicalName": "Vend voiture électrique Citroën C",
+    "sampleCount": 12,
+    "averagePrice": 5625,
+    "medianPrice": 5940,
+    "averageKm": 57955,
+    "medianKm": 62300,
+    "minPrice": 5000,
+    "maxPrice": 6000,
+    "minKm": 28000,
+    "maxKm": 90700,
+    "sweetSpotPrice": 5940,
+    "sweetSpotKm": 62300,
+    "mostAvailableSummary": "Marché le plus disponible : 5 940 € pour ~62 300 km (12 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3274291911",
+        "title": "Vend voiture électrique Citroën C-Zéro",
+        "price": 5000,
+        "year": 2017,
+        "km": 65000,
+        "isPro": false,
+        "location": "65000 km",
+        "badge": "Prix équitable",
+        "href": "https://www.leboncoin.fr/ad/voitures/3274291911"
+      },
+      {
+        "id": "3237587888",
+        "title": "Citroen c-zero 100% electrique",
+        "price": 5000,
+        "year": 2019,
+        "km": 62300,
+        "isPro": false,
+        "location": "62300 km",
+        "badge": "Particulier",
+        "href": "https://www.leboncoin.fr/ad/voitures/3237587888"
+      },
+      {
+        "id": "3272333670",
+        "title": "Citroën C-Zéro Electrique CONFORT première main",
+        "price": 5000,
+        "year": 2019,
+        "km": 90700,
+        "isPro": false,
+        "location": "90700 km",
+        "badge": "Particulier",
+        "href": "https://www.leboncoin.fr/ad/voitures/3272333670"
+      },
+      {
+        "id": "3241471838",
+        "title": "PEUGEOT ION 100% électrique boîte auto",
+        "price": 5000,
+        "year": 2016,
+        "km": 39488,
+        "isPro": false,
+        "location": "39488 km",
+        "badge": "Prix équitable",
+        "href": "https://www.leboncoin.fr/ad/voitures/3241471838"
+      },
+      {
+        "id": "3256079499",
+        "title": "Peugeot iOn EV 67 Active",
+        "price": 5690,
+        "year": 2018,
+        "km": 53543,
+        "isPro": true,
+        "location": "53543 km",
+        "badge": "Bonne affaire",
+        "href": "https://www.leboncoin.fr/ad/voitures/3256079499"
+      }
+    ]
+  },
+  "renault-zoe-r110-52": {
+    "modelId": "renault-zoe-r110-52",
+    "canonicalName": "Renault ZOE Life R110",
+    "sampleCount": 3,
+    "averagePrice": 6827,
+    "medianPrice": 5990,
+    "averageKm": 80961,
+    "medianKm": 96382,
+    "minPrice": 5000,
+    "maxPrice": 9490,
+    "minKm": 50000,
+    "maxKm": 96500,
+    "sweetSpotPrice": 5990,
+    "sweetSpotKm": 96382,
+    "mostAvailableSummary": "Marché le plus disponible : 5 990 € pour ~96 382 km (3 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3261083756",
+        "title": "Renault ZOE Life R110",
+        "price": 5000,
+        "year": 2020,
+        "km": 96382,
+        "isPro": false,
+        "location": "96382 km",
+        "badge": "Particulier",
+        "href": "https://www.leboncoin.fr/ad/voitures/3261083756"
+      },
+      {
+        "id": "3247627689",
+        "title": "Renault Zoe 92cv 68kw TRES BON ETAT LOCATION BATTERIE 50 PAR MOIS",
+        "price": 5990,
+        "year": 2015,
+        "km": 50000,
+        "isPro": true,
+        "badge": "Prix équitable",
+        "href": "https://www.leboncoin.fr/ad/voitures/3247627689"
+      },
+      {
+        "id": "3250216835",
+        "title": "RENAULT ZOE Z.E.50 R110 2020 - Batterie en location",
+        "price": 9490,
+        "year": 2020,
+        "km": 96500,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3250216835"
+      }
+    ]
+  },
+  "nissan-leaf-40": {
+    "modelId": "nissan-leaf-40",
+    "canonicalName": "Nissan leaf 30 kwh RHD",
+    "sampleCount": 9,
+    "averagePrice": 7056,
+    "medianPrice": 5900,
+    "averageKm": 87075,
+    "medianKm": 95000,
+    "minPrice": 5100,
+    "maxPrice": 11990,
+    "minKm": 59000,
+    "maxKm": 100000,
+    "sweetSpotPrice": 5900,
+    "sweetSpotKm": 95000,
+    "mostAvailableSummary": "Marché le plus disponible : 5 900 € pour ~95 000 km (9 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3258074371",
+        "title": "Nissan leaf 30 kwh RHD",
+        "price": 5100,
+        "year": 2016,
+        "km": 95000,
+        "isPro": false,
+        "location": "95000 km",
+        "badge": "Prix équitable",
+        "href": "https://www.leboncoin.fr/ad/voitures/3258074371"
+      },
+      {
+        "id": "3261585983",
+        "title": "Nissan leaf",
+        "price": 5300,
+        "year": 2014,
+        "km": 77250,
+        "isPro": false,
+        "location": "77250 km",
+        "badge": "Bonne affaire",
+        "href": "https://www.leboncoin.fr/ad/voitures/3261585983"
+      },
+      {
+        "id": "3264194126",
+        "title": "Nissan leaf 30 kw CT vierge + 4 pneus excellent état+ 4 roues hiver",
+        "price": 5500,
+        "year": 2016,
+        "km": 90000,
+        "isPro": false,
+        "location": "90000 km",
+        "badge": "Prix équitable",
+        "href": "https://www.leboncoin.fr/ad/voitures/3264194126"
+      },
+      {
+        "id": "3268282533",
+        "title": "Nissan Leaf Gen1 30 kWh",
+        "price": 5820,
+        "year": 2017,
+        "km": 95000,
+        "isPro": false,
+        "location": "95000 km",
+        "badge": "Prix équitable",
+        "href": "https://www.leboncoin.fr/ad/voitures/3268282533"
+      },
+      {
+        "id": "3273154591",
+        "title": "Nissan Leaf Acenta 30 kWh – 2016 – 100 000 km",
+        "price": 5900,
+        "year": 2016,
+        "km": 100000,
+        "isPro": false,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3273154591"
+      }
+    ]
+  },
+  "renault-megane-ev40": {
+    "modelId": "renault-megane-ev40",
+    "canonicalName": "RENAULT Megane E",
+    "sampleCount": 3,
+    "averagePrice": 20282,
+    "medianPrice": 18990,
+    "averageKm": 39920,
+    "medianKm": 40742,
+    "minPrice": 17499,
+    "maxPrice": 24358,
+    "minKm": 37019,
+    "maxKm": 42000,
+    "sweetSpotPrice": 18990,
+    "sweetSpotKm": 40742,
+    "mostAvailableSummary": "Marché le plus disponible : 18 990 € pour ~40 742 km (3 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3267316591",
+        "title": "Renault Megane E-Tech Electric EV40 130ch Equilibre standard charge",
+        "price": 17499,
+        "year": 2022,
+        "km": 37019,
+        "isPro": true,
+        "badge": "À la une",
+        "href": "https://www.leboncoin.fr/ad/voitures/3267316591"
+      },
+      {
+        "id": "3237635891",
+        "title": "RENAULT Megane E-Tech EV40 130ch standard charge Equilibre",
+        "price": 18990,
+        "year": 2022,
+        "km": 40742,
+        "isPro": true,
+        "location": "40742 km",
+        "badge": "À la une",
+        "href": "https://www.leboncoin.fr/ad/voitures/3237635891"
+      },
+      {
+        "id": "3241547436",
+        "title": "Renault Mégane E-TECH EV60 220 ch optimum charge Equilibre",
+        "price": 24358,
+        "year": 2023,
+        "km": 42000,
+        "isPro": true,
+        "badge": "À la une",
+        "href": "https://www.leboncoin.fr/ad/voitures/3241547436"
+      }
+    ]
+  },
+  "fiat-500e-42": {
+    "modelId": "fiat-500e-42",
+    "canonicalName": "Fiat 500 fiat iii e 118 3+1 icone 42kwh",
+    "sampleCount": 6,
+    "averagePrice": 15105,
+    "medianPrice": 13990,
+    "averageKm": 25173,
+    "medianKm": 13657,
+    "minPrice": 11780,
+    "maxPrice": 19990,
+    "minKm": 50,
+    "maxKm": 77364,
+    "sweetSpotPrice": 13990,
+    "sweetSpotKm": 13657,
+    "mostAvailableSummary": "Marché le plus disponible : 13 990 € pour ~13 657 km (6 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3261111485",
+        "title": "FIAT 500 Fiat Electrique 23,8 kWh 2023 Action FAIBLE KILOMETRAGE",
+        "price": 11780,
+        "year": 2023,
+        "km": 10823,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3261111485"
+      },
+      {
+        "id": "3263316182",
+        "title": "FIAT 500 Fiat Electrique 23,8 kWh FAIBLE KILOMETRAGE",
+        "price": 11890,
+        "year": 2023,
+        "km": 13657,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3263316182"
+      },
+      {
+        "id": "3253999550",
+        "title": "FIAT 500 e 118 ch Nouvelle 500",
+        "price": 12990,
+        "year": 2022,
+        "km": 77364,
+        "isPro": true,
+        "badge": "À la une",
+        "href": "https://www.leboncoin.fr/ad/voitures/3253999550"
+      },
+      {
+        "id": "3265712416",
+        "title": "FIAT 500C Electrique Cabriolet 24 kWh Red - SOH 93 %",
+        "price": 13990,
+        "year": 2022,
+        "km": 49096,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3265712416"
+      },
+      {
+        "id": "3271893503",
+        "title": "Fiat 500 fiat iii e 118 3+1 icone 42kwh",
+        "price": 19990,
+        "year": 2023,
+        "km": 50,
+        "isPro": false,
+        "location": "Tours 37100 Sainte-Radegonde",
+        "badge": "Particulier",
+        "href": "https://www.leboncoin.fr/ad/voitures/3271893503"
+      }
+    ]
+  },
+  "renault-megane-ev60": {
+    "modelId": "renault-megane-ev60",
+    "canonicalName": "RENAULT Megane E",
+    "sampleCount": 2,
+    "averagePrice": 24390,
+    "medianPrice": 24789,
+    "averageKm": 55027,
+    "medianKm": 59955,
+    "minPrice": 23990,
+    "maxPrice": 24789,
+    "minKm": 50099,
+    "maxKm": 59955,
+    "sweetSpotPrice": 24789,
+    "sweetSpotKm": 59955,
+    "mostAvailableSummary": "Marché le plus disponible : 24 789 € pour ~59 955 km (2 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3267881666",
+        "title": "RENAULT Megane E-Tech EV60 220 ch super charge Techno",
+        "price": 23990,
+        "year": 2023,
+        "km": 59955,
+        "isPro": true,
+        "location": "59955 km",
+        "badge": "À la une",
+        "href": "https://www.leboncoin.fr/ad/voitures/3267881666"
+      },
+      {
+        "id": "3205523946",
+        "title": "RENAULT Megane E-Tech EV60 220 ch super charge Techno",
+        "price": 24789,
+        "year": 2022,
+        "km": 50099,
+        "isPro": true,
+        "badge": "À la une",
+        "href": "https://www.leboncoin.fr/ad/voitures/3205523946"
+      }
+    ]
+  },
+  "peugeot-e308-sw-54": {
+    "modelId": "peugeot-e308-sw-54",
+    "canonicalName": "308 sw electrique07/ 2024 accidenté 40 000kms accidenté",
+    "sampleCount": 2,
+    "averagePrice": 15250,
+    "medianPrice": 24999,
+    "averageKm": 30518,
+    "medianKm": 40000,
+    "minPrice": 5500,
+    "maxPrice": 24999,
+    "minKm": 21036,
+    "maxKm": 40000,
+    "sweetSpotPrice": 24999,
+    "sweetSpotKm": 40000,
+    "mostAvailableSummary": "Marché le plus disponible : 24 999 € pour ~40 000 km (2 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3272199403",
+        "title": "308 sw electrique07/ 2024 accidenté 40 000kms accidenté",
+        "price": 5500,
+        "year": 2024,
+        "km": 40000,
+        "isPro": true,
+        "location": "40000 km",
+        "badge": "Pro",
+        "href": "https://www.leboncoin.fr/ad/voitures/3272199403"
+      },
+      {
+        "id": "3261018267",
+        "title": "Peugeot 308 e-308 156ch First Edition",
+        "price": 24999,
+        "year": 2023,
+        "km": 21036,
+        "isPro": true,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3261018267"
+      }
+    ]
+  },
+  "tesla-model-3-standard-60": {
+    "modelId": "tesla-model-3-standard-60",
+    "canonicalName": "TESLA MODEL 3 AUTONOMIE STANDARD Plus / SOH 90.9%",
+    "sampleCount": 6,
+    "averagePrice": 28765,
+    "medianPrice": 29100,
+    "averageKm": 60353,
+    "medianKm": 56589,
+    "minPrice": 26990,
+    "maxPrice": 29600,
+    "minKm": 36457,
+    "maxKm": 100000,
+    "sweetSpotPrice": 29100,
+    "sweetSpotKm": 56589,
+    "mostAvailableSummary": "Marché le plus disponible : 29 100 € pour ~56 589 km (6 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3267848901",
+        "title": "TESLA MODEL 3 AUTONOMIE STANDARD Plus / SOH 90.9%",
+        "price": 26990,
+        "year": 2023,
+        "km": 100000,
+        "isPro": true,
+        "location": "Villebon-sur-Yvette 91140",
+        "badge": "À la une",
+        "href": "https://www.leboncoin.fr/ad/voitures/3267848901"
+      },
+      {
+        "id": "3272307934",
+        "title": "Tesla Model 3 2021 RWD - Véhicule d'occasion certifié",
+        "price": 28700,
+        "year": 2021,
+        "km": 41200,
+        "isPro": false,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3272307934"
+      },
+      {
+        "id": "3272307942",
+        "title": "Tesla Model 3 2023 RWD - Véhicule d'occasion certifié",
+        "price": 28900,
+        "year": 2023,
+        "km": 77970,
+        "isPro": false,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3272307942"
+      },
+      {
+        "id": "3256432174",
+        "title": "Tesla Model 3 2023 RWD - Véhicule d'occasion certifié",
+        "price": 29100,
+        "year": 2023,
+        "km": 49903,
+        "isPro": false,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3256432174"
+      },
+      {
+        "id": "3270664983",
+        "title": "Tesla Model 3 2021 RWD - Véhicule d'occasion certifié",
+        "price": 29300,
+        "year": 2021,
+        "km": 56589,
+        "isPro": false,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3270664983"
+      }
+    ]
+  },
+  "skoda-enyaq-iv80-77": {
+    "modelId": "skoda-enyaq-iv80-77",
+    "canonicalName": "Skoda enyaq 85 Clever",
+    "sampleCount": 1,
+    "averagePrice": 42990,
+    "medianPrice": 42990,
+    "averageKm": 5500,
+    "medianKm": 5500,
+    "minPrice": 42990,
+    "maxPrice": 42990,
+    "minKm": 5500,
+    "maxKm": 5500,
+    "sweetSpotPrice": 42990,
+    "sweetSpotKm": 5500,
+    "mostAvailableSummary": "Marché le plus disponible : 42 990 € pour ~5 500 km (1 annonce analysée)",
+    "topAds": [
+      {
+        "id": "3249337436",
+        "title": "Skoda enyaq 85 Clever",
+        "price": 42990,
+        "year": 2026,
+        "km": 5500,
+        "isPro": true,
+        "location": "Saint-Victoret 13730",
+        "badge": "À la une",
+        "href": "https://www.leboncoin.fr/ad/voitures/3249337436"
+      }
+    ]
+  },
+  "volkswagen-id3-pro-58": {
+    "modelId": "volkswagen-id3-pro-58",
+    "canonicalName": "Volkswagen ID.3 204 ch Pro Life Max",
+    "sampleCount": 2,
+    "averagePrice": 31990,
+    "medianPrice": 39990,
+    "averageKm": 30068,
+    "medianKm": 47135,
+    "minPrice": 23990,
+    "maxPrice": 39990,
+    "minKm": 13000,
+    "maxKm": 47135,
+    "sweetSpotPrice": 39990,
+    "sweetSpotKm": 47135,
+    "mostAvailableSummary": "Marché le plus disponible : 39 990 € pour ~47 135 km (2 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3254371688",
+        "title": "Volkswagen ID.3 145ch Pro 58 kWh",
+        "price": 23990,
+        "year": 2023,
+        "km": 47135,
+        "isPro": true,
+        "badge": "À la une",
+        "href": "https://www.leboncoin.fr/ad/voitures/3254371688"
+      },
+      {
+        "id": "3124599546",
+        "title": "Volkswagen ID.3 204 ch Pro Life Max",
+        "price": 39990,
+        "year": 2025,
+        "km": 13000,
+        "isPro": false,
+        "location": "13000 km",
+        "badge": "Particulier",
+        "href": "https://www.leboncoin.fr/ad/voitures/3124599546"
+      }
+    ]
+  },
+  "audi-q4-etron-77": {
+    "modelId": "audi-q4-etron-77",
+    "canonicalName": "Audi Q4 e",
+    "sampleCount": 1,
+    "averagePrice": 66990,
+    "medianPrice": 66990,
+    "averageKm": 5000,
+    "medianKm": 5000,
+    "minPrice": 66990,
+    "maxPrice": 66990,
+    "minKm": 5000,
+    "maxKm": 5000,
+    "sweetSpotPrice": 66990,
+    "sweetSpotKm": 5000,
+    "mostAvailableSummary": "Marché le plus disponible : 66 990 € pour ~5 000 km (1 annonce analysée)",
+    "topAds": [
+      {
+        "id": "3254560356",
+        "title": "Audi Q4 e-tron SPORTBACK Performance S line",
+        "price": 66990,
+        "year": 2026,
+        "km": 5000,
+        "isPro": false,
+        "location": "Charmeil 03110",
+        "badge": "Occasion récente",
+        "href": "https://www.leboncoin.fr/ad/voitures/3254560356"
+      }
+    ]
+  },
+  "smart-fortwo-eq": {
+    "modelId": "smart-fortwo-eq",
+    "canonicalName": "Vente Smart electrique Noir belle finition Toit panaromique",
+    "sampleCount": 6,
+    "averagePrice": 13360,
+    "medianPrice": 5990,
+    "averageKm": 46660,
+    "medianKm": 71000,
+    "minPrice": 5600,
+    "maxPrice": 48980,
+    "minKm": 5900,
+    "maxKm": 80000,
+    "sweetSpotPrice": 5990,
+    "sweetSpotKm": 71000,
+    "mostAvailableSummary": "Marché le plus disponible : 5 990 € pour ~71 000 km (6 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3260819453",
+        "title": "Vente Smart electrique Noir belle finition Toit panaromique",
+        "price": 5600,
+        "year": 2013,
+        "km": 80000,
+        "isPro": false,
+        "location": "80000 km",
+        "badge": "Particulier",
+        "href": "https://www.leboncoin.fr/ad/voitures/3260819453"
+      },
+      {
+        "id": "3271988683",
+        "title": "Smart fortwo 3",
+        "price": 5800,
+        "year": 2021,
+        "km": 20000,
+        "isPro": true,
+        "location": "20000 km",
+        "badge": "Pro",
+        "href": "https://www.leboncoin.fr/ad/voitures/3271988683"
+      },
+      {
+        "id": "3240311607",
+        "title": "Smart Fortwo EQ Pure 2018 – 71 000 km – Bon état",
+        "price": 5800,
+        "year": 2018,
+        "km": 71000,
+        "isPro": true,
+        "location": "71552 km",
+        "badge": "Pro",
+        "href": "https://www.leboncoin.fr/ad/voitures/3240311607"
+      },
+      {
+        "id": "3254559239",
+        "title": "SMART FORTWO COUPE Smart Electric Drive avec batterie",
+        "price": 5990,
+        "year": 2014,
+        "km": 73000,
+        "isPro": true,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3254559239"
+      },
+      {
+        "id": "3241402336",
+        "title": "SMART Fortwo Électrique 82ch prime - Intérieur Cuir - Garantie 12 Mois",
+        "price": 7990,
+        "year": 2019,
+        "km": 30060,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3241402336"
+      }
+    ]
+  },
+  "dacia-spring-27": {
+    "modelId": "dacia-spring-27",
+    "canonicalName": "Dacia Spring 65ch Extreme",
+    "sampleCount": 56,
+    "averagePrice": 9825,
+    "medianPrice": 8500,
+    "averageKm": 48198,
+    "medianKm": 44000,
+    "minPrice": 6900,
+    "maxPrice": 19490,
+    "minKm": 5000,
+    "maxKm": 94130,
+    "sweetSpotPrice": 8500,
+    "sweetSpotKm": 44000,
+    "mostAvailableSummary": "Marché le plus disponible : 8 500 € pour ~44 000 km (56 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3261912805",
+        "title": "Vend dacia spring full électrique. Boîte automatique contrôle technique OK clim OK centralisée à distance vitre électrique rétroviseur électrique Radars de recul avant et arrière roule très bien",
+        "price": 6900,
+        "year": 2021,
+        "km": 71232,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3261912805"
+      },
+      {
+        "id": "3270312600",
+        "title": "Dacia SPRING Comfort Plus",
+        "price": 6990,
+        "year": 2022,
+        "km": 89000,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3270312600"
+      },
+      {
+        "id": "3274581453",
+        "title": "Dacia spring",
+        "price": 7200,
+        "year": 2023,
+        "km": 85000,
+        "isPro": false,
+        "href": "https://www.leboncoin.fr/ad/voitures/3274581453"
+      },
+      {
+        "id": "3167762241",
+        "title": "Dacia Spring ELECTRIC ACHAT-INTEGRAL CONFORT PLUS - 2 CABLES 1er MAIN- Reprise / Garantie 4ANS",
+        "price": 7490,
+        "year": 2022,
+        "km": 72500,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3167762241"
+      },
+      {
+        "id": "3272424774",
+        "title": "Dacia Spring Achat Intégral Confort Plus",
+        "price": 7500,
+        "year": 2021,
+        "km": 92000,
+        "isPro": false,
+        "href": "https://www.leboncoin.fr/ad/voitures/3272424774"
+      }
+    ]
+  },
+  "ford-mustang-mache-76": {
+    "modelId": "ford-mustang-mache-76",
+    "canonicalName": "Ford Mustang Mach",
+    "sampleCount": 3,
+    "averagePrice": 29666,
+    "medianPrice": 29999,
+    "averageKm": 34180,
+    "medianKm": 29840,
+    "minPrice": 27499,
+    "maxPrice": 31499,
+    "minKm": 24502,
+    "maxKm": 48198,
+    "sweetSpotPrice": 29999,
+    "sweetSpotKm": 29840,
+    "mostAvailableSummary": "Marché le plus disponible : 29 999 € pour ~29 840 km (3 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3271703718",
+        "title": "Ford Mustang Mach-E 269ch Standard Range 76kWh Mach-E Propulsion",
+        "price": 27499,
+        "year": 2023,
+        "km": 48198,
+        "isPro": true,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3271703718"
+      },
+      {
+        "id": "3241711016",
+        "title": "Ford Mustang Mach-E 269ch Standard Range 76kWh Mach-E Propulsion",
+        "price": 29999,
+        "year": 2023,
+        "km": 29840,
+        "isPro": true,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3241711016"
+      },
+      {
+        "id": "3266743620",
+        "title": "Ford Mustang Mach-E 269ch Standard Range 72,6kWh Mach-E Propulsion",
+        "price": 31499,
+        "year": 2024,
+        "km": 24502,
+        "isPro": true,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3266743620"
+      }
+    ]
+  },
+  "peugeot-e208-50": {
+    "modelId": "peugeot-e208-50",
+    "canonicalName": "Peugeot 208 e",
+    "sampleCount": 27,
+    "averagePrice": 13799,
+    "medianPrice": 12990,
+    "averageKm": 77003,
+    "medianKm": 85826,
+    "minPrice": 10200,
+    "maxPrice": 26499,
+    "minKm": 300,
+    "maxKm": 100000,
+    "sweetSpotPrice": 12990,
+    "sweetSpotKm": 85826,
+    "mostAvailableSummary": "Marché le plus disponible : 12 990 € pour ~85 826 km (27 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3269713145",
+        "title": "Peugeot 208",
+        "price": 10200,
+        "year": 2020,
+        "km": 85800,
+        "isPro": false,
+        "href": "https://www.leboncoin.fr/ad/voitures/3269713145"
+      },
+      {
+        "id": "3274427484",
+        "title": "Peugeot 208 Electrique 50 kWh Allure 136 ch",
+        "price": 12490,
+        "year": 2020,
+        "km": 93885,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3274427484"
+      },
+      {
+        "id": "3274426894",
+        "title": "Peugeot 208 Electrique 50 kWh Allure 136 ch",
+        "price": 12490,
+        "year": 2020,
+        "km": 93885,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3274426894"
+      },
+      {
+        "id": "3274426254",
+        "title": "Peugeot 208 Electrique 50 kWh Allure 136 ch",
+        "price": 12490,
+        "year": 2020,
+        "km": 93885,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3274426254"
+      },
+      {
+        "id": "3274425633",
+        "title": "Peugeot 208 Electrique 50 kWh Allure 136 ch",
+        "price": 12490,
+        "year": 2020,
+        "km": 93885,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3274425633"
+      }
+    ]
+  },
+  "peugeot-e2008-50": {
+    "modelId": "peugeot-e2008-50",
+    "canonicalName": "Peugeot 2008 e",
+    "sampleCount": 4,
+    "averagePrice": 20370,
+    "medianPrice": 24499,
+    "averageKm": 79245,
+    "medianKm": 82000,
+    "minPrice": 13990,
+    "maxPrice": 26999,
+    "minKm": 10354,
+    "maxKm": 202625,
+    "sweetSpotPrice": 24499,
+    "sweetSpotKm": 82000,
+    "mostAvailableSummary": "Marché le plus disponible : 24 499 € pour ~82 000 km (4 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3233466971",
+        "title": "Peugeot 2008 electric 135 50kwh active pack bva (garantie 12 mois)",
+        "price": 13990,
+        "year": 2020,
+        "km": 82000,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3233466971"
+      },
+      {
+        "id": "3227017887",
+        "title": "Peugeot E-2008 GENERATION-II ELECTRIC 13 CV 50KWH ALLURE PACK - CARPLAY - CAMERA DE RECUL - VIRTUAL",
+        "price": 15990,
+        "year": 2022,
+        "km": 22000,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3227017887"
+      },
+      {
+        "id": "3219790148",
+        "title": "Peugeot 2008 e-2008 156ch 54 kWh Allure",
+        "price": 24499,
+        "year": 2025,
+        "km": 10354,
+        "isPro": true,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3219790148"
+      },
+      {
+        "id": "3181238381",
+        "title": "Peugeot 2008 e-2008 136ch Style",
+        "price": 26999,
+        "year": 2026,
+        "km": 202625,
+        "isPro": true,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3181238381"
+      }
+    ]
+  },
+  "peugeot-e3008-73": {
+    "modelId": "peugeot-e3008-73",
+    "canonicalName": "Peugeot e",
+    "sampleCount": 1,
+    "averagePrice": 43880,
+    "medianPrice": 43880,
+    "averageKm": 13534,
+    "medianKm": 13534,
+    "minPrice": 43880,
+    "maxPrice": 43880,
+    "minKm": 13534,
+    "maxKm": 13534,
+    "sweetSpotPrice": 43880,
+    "sweetSpotKm": 13534,
+    "mostAvailableSummary": "Marché le plus disponible : 43 880 € pour ~13 534 km (1 annonce analysée)",
+    "topAds": [
+      {
+        "id": "3196699731",
+        "title": "Peugeot e-3008 (3) BEV 73 KWH 4X4 FIRST EDITION",
+        "price": 43880,
+        "year": 2025,
+        "km": 13534,
+        "isPro": true,
+        "badge": "À la une",
+        "href": "https://www.leboncoin.fr/ad/voitures/3196699731"
+      }
+    ]
+  },
+  "renault-twingo-electric-22": {
+    "modelId": "renault-twingo-electric-22",
+    "canonicalName": "Renault Twingo E",
+    "sampleCount": 10,
+    "averagePrice": 11482,
+    "medianPrice": 11799,
+    "averageKm": 48853,
+    "medianKm": 51190,
+    "minPrice": 8290,
+    "maxPrice": 13450,
+    "minKm": 16666,
+    "maxKm": 84000,
+    "sweetSpotPrice": 11799,
+    "sweetSpotKm": 51190,
+    "mostAvailableSummary": "Marché le plus disponible : 11 799 € pour ~51 190 km (10 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3250075137",
+        "title": "RENAULT TWINGO ZE ELECTRIQUE - AUTHENTIC - 82ch / 22kw - ACHAT INTEGRAL - SOH 87%",
+        "price": 8290,
+        "year": 2022,
+        "km": 84000,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3250075137"
+      },
+      {
+        "id": "3237102718",
+        "title": "Renault Twingo Electric Life R80 Achat Intégral",
+        "price": 9990,
+        "year": 2021,
+        "km": 32963,
+        "isPro": false,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3237102718"
+      },
+      {
+        "id": "3272010098",
+        "title": "RENAULT TWINGO E-Tech Intens Electrique Achat intégral - SOH 93 %",
+        "price": 9990,
+        "year": 2021,
+        "km": 48279,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3272010098"
+      },
+      {
+        "id": "3252605741",
+        "title": "Renault Twingo E-Tech Electric Zen R80 Achat Intégral - 21MY",
+        "price": 11400,
+        "year": 2022,
+        "km": 55527,
+        "isPro": false,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3252605741"
+      },
+      {
+        "id": "3230517404",
+        "title": "Renault Twingo E-Tech Electric Equilibre R80 Achat Intégral",
+        "price": 11699,
+        "year": 2022,
+        "km": 55761,
+        "isPro": false,
+        "badge": "",
+        "href": "https://www.leboncoin.fr/ad/voitures/3230517404"
+      }
+    ]
+  },
+  "mg-mg4-luxury-64": {
+    "modelId": "mg-mg4-luxury-64",
+    "canonicalName": "Mg motor MG4 EV 170ch",
+    "sampleCount": 29,
+    "averagePrice": 16622,
+    "medianPrice": 16490,
+    "averageKm": 49327,
+    "medianKm": 49700,
+    "minPrice": 11400,
+    "maxPrice": 25990,
+    "minKm": 10100,
+    "maxKm": 98000,
+    "sweetSpotPrice": 16490,
+    "sweetSpotKm": 49700,
+    "mostAvailableSummary": "Marché le plus disponible : 16 490 € pour ~49 700 km (29 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3273881323",
+        "title": "\"Accidenté\" MG MG4 204 77-2 kwh Luxury / GX027",
+        "price": 11400,
+        "year": 2024,
+        "km": 33500,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3273881323"
+      },
+      {
+        "id": "3271650812",
+        "title": "Mg4",
+        "price": 14000,
+        "year": 2022,
+        "km": 98000,
+        "isPro": false,
+        "href": "https://www.leboncoin.fr/ad/voitures/3271650812"
+      },
+      {
+        "id": "3250102988",
+        "title": "MG4 Standard V1",
+        "price": 15000,
+        "year": 2022,
+        "km": 40000,
+        "isPro": false,
+        "href": "https://www.leboncoin.fr/ad/voitures/3250102988"
+      },
+      {
+        "id": "3230034873",
+        "title": "Mg mg4 electric 170 73ppm 49kwh bva",
+        "price": 15280,
+        "year": 2022,
+        "km": 78255,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3230034873"
+      },
+      {
+        "id": "3227456296",
+        "title": "MG MOTOR MG4 170ch 51 KWh Standard /suivi MG MOTOR",
+        "price": 15490,
+        "year": 2022,
+        "km": 71500,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3227456296"
+      }
+    ]
+  },
+  "hyundai-kona-ev-64": {
+    "modelId": "hyundai-kona-ev-64",
+    "canonicalName": "Hyundai Kona Electric 39kWh",
+    "sampleCount": 22,
+    "averagePrice": 15761,
+    "medianPrice": 15980,
+    "averageKm": 56672,
+    "medianKm": 51973,
+    "minPrice": 13970,
+    "maxPrice": 17990,
+    "minKm": 23600,
+    "maxKm": 94891,
+    "sweetSpotPrice": 15980,
+    "sweetSpotKm": 51973,
+    "mostAvailableSummary": "Marché le plus disponible : 15 980 € pour ~51 973 km (22 annonces analysées)",
+    "topAds": [
+      {
+        "id": "3257508355",
+        "title": "Hyundai Kona Electric 136ch Intuitive Euro6d-T EVAP 2cv",
+        "price": 13970,
+        "year": 2020,
+        "km": 94891,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3257508355"
+      },
+      {
+        "id": "3240595291",
+        "title": "Hyundai Kona Electric 136ch Intuitive Euro6d-T EVAP 2cv",
+        "price": 14990,
+        "year": 2020,
+        "km": 90101,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3240595291"
+      },
+      {
+        "id": "3172108657",
+        "title": "Hyundai Kona Electric 136ch Creative Euro6d-T EVAP",
+        "price": 15220,
+        "year": 2020,
+        "km": 23600,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3172108657"
+      },
+      {
+        "id": "3267996306",
+        "title": "Hyundai Kona EV Creative 39 kWh 2022 batterie 100%",
+        "price": 15250,
+        "year": 2022,
+        "km": 78400,
+        "isPro": false,
+        "href": "https://www.leboncoin.fr/ad/voitures/3267996306"
+      },
+      {
+        "id": "3267832912",
+        "title": "Hyundai Kona ELECTRIC Electrique 39 kWh - 136 ch Intuitive",
+        "price": 15290,
+        "year": 2020,
+        "km": 43833,
+        "isPro": true,
+        "href": "https://www.leboncoin.fr/ad/voitures/3267832912"
+      }
+    ]
+  }
+}

@@ -1,0 +1,18 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Optimisation du cache Docker : copie des fichiers de dépendances
+COPY package*.json ./
+
+# Installation des dépendances
+RUN npm install
+
+# Copie du reste des sources
+COPY . .
+
+# Port d'écoute du serveur Vite
+EXPOSE 3000
+
+# Commande par défaut : serveur de développement Vite
+CMD ["npm", "run", "dev"]
