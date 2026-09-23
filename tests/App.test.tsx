@@ -60,10 +60,10 @@ describe('Parcours utilisateur App (Stop-Carburant)', () => {
     expect(revealBtn).toBeInTheDocument();
     fireEvent.click(revealBtn);
 
-    // Le lien footer "Méthodologie & Code Open Source" doit être visible avec lien GitHub
+    // Le lien footer "Méthodologie & Code Open Source" doit être visible avec lien GitHub officiel
     const openSourceLink = await screen.findByRole('link', { name: /méthodologie & code open source/i });
     expect(openSourceLink).toBeInTheDocument();
-    expect(openSourceLink).toHaveAttribute('href', expect.stringContaining('github.com'));
+    expect(openSourceLink).toHaveAttribute('href', 'https://github.com/thomasgiroire/Stop-Carburant');
     expect(openSourceLink).toHaveAttribute('target', '_blank');
 
     // Le détail financier est consultable sans modale superflue

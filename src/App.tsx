@@ -228,7 +228,7 @@ export default function App() {
           <span>Stop Carburant — Zéro bla-bla • StopCarburant.fr</span>
           <div className="flex items-center gap-4 text-[11px]">
             <a
-              href="https://github.com/Stop-Carburant/Stop-Carburant"
+              href="https://github.com/thomasgiroire/Stop-Carburant"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-neutral-300 transition-colors flex items-center gap-1 text-neutral-400 underline decoration-dotted"
