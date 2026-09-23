@@ -102,6 +102,37 @@ export function calculateEVFinancing(
   };
 }
 
+/**
+ * Calcule l'apport (reprise véhicule) minimum nécessaire pour annuler le reste à charge mensuel
+ * (rendre l'opération neutre / 100% autofinancée avec mensualité <= targetMonthly).
+ * Arrondi au pas souhaité (par défaut 100 €).
+ */
+export function calculateBreakEvenDownPayment(
+  price: number,
+  targetMonthly: number,
+  mode: LoanRateMode = 'eco_1pct',
+  months: number = 60,
+  step: number = 100
+): number {
+  if (targetMonthly <= 0) return price;
+  if (price <= 0) return 0;
+
+  // Si déjà autofinancé sans apport
+  if (calculateEVFinancing(price, mode, months, 0).monthly <= targetMonthly) {
+    return 0;
+  }
+
+  // Recherche du premier palier d'apport permettant de couvrir l'intégralité du reste à charge
+  for (let d = step; d < price; d += step) {
+    if (calculateEVFinancing(price, mode, months, d).monthly <= targetMonthly) {
+      return d;
+    }
+  }
+
+  return price;
+}
+
+
 export const ECO_MOBILITY_PARTNERS = {
   creditMutuel: {
     name: 'Crédit Mutuel',

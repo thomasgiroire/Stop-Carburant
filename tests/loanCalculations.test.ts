@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { calculateRawMonthly, calculateEVFinancing, ECO_MOBILITY_PARTNERS } from '../src/utils/loanCalculations';
+import { calculateRawMonthly, calculateEVFinancing, calculateBreakEvenDownPayment, ECO_MOBILITY_PARTNERS } from '../src/utils/loanCalculations';
 
 describe('Calculateur de financement auto (Stop-Carburant)', () => {
   it('calcule correctement la mensualité brute avec amortissement à taux fixe', () => {
@@ -59,4 +59,22 @@ describe('Calculateur de financement auto (Stop-Carburant)', () => {
     expect(loanFullyPaid.totalCost).toBe(0);
     expect(loanFullyPaid.totalInterest).toBe(0);
   });
+
+  it('calcule l\'apport de reprise nécessaire pour atteindre le point d\'équilibre (break-even)', () => {
+    // Cas scénario utilisateur : Peugeot e-2008 à 15 500 €, budget dispo de 257 €/mois (gap de 17 € sans apport)
+    // Mensualité sans apport = 274 €
+    const needed = calculateBreakEvenDownPayment(15500, 257, 'eco_1pct', 60, 100);
+    expect(needed).toBe(1000);
+
+    // Vérification que 1 000 € d'apport donne bien une mensualité <= 257 €
+    const fin = calculateEVFinancing(15500, 'eco_1pct', 60, needed);
+    expect(fin.monthly).toBeLessThanOrEqual(257);
+
+    // Si déjà autofinancé sans apport, apport nécessaire = 0 €
+    expect(calculateBreakEvenDownPayment(8000, 200, 'eco_1pct', 60, 100)).toBe(0);
+
+    // Si budget dispo nul ou négatif, apport = prix total
+    expect(calculateBreakEvenDownPayment(10000, 0, 'eco_1pct', 60, 100)).toBe(10000);
+  });
 });
+

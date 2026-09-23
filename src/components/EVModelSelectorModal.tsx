@@ -38,8 +38,21 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedBodyType, setSelectedBodyType] = useState<string>('all');
   const [minRange, setMinRange] = useState<number>(0);
+  const [onlyProfitable, setOnlyProfitable] = useState<boolean>(false);
 
   const allModels = useMemo(() => EVDatabaseService.getAllModels(), []);
+
+  const profitableCount = useMemo(() => {
+    return allModels.filter((car) => {
+      const fin = EVDatabaseService.calculateFinancials(
+        car,
+        userFuelBudget,
+        dailyKm,
+        loanMode
+      );
+      return fin.is100PctAutofinanced;
+    }).length;
+  }, [allModels, userFuelBudget, dailyKm, loanMode]);
 
   const filteredModels = useMemo(() => {
     return allModels.filter((car) => {
@@ -54,9 +67,20 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
         const fullText = `${car.make} ${car.model} ${car.trim} ${car.fullName}`.toLowerCase();
         if (!fullText.includes(q)) return false;
       }
+      if (onlyProfitable) {
+        const fin = EVDatabaseService.calculateFinancials(
+          car,
+          userFuelBudget,
+          dailyKm,
+          loanMode
+        );
+        if (!fin.is100PctAutofinanced) {
+          return false;
+        }
+      }
       return true;
     });
-  }, [allModels, selectedBodyType, minRange, searchQuery]);
+  }, [allModels, selectedBodyType, minRange, searchQuery, onlyProfitable, userFuelBudget, dailyKm, loanMode]);
 
   if (!isOpen) return null;
 
@@ -146,14 +170,59 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center justify-between text-xs text-neutral-400 pt-1">
-            <span>
-              <strong className="text-white">{filteredModels.length}</strong> modèles disponibles dans le référentiel
-            </span>
-            <span className="text-[11px] text-neutral-500 flex items-center gap-1">
-              <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-              Calculs actualisés avec votre budget ({formatCurrency(userFuelBudget)}/m)
-            </span>
+          {/* Ligne toggle rentabilité & indicateurs */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 pt-1">
+            <button
+              type="button"
+              id="filter-only-profitable"
+              data-testid="filter-only-profitable"
+              role="switch"
+              aria-checked={onlyProfitable}
+              onClick={() => setOnlyProfitable(!onlyProfitable)}
+              className={`inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all cursor-pointer w-fit ${
+                onlyProfitable
+                  ? 'bg-emerald-950/60 border-emerald-500/80 text-emerald-300 shadow-md shadow-emerald-950/40'
+                  : 'bg-neutral-950/70 border-neutral-800 text-neutral-400 hover:text-neutral-200 hover:border-neutral-700'
+              }`}
+            >
+              {/* Switch UI */}
+              <div
+                className={`relative inline-flex h-4 w-7 shrink-0 items-center rounded-full transition-colors duration-200 ${
+                  onlyProfitable ? 'bg-emerald-500' : 'bg-neutral-700'
+                }`}
+              >
+                <span
+                  className={`inline-block h-2.5 w-2.5 transform rounded-full bg-white transition duration-200 ${
+                    onlyProfitable ? 'translate-x-3.5' : 'translate-x-0.5'
+                  }`}
+                />
+              </div>
+
+              <span>Modèles rentables uniquement</span>
+
+              <span
+                className={`px-1.5 py-0.5 rounded-md text-[10px] font-bold ${
+                  onlyProfitable
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
+                    : 'bg-neutral-800 text-neutral-400'
+                }`}
+              >
+                100% autofinancés ({profitableCount})
+              </span>
+            </button>
+
+            <div className="flex items-center justify-between sm:justify-end gap-3 text-xs text-neutral-400">
+              <span>
+                <strong className="text-white" data-testid="models-count">{filteredModels.length}</strong>{' '}
+                {filteredModels.length > 1 ? 'modèles disponibles' : 'modèle disponible'}
+                {onlyProfitable && ` (sur ${allModels.length})`}
+              </span>
+              <span className="text-[11px] text-neutral-500 flex items-center gap-1">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span className="hidden sm:inline">Calculs actualisés avec votre budget</span>
+                <span>({formatCurrency(userFuelBudget)}/m)</span>
+              </span>
+            </div>
           </div>
         </div>
 
@@ -163,13 +232,16 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
             <div className="text-center py-12 space-y-3">
               <Car className="w-12 h-12 text-neutral-600 mx-auto" />
               <p className="text-sm font-semibold text-neutral-300">
-                Aucun modèle ne correspond à vos critères de recherche.
+                {onlyProfitable
+                  ? `Aucun modèle n'est 100% autofinancé avec vos critères et votre budget actuel (${formatCurrency(userFuelBudget)}/m).`
+                  : 'Aucun modèle ne correspond à vos critères de recherche.'}
               </p>
               <button
                 onClick={() => {
                   setSearchQuery('');
                   setSelectedBodyType('all');
                   setMinRange(0);
+                  setOnlyProfitable(false);
                 }}
                 className="text-xs text-emerald-400 underline cursor-pointer"
               >

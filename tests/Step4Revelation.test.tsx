@@ -253,5 +253,47 @@ describe('Composant Step4Revelation', () => {
       expect(eq2.highlight).toBe('2 mois de salaire par an');
     });
   });
+
+  it('affiche le message d\'apport de reprise pour annuler le reste à charge sur l\'option confort et permet de l\'appliquer au clic', async () => {
+    // Scénario maison utilisateur : 300 € budget, 140 km/j, maison
+    render(
+      <Step4Revelation
+        fuelBudget={300}
+        housing="maison"
+        dailyKm={140}
+        prices={DEFAULT_PRICES}
+        onModifyParams={vi.fn()}
+      />
+    );
+
+    const revealBtn = screen.getByRole('button', { name: /voir où devrait plutôt aller cet argent/i });
+    fireEvent.click(revealBtn);
+
+    // Initialement sur la Nissan Leaf II (recommandation économique couverte)
+    expect(await screen.findByText(/Achetez une Nissan Leaf II maintenant !/i)).toBeInTheDocument();
+
+    // Basculer vers l'option confort (Peugeot e-2008)
+    const comfortBtn = screen.getByRole('button', { name: /Option confort & plus grande autonomie/i });
+    fireEvent.click(comfortBtn);
+
+    // Vérifier l'affichage du reste à charge (+17 € / mois de votre poche !)
+    expect(await screen.findByText(/Plus que/i)).toBeInTheDocument();
+    expect(screen.getByText(/\+17/i)).toBeInTheDocument();
+
+    // Vérifier la phrase demandée : "Avec un apport de 1 000 € (reprise véhicule), vous vous mettez à l'abri des futures augmentations."
+    expect(screen.getByText(/Avec un apport de/i)).toBeInTheDocument();
+    expect(screen.getByText(/vous vous mettez à l'abri des futures augmentations/i)).toBeInTheDocument();
+
+    const applyApportBtn = screen.getByRole('button', { name: /1.*000.*\(reprise véhicule\)/i });
+    expect(applyApportBtn).toBeInTheDocument();
+
+    // Cliquer sur le bouton d'apport
+    fireEvent.click(applyApportBtn);
+
+    // L'opération devient nulle / autofinancée (plus de reste à charge, affichage du gain ou 0 € restant)
+    expect(screen.queryByText(/Plus que/i)).not.toBeInTheDocument();
+    expect(await screen.findByText(/chaque mois dans votre poche !|sans débourser/i)).toBeInTheDocument();
+  });
 });
+
 

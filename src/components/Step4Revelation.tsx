@@ -21,7 +21,7 @@ import { HousingType, ElecTarifMode, ActiveSimulationContext } from '../types';
 import { calculateSimulation, formatCurrency, formatNumber, SMIC_NET_MENSUEL, getSurplusEquivalent } from '../utils/calculator';
 import { getTieredEVRecommendations, getDailyUsageAdvice, getVehicleRealConso, EVTier, UsedEVRecommendation } from '../utils/evRecommendations';
 import { EnergyPrices, DEFAULT_PRICES } from '../services/energyPrices';
-import { LoanRateMode, calculateEVFinancing } from '../utils/loanCalculations';
+import { LoanRateMode, calculateEVFinancing, calculateBreakEvenDownPayment } from '../utils/loanCalculations';
 import { EVDatabaseService, OpenDataEVModel } from '../services/evDatabaseService';
 import { EVModelSelectorModal } from './EVModelSelectorModal';
 import { VictoryCelebration } from './VictoryCelebration';
@@ -138,6 +138,12 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
   const remainingGap = Math.max(0, carMonthly - availableBudget);
   const surplusCash = Math.max(0, availableBudget - carMonthly);
   const isFullyCovered = remainingGap <= 0;
+
+  // Apport nécessaire (reprise véhicule) pour annuler le reste à charge
+  const breakEvenDownPayment = useMemo(() => {
+    if (availableBudget <= 0) return 0;
+    return calculateBreakEvenDownPayment(effectiveMarketPrice, availableBudget, loanMode, 60, 100);
+  }, [availableBudget, effectiveMarketPrice, loanMode]);
 
   // Synchronisation du contexte actif vers App (modale & footer)
   useEffect(() => {
@@ -353,7 +359,22 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                         de votre poche !
                       </h2>
                       <p className="text-xs sm:text-sm md:text-base text-neutral-300 font-medium">
-                        Vos économies de carburant financent déjà la majorité de votre voiture électrique.
+                        {breakEvenDownPayment > 0 && breakEvenDownPayment < effectiveMarketPrice ? (
+                          <>
+                            Avec un apport de{' '}
+                            <button
+                              type="button"
+                              onClick={() => setDownPayment(breakEvenDownPayment)}
+                              className="text-amber-400 hover:text-amber-300 underline decoration-dotted font-bold cursor-pointer transition-colors"
+                              title={`Simuler un apport de reprise de ${formatCurrency(breakEvenDownPayment)}`}
+                            >
+                              {formatCurrency(breakEvenDownPayment)} (reprise véhicule)
+                            </button>
+                            , vous vous mettez à l'abri des futures augmentations.
+                          </>
+                        ) : (
+                          'Vos économies de carburant financent déjà la majorité de votre voiture électrique.'
+                        )}
                       </p>
                     </div>
                   )}
