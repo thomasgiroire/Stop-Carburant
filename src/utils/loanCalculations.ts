@@ -15,6 +15,7 @@ export interface LoanFinancingResult {
   capital: number;
   months: number;
   downPayment?: number;
+  equipmentNetCost?: number;
 }
 
 /**
@@ -34,15 +35,18 @@ export function calculateRawMonthly(capital: number, annualRate: number, months:
  *   Pour un capital <= 10 000 €, 100% du crédit est à 1,00%. Au-delà, le surplus est calculé au taux standard 4,90%.
  * - 'standard_4_9pct' : Crédit auto amortissable classique moyen à 4,90% TAEG.
  * - downPayment : Apport personnel éventuel (reprise de l'ancien véhicule), déduit du capital à emprunter.
+ * - equipmentNetCost : Coût net de l'équipement de recharge à domicile (après déduction du crédit d'impôt).
  */
 export function calculateEVFinancing(
   price: number,
   mode: LoanRateMode = 'eco_1pct',
   months: number = 60,
-  downPayment: number = 0
+  downPayment: number = 0,
+  equipmentNetCost: number = 0
 ): LoanFinancingResult {
-  const effectiveDownPayment = Math.max(0, Math.min(price, Math.max(0, downPayment || 0)));
-  const capital = Math.max(0, price - effectiveDownPayment);
+  const totalPrice = Math.max(0, price + Math.max(0, equipmentNetCost));
+  const effectiveDownPayment = Math.max(0, Math.min(totalPrice, Math.max(0, downPayment || 0)));
+  const capital = Math.max(0, totalPrice - effectiveDownPayment);
 
   if (capital === 0) {
     return {
@@ -112,24 +116,26 @@ export function calculateBreakEvenDownPayment(
   targetMonthly: number,
   mode: LoanRateMode = 'eco_1pct',
   months: number = 60,
-  step: number = 100
+  step: number = 100,
+  equipmentNetCost: number = 0
 ): number {
-  if (targetMonthly <= 0) return price;
-  if (price <= 0) return 0;
+  const totalPrice = price + Math.max(0, equipmentNetCost);
+  if (targetMonthly <= 0) return totalPrice;
+  if (totalPrice <= 0) return 0;
 
   // Si déjà autofinancé sans apport
-  if (calculateEVFinancing(price, mode, months, 0).monthly <= targetMonthly) {
+  if (calculateEVFinancing(price, mode, months, 0, equipmentNetCost).monthly <= targetMonthly) {
     return 0;
   }
 
   // Recherche du premier palier d'apport permettant de couvrir l'intégralité du reste à charge
-  for (let d = step; d < price; d += step) {
-    if (calculateEVFinancing(price, mode, months, d).monthly <= targetMonthly) {
+  for (let d = step; d < totalPrice; d += step) {
+    if (calculateEVFinancing(price, mode, months, d, equipmentNetCost).monthly <= targetMonthly) {
       return d;
     }
   }
 
-  return price;
+  return totalPrice;
 }
 
 

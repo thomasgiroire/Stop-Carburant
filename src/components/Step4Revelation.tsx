@@ -15,13 +15,19 @@ import {
   Landmark,
   Tag,
   Database,
-  Car
+  Car,
+  Info
 } from 'lucide-react';
 import { HousingType, ElecTarifMode, ActiveSimulationContext } from '../types';
 import { calculateSimulation, formatCurrency, formatNumber, SMIC_NET_MENSUEL, getSurplusEquivalent } from '../utils/calculator';
 import { getTieredEVRecommendations, getDailyUsageAdvice, getVehicleRealConso, EVTier, UsedEVRecommendation } from '../utils/evRecommendations';
 import { EnergyPrices, DEFAULT_PRICES } from '../services/energyPrices';
 import { LoanRateMode, calculateEVFinancing, calculateBreakEvenDownPayment } from '../utils/loanCalculations';
+import {
+  ChargingEquipmentType,
+  CHARGING_EQUIPMENT_OPTIONS,
+  getRecommendedChargingEquipment,
+} from '../utils/chargingCalculations';
 import { EVDatabaseService, OpenDataEVModel } from '../services/evDatabaseService';
 import { getVehicleCorrectionBadge } from '../utils/consumptionCorrection';
 import { EVModelSelectorModal } from './EVModelSelectorModal';
@@ -59,6 +65,9 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
   const [userForcedTarif, setUserForcedTarif] = useState<ElecTarifMode | null>(null);
   const [customSelectedEV, setCustomSelectedEV] = useState<UsedEVRecommendation | null>(null);
   const [isModelSelectorOpen, setIsModelSelectorOpen] = useState<boolean>(false);
+  const [selectedEquipmentType, setSelectedEquipmentType] = useState<ChargingEquipmentType | null>(null);
+  const [userEquipmentChoice, setUserEquipmentChoice] = useState<boolean | null>(null);
+  const [isMaintenanceDetailOpen, setIsMaintenanceDetailOpen] = useState<boolean>(false);
 
   // 1. Déterminer les véhicules recommandés selon le budget carburant libéré
   const baseSimHP = calculateSimulation(fuelBudget, housing, dailyKm, prices, 'HP');
@@ -110,11 +119,43 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
   const simHC = calculateSimulation(fuelBudget, housing, dailyKm, prices, 'HC', vehicleRealConso);
   const dailyAdvice = currentEV.dailyAdvice ?? getDailyUsageAdvice(dailyKm, currentEV.realRangeKm, housing, currentEV.model);
 
+  // Équipement de recharge recommandé et simulation physique avec pertes AC réalistes
+  const chargingRec = useMemo(() => {
+    return getRecommendedChargingEquipment(
+      dailyKm,
+      currentEV.realRangeKm,
+      vehicleRealConso,
+      housing
+    );
+  }, [dailyKm, currentEV.realRangeKm, vehicleRealConso, housing]);
+
+  const activeEquipmentType: ChargingEquipmentType = selectedEquipmentType ?? chargingRec.recommendedType;
+  const activeEquipment = CHARGING_EQUIPMENT_OPTIONS[activeEquipmentType];
+  const activeSimulation = chargingRec.simulations[activeEquipmentType];
+
   // Prix d'achat de référence issu du catalogue officiel pour tous les calculs de financement
   const effectiveMarketPrice = currentEV.estimatedMarketPrice;
-  const clampedDownPayment = Math.min(downPayment, effectiveMarketPrice);
-  const financing = calculateEVFinancing(effectiveMarketPrice, loanMode, 60, clampedDownPayment);
-  const financingStandard = calculateEVFinancing(effectiveMarketPrice, 'standard_4_9pct', 60, clampedDownPayment);
+  const financingWithoutEquip = calculateEVFinancing(effectiveMarketPrice, loanMode, 60, Math.min(downPayment, effectiveMarketPrice), 0);
+
+  // Estimation du surcoût de l'équipement dans le prêt
+  const sampleEquipFinancing = calculateEVFinancing(effectiveMarketPrice, loanMode, 60, Math.min(downPayment, effectiveMarketPrice), activeEquipment.netCost);
+  const estimatedEquipMonthly = Math.max(0, sampleEquipFinancing.monthly - financingWithoutEquip.monthly);
+
+  // "Si le budget le permet" : vérifier si le budget disponible absorbe la mensualité totale sans effort d'épargne
+  const maxAvailableBudget = Math.max(simHP.carLeaseBudget, simHC.carLeaseBudget);
+  const budgetAllowsEquipment = (maxAvailableBudget - financingWithoutEquip.monthly) >= estimatedEquipMonthly;
+
+  // L'utilisateur peut forcer l'inclusion ou l'exclusion, sinon règle automatique "si le budget le permet"
+  const isEquipmentIncludedInLoan = userEquipmentChoice !== null ? userEquipmentChoice : budgetAllowsEquipment;
+
+  // Montant net de l'équipement à financer dans le prêt (si maison et activé)
+  const equipmentNetCostToFinance = (housing === 'maison' && isEquipmentIncludedInLoan) ? activeEquipment.netCost : 0;
+
+  const totalAmountToFinance = effectiveMarketPrice + equipmentNetCostToFinance;
+  const clampedDownPayment = Math.min(downPayment, totalAmountToFinance);
+  const financing = calculateEVFinancing(effectiveMarketPrice, loanMode, 60, clampedDownPayment, equipmentNetCostToFinance);
+  const equipmentMonthly = Math.max(0, financing.monthly - financingWithoutEquip.monthly);
+  const financingStandard = calculateEVFinancing(effectiveMarketPrice, 'standard_4_9pct', 60, clampedDownPayment, equipmentNetCostToFinance);
   const recommendedMarketPrice = tieredEVs.recommended.estimatedMarketPrice;
   const recommendedFinancing = calculateEVFinancing(recommendedMarketPrice, loanMode, 60, Math.min(downPayment, recommendedMarketPrice));
   const economyMarketPrice = tieredEVs.economy ? tieredEVs.economy.estimatedMarketPrice : 0;
@@ -129,7 +170,8 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
   // 2. Tester la rentabilité avec le tarif Heures Pleines (HP) :
   const availableBudgetHP = simHP.carLeaseBudget;
   const remainingGapHP = Math.max(0, carMonthly - availableBudgetHP);
-  const isProfitableHP = remainingGapHP <= 0; // C'est déjà rentable si 0 € de reste à charge
+  const surplusCashHP = Math.max(0, availableBudgetHP - carMonthly);
+  const isProfitableHP = remainingGapHP <= 0 && surplusCashHP > 0;
 
   // 3. Calcul avec le tarif Heures Creuses (HC) :
   const availableBudgetHC = simHC.carLeaseBudget;
@@ -153,8 +195,8 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
   // Apport nécessaire (reprise véhicule) pour annuler le reste à charge
   const breakEvenDownPayment = useMemo(() => {
     if (availableBudget <= 0) return 0;
-    return calculateBreakEvenDownPayment(effectiveMarketPrice, availableBudget, loanMode, 60, 100);
-  }, [availableBudget, effectiveMarketPrice, loanMode]);
+    return calculateBreakEvenDownPayment(effectiveMarketPrice, availableBudget, loanMode, 60, 100, equipmentNetCostToFinance);
+  }, [availableBudget, effectiveMarketPrice, loanMode, equipmentNetCostToFinance]);
 
   // Synchronisation du contexte actif vers App (modale & footer)
   useEffect(() => {
@@ -693,6 +735,13 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                           <span className="font-mono font-bold text-white">{formatCurrency(effectiveMarketPrice)}</span>
                         </div>
 
+                        {equipmentNetCostToFinance > 0 && (
+                          <div className="flex items-center justify-between text-xs">
+                            <span className="text-neutral-400">Équipement de recharge ({activeEquipment.shortName}) :</span>
+                            <span className="font-mono text-emerald-400 font-semibold">+{formatCurrency(equipmentNetCostToFinance)} net</span>
+                          </div>
+                        )}
+
                         {/* Apport perso */}
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 py-1">
                           <label htmlFor="input-down-payment" className="text-neutral-300 font-medium cursor-pointer">
@@ -703,12 +752,12 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                               id="input-down-payment"
                               type="number"
                               min={0}
-                              max={effectiveMarketPrice}
+                              max={totalAmountToFinance}
                               step={500}
                               value={downPayment === 0 ? '' : downPayment}
                               onChange={(e) => {
                                 const val = e.target.value === '' ? 0 : Math.max(0, parseInt(e.target.value, 10) || 0);
-                                setDownPayment(Math.min(val, effectiveMarketPrice));
+                                setDownPayment(Math.min(val, totalAmountToFinance));
                               }}
                               placeholder="0"
                               className="w-24 py-1 px-2.5 rounded-lg bg-neutral-900 border border-neutral-700 text-right font-mono font-bold text-white text-xs outline-none"
@@ -718,7 +767,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                         </div>
 
                         <div className="flex items-center justify-end gap-1.5 pb-1">
-                          {[1000, 2000, 3000].filter((p) => p < effectiveMarketPrice).map((preset) => (
+                          {[1000, 2000, 3000].filter((p) => p < totalAmountToFinance).map((preset) => (
                             <button
                               key={preset}
                               type="button"
@@ -757,7 +806,14 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                           <span className="text-neutral-400">
                             {clampedDownPayment > 0 ? 'Mensualité avec apport (5 ans) :' : 'Mensualité sans apport (5 ans) :'}
                           </span>
-                          <span className="font-mono font-bold text-emerald-400 text-sm">~{carMonthly} € / mois</span>
+                          <div className="text-right">
+                            <span className="font-mono font-bold text-emerald-400 text-sm">~{carMonthly} € / mois</span>
+                            {equipmentMonthly > 0 && (
+                              <div className="text-[10px] text-neutral-400">
+                                dont ~{equipmentMonthly} €/mois pour la recharge
+                              </div>
+                            )}
+                          </div>
                         </div>
 
                         <div className="flex items-center justify-between text-neutral-400 text-[11px]">
@@ -776,10 +832,192 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                       </div>
                     </div>
 
+                    {/* Bloc Équipement de recharge */}
+                    <div className="p-4 sm:p-5 rounded-2xl bg-neutral-950 border border-neutral-800 space-y-3.5 text-left">
+                      <div className="flex items-center justify-between pb-2 border-b border-neutral-800 text-xs sm:text-sm">
+                        <div className="flex items-center gap-2">
+                          <Zap className="w-4 h-4 text-emerald-400" />
+                          <span className="font-bold text-white">Équipement de recharge</span>
+                        </div>
+                        <span className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-300">
+                          {activeEquipment.badge}
+                        </span>
+                      </div>
+
+                      {housing === 'maison' ? (
+                        <>
+                          {/* Sélecteur des 3 solutions de recharge */}
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            {(['standard_plug', 'reinforced_plug', 'wallbox_7kw'] as ChargingEquipmentType[]).map((type) => {
+                              const opt = CHARGING_EQUIPMENT_OPTIONS[type];
+                              const isSelected = activeEquipmentType === type;
+                              const isRec = chargingRec.recommendedType === type;
+                              return (
+                                <button
+                                  key={type}
+                                  type="button"
+                                  onClick={() => setSelectedEquipmentType(type)}
+                                  className={`p-2.5 sm:p-3 rounded-xl border text-left transition-all cursor-pointer relative ${
+                                    isSelected
+                                      ? 'bg-neutral-800 border-emerald-500 text-white shadow-lg'
+                                      : 'bg-neutral-900/80 border-neutral-800 text-neutral-400 hover:text-neutral-200'
+                                  }`}
+                                >
+                                  {isRec && (
+                                    <span className="absolute -top-2 right-2 text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-500 text-black shadow">
+                                      Conseillé
+                                    </span>
+                                  )}
+                                  <div className="text-xs font-bold text-white leading-tight">
+                                    {opt.shortName}
+                                  </div>
+                                  <div className="text-[11px] text-neutral-400 mt-0.5 font-mono">
+                                    {opt.powerKw} kW • {opt.netCost === 0 ? '0 €' : `~${formatCurrency(opt.netCost)}`}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+
+                          {/* Diagnostic Vendredi soir & Rendement physique */}
+                          <div className={`p-3 rounded-xl border text-xs space-y-1.5 ${
+                            activeSimulation.isComfortSufficient
+                              ? 'bg-emerald-950/30 border-emerald-500/30 text-emerald-200'
+                              : 'bg-amber-950/30 border-amber-500/30 text-amber-200'
+                          }`}>
+                            <div className="flex items-center justify-between font-semibold">
+                              <span>État de la batterie le vendredi soir :</span>
+                              <span className="font-mono font-bold text-sm">
+                                ~{activeSimulation.fridayEveningPct}% ({activeSimulation.fridayEveningKm} km)
+                              </span>
+                            </div>
+                            <p className="text-[11px] opacity-90 leading-relaxed">
+                              {activeSimulation.isComfortSufficient
+                                ? '✓ Confort week-end assuré : vous arrivez le vendredi soir avec au moins 50% de batterie pour partir immédiatement sans contrainte.'
+                                : '⚠️ Attention : vous arrivez le vendredi soir avec moins de 50% de batterie. Une prise renforcée ou une borne est conseillée pour plus de sérénité.'}
+                            </p>
+                            <div className="pt-1 border-t border-white/10 flex items-center justify-between text-[11px] text-neutral-300">
+                              <span>Récupération nocturne (8h) :</span>
+                              <span className="font-mono font-semibold">
+                                ~{activeSimulation.nightlyRecoveredKm} km / nuit <span className="text-neutral-400 font-normal">(rendement {Math.round(activeEquipment.efficiency * 100)}% avec pertes AC déduites)</span>
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* Détail financier matériel + pose & Crédit d'impôt */}
+                          <div className="space-y-1.5 text-xs text-neutral-300 pt-0.5">
+                            {activeEquipment.grossCost > 0 ? (
+                              <>
+                                <div className="flex items-center justify-between">
+                                  <span className="text-neutral-400">Matériel & pose (fourchette haute) :</span>
+                                  <span className="font-mono text-neutral-200">{formatCurrency(activeEquipment.grossCost)}</span>
+                                </div>
+                                {activeEquipment.taxCredit > 0 && (
+                                  <div className="flex items-center justify-between text-emerald-400">
+                                    <span>Crédit d'impôt officiel déduit :</span>
+                                    <span className="font-mono font-bold">- {formatCurrency(activeEquipment.taxCredit)}</span>
+                                  </div>
+                                )}
+                                <div className="flex items-center justify-between font-semibold text-white">
+                                  <span>Reste à charge net :</span>
+                                  <span className="font-mono text-emerald-400 font-bold">{formatCurrency(activeEquipment.netCost)}</span>
+                                </div>
+
+                                {/* Option d'intégration au prêt */}
+                                <div className="pt-2">
+                                  <label
+                                    className="p-2.5 rounded-xl bg-neutral-900 border border-neutral-800 flex items-center justify-between gap-2 cursor-pointer hover:border-neutral-700 transition-all text-xs"
+                                  >
+                                    <div className="flex items-center gap-2">
+                                      <input
+                                        type="checkbox"
+                                        checked={isEquipmentIncludedInLoan}
+                                        onChange={(e) => setUserEquipmentChoice(e.target.checked)}
+                                        className="w-4 h-4 rounded text-emerald-500 focus:ring-0 cursor-pointer bg-neutral-800 border-neutral-700"
+                                      />
+                                      <span className="text-neutral-200 font-medium">
+                                        Intégrer l'équipement au prêt du véhicule
+                                      </span>
+                                    </div>
+                                    <span className="font-mono font-bold text-emerald-400 shrink-0">
+                                      +{equipmentMonthly} € / mois
+                                    </span>
+                                  </label>
+                                  <div className="text-[11px] text-neutral-400 pt-1 pl-1">
+                                    Permet d'étaler l'installation sur 60 mois sans sortir d'épargne.
+                                  </div>
+                                </div>
+                              </>
+                            ) : (
+                              <div className="flex items-center justify-between text-neutral-400 text-xs">
+                                <span>Coût d'installation :</span>
+                                <span className="font-mono font-semibold text-emerald-400">0 € (prise standard existante)</span>
+                              </div>
+                            )}
+                          </div>
+                        </>
+                      ) : (
+                        /* Cas Appartement */
+                        <div className="space-y-2 text-xs text-neutral-300">
+                          <p className="text-neutral-400 leading-relaxed">
+                            En appartement, aucune installation n'est obligatoire : vous profitez des 150 000+ bornes publiques et des recharges pendant vos courses.
+                          </p>
+                          <div className="p-2.5 rounded-xl bg-neutral-900 border border-neutral-800 space-y-1 text-[11px]">
+                            <div className="font-semibold text-white">💡 Bon à savoir : Le Droit à la prise en copropriété</div>
+                            <div className="text-neutral-400">
+                              Si vous avez une place attitrée, la loi vous garantit d'installer une borne avec <strong>50% d'aide ADVENIR</strong> et <strong>500 € de crédit d'impôt</strong>.
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+
                     {/* Économies d'entretien */}
-                    <div className="p-3.5 rounded-2xl bg-neutral-950 border border-neutral-800 flex items-center justify-between text-xs text-neutral-300">
-                      <span className="font-semibold text-white">Économies d'entretien intégrées au calcul :</span>
-                      <span className="font-mono font-bold text-emerald-400">+{sim.maintenanceSavings} € / mois</span>
+                    <div className="p-3.5 rounded-2xl bg-neutral-950 border border-neutral-800 space-y-2 text-xs text-neutral-300">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-semibold text-white">Économies d'entretien intégrées au calcul :</span>
+                          <button
+                            type="button"
+                            onClick={() => setIsMaintenanceDetailOpen(!isMaintenanceDetailOpen)}
+                            className="text-neutral-400 hover:text-emerald-400 p-0.5 rounded cursor-pointer transition-colors"
+                            title="Comprendre le calcul des économies d'entretien"
+                          >
+                            <Info className="w-3.5 h-3.5 text-neutral-400 hover:text-emerald-400" />
+                          </button>
+                        </div>
+                        <span className="font-mono font-bold text-emerald-400">+{sim.maintenanceSavings} € / mois</span>
+                      </div>
+
+                      {/* Accordéon explicatif interactif */}
+                      <AnimatePresence>
+                        {isMaintenanceDetailOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="pt-2 border-t border-neutral-800 text-[11px] text-neutral-400 space-y-2 overflow-hidden"
+                          >
+                            <p className="leading-relaxed">
+                              <strong className="text-neutral-200">Base du calcul :</strong> Barème conservateur fourchette basse de <strong className="text-emerald-400">0,015 € / km</strong> (~1,50 € / 100 km) issu des rapports de l'ADEME et des données des loueurs longue durée.
+                            </p>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-neutral-300">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-emerald-400">✓</span> 0 vidange moteur, 0 huile, 0 filtres
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-emerald-400">✓</span> 0 courroie de distribution ni bougies
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-emerald-400">✓</span> 0 boîte de vitesses complexe ni embrayage
+                              </div>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-emerald-400">✓</span> Usure des freins divisée par 3 (régénération)
+                              </div>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </div>
                   </motion.div>
                 )}
