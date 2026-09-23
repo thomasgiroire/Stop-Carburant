@@ -1,5 +1,7 @@
 # Stop-Carburant.fr — Simulateur d'économies & Neutralisation de budget carburant
 
+> **🌐 Démo en ligne : [https://thomasgiroire.github.io/Stop-Carburant/](https://thomasgiroire.github.io/Stop-Carburant/)**
+
 Application web interactive d'aide à la décision financière pour comparer les coûts d'un véhicule thermique et l'acquisition d'un véhicule électrique (occasion / neuf), en exploitant les flux en temps réel de l'Open Data des carburants et les tarifs réglementés de l'électricité en France (EDF).
 
 ---
