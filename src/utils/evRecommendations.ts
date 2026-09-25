@@ -421,43 +421,40 @@ export function carCoversDailyNeed(
 
 /**
  * Détermine si la catégorie et le niveau de confort du véhicule sont adaptés à la distance quotidienne :
- * - < 80 km/jour : Tout véhicule convient (citadines économiques type Spring, Zoé, Twingo ou berlines).
- * - 80 à 139 km/jour : On écarte les micro-citadines trop spartiates (Dacia Spring, Twingo), 
- *   les citadines polyvalentes à batterie éprouvée (Zoé 41/52, e-208) et berlines sont adaptées.
- * - >= 140 km/jour (150 km, 160 km, 180 km, 200 km...) : Faire 140 à 200 km par jour au quotidien
- *   sur route et autoroute nécessite un confort routier supérieur (insonorisation acoustique, 
- *   sièges ergonomiques, aides à la conduite niveau 2, suspensions).
- *   On écarte les citadines (Zoé, Spring, Twingo, e-208) pour prioriser les berlines routières
- *   et SUV (Tesla Model 3, MG4 Luxury, VW ID.3, Kona, Model Y...).
- * - >= 175 km/jour : Exigence stricte d'une routière ou SUV longue distance avec autonomie réelle >= 300 km.
+ * - <= 40 km/jour : Tout véhicule convient, y compris les micro-citadines (Dacia Spring, Twingo).
+ * - > 40 km/jour et <= 70 km/jour : On écarte les micro-citadines trop spartiates (Spring, Twingo).
+ *   Les citadines polyvalentes (Zoé, e-208, Corsa-e...), compactes et berlines sont adaptées.
+ * - > 70 km/jour : Écarte formellement TOUTES les citadines (micro-citadines et citadines polyvalentes comme Zoé, e-208...).
+ *   Réservé aux compactes (Segment C : ID.3, MG4, Mégane...), berlines routières et SUV.
+ * - >= 120 km/jour : Exigence d'autonomie réelle minimale >= 300 km pour éliminer les petites batteries (< 55 kWh).
+ * - >= 160 km/jour : Exigence d'autonomie réelle minimale >= 350 km pour réserver aux très grandes batteries routières (>= 60-64 kWh).
  */
 export function isCarComfortableForDailyKm(
   car: EVModelData,
   dailyKm: number
 ): boolean {
-  if (dailyKm < 80) return true;
+  const categoryLevel = getCarCategoryLevel(car);
 
-  // Entre 80 et 139 km/jour : exclure les micro-citadines très limitées (Spring, Twingo)
-  if (dailyKm < 140) {
-    if (car.model.includes('Spring') || car.model.includes('Twingo')) {
-      return false;
-    }
-    return true;
+  // 1. Paliers pour micro-citadines (Dacia Spring, Twingo : Niveau 0)
+  // Autorisées jusqu'à 40 km/j inclus. Au-delà, insonorisation et puissance trop limitées sur voie rapide.
+  if (dailyKm > 40 && categoryLevel === 0) {
+    return false;
   }
 
-  // Dès 140 km/jour et a fortiori 200 km/jour :
-  // Recommander uniquement les berlines, compactes routières et SUV (Tesla, MG4, ID.3, Kona, Niro...)
-  // et écarter formellement les citadines pures (Zoé, Spring, Twingo, e-208)
-  const isCityCar = car.bodyType === 'citadine' || 
-                    car.model.includes('Zoé') || 
-                    car.model.includes('Spring') || 
-                    car.model.includes('Twingo') || 
-                    car.model.includes('208');
+  // 2. Paliers pour citadines polyvalentes (Zoé, e-208, Corsa-e... : Niveau 1)
+  // Autorisées jusqu'à 70 km/j inclus. Au-delà, exiger le confort routier d'une compacte ou berline (Niveau >= 2).
+  if (dailyKm > 70 && categoryLevel <= 1) {
+    return false;
+  }
 
-  if (isCityCar) return false;
+  // 3. Exigences d'autonomie réelle croissante pour compactes, berlines et SUV :
+  // Dès 120 km/j : écarter les petites batteries / faibles autonomies réelles (< 300 km)
+  if (dailyKm >= 120 && car.realRangeKm < 300) {
+    return false;
+  }
 
-  // À partir de 175 km/jour : exclure également les compactes/SUV à autonomie limitée (< 300 km réels)
-  if (dailyKm >= 175 && car.realRangeKm < 300) {
+  // Dès 160 km/j : réserver aux très grandes autonomies réelles (>= 350 km)
+  if (dailyKm >= 160 && car.realRangeKm < 350) {
     return false;
   }
 
@@ -552,7 +549,7 @@ export function getTieredEVRecommendations(
   const baseCatalog = candidateCatalog.length > 0 ? candidateCatalog : EV_CATALOG;
 
   // 1. Filtrer selon le confort adapté au kilométrage quotidien
-  // (ex: privilégier Tesla/MG4/ID.3 et écarter Zoé/Spring pour les trajets quotidiens >= 140 km)
+  // (ex: privilégier Tesla/MG4/ID.3 et écarter Zoé/Spring pour les trajets quotidiens > 70 km)
   const comfortableCars = baseCatalog.filter((car) =>
     isCarComfortableForDailyKm(car, safeDailyKm)
   );
@@ -564,7 +561,7 @@ export function getTieredEVRecommendations(
   );
 
   // Sécurité si aucune voiture confortable ne couvre l'autonomie requise :
-  // NE JAMAIS réinjecter les citadines quand le profil de roulage exige du confort routier (>= 140 km/j).
+  // NE JAMAIS réinjecter les citadines quand le profil de roulage exige du confort routier (> 70 km/j).
   // On retient d'abord les voitures de catalogToUse qui couvrent au moins le trajet du jour :
   if (coveringCars.length === 0) {
     coveringCars = catalogToUse.filter((car) => car.realRangeKm >= safeDailyKm);
@@ -579,7 +576,8 @@ export function getTieredEVRecommendations(
 
   // Repli ultime si aucune sélection n'a été possible
   if (coveringCars.length === 0) {
-    coveringCars = [...baseCatalog];
+    const nonCityFallback = baseCatalog.filter((c) => getCarCategoryLevel(c) >= 2);
+    coveringCars = safeDailyKm > 70 && nonCityFallback.length > 0 ? nonCityFallback : [...baseCatalog];
   }
 
   // 3. Filtrer les voitures qui permettent de récupérer de l'argent
@@ -673,14 +671,14 @@ export function getTieredEVRecommendations(
     let badge = car.strategyBadge;
     if (isComfortTier) {
       badge = isProfitable
-        ? (safeDailyKm >= 140
+        ? (safeDailyKm > 70
             ? `Option grand confort routier (${car.realRangeKm} km • 100% autofinancée)`
             : `Option confort & autonomie (${car.realRangeKm} km • 100% autofinancée)`)
         : `Option confort & grande autonomie (${car.realRangeKm} km)`;
     } else {
       badge = isProfitable
-        ? (safeDailyKm >= 140
-            ? `Berline routière confort recommandée (ROI Direct • +${Math.round(surplus)} €/m)`
+        ? (safeDailyKm > 70
+            ? `Confort routier recommandé (ROI Direct • +${Math.round(surplus)} €/m)`
             : `Modèle le plus économique (ROI Direct • +${Math.round(surplus)} €/m)`)
         : `Modèle le moins cher à financer (~${monthly} €/m)`;
     }

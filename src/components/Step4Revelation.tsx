@@ -623,19 +623,31 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                   </div>
 
                   {/* Chiffre 3 : Pouvoir d'achat net libéré */}
-                  <div className="p-3.5 rounded-2xl bg-neutral-900/90 border border-emerald-500/40 space-y-1 shadow-lg shadow-emerald-950/20">
-                    <div className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1">
-                      <Zap className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                  <div className={`p-3.5 rounded-2xl bg-neutral-900/90 space-y-1 shadow-lg ${
+                    surplusCash > 0 || isFullyCovered
+                      ? 'border border-emerald-500/40 shadow-emerald-950/20'
+                      : 'border border-rose-500/40 shadow-rose-950/20'
+                  }`}>
+                    <div className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 ${
+                      surplusCash > 0 || isFullyCovered ? 'text-emerald-400' : 'text-rose-400'
+                    }`}>
+                      <Zap className={`w-3.5 h-3.5 shrink-0 ${
+                        surplusCash > 0 || isFullyCovered ? 'text-emerald-400' : 'text-rose-400'
+                      }`} />
                       <span>3. En poche / mois</span>
                     </div>
                     <div className={`text-xl sm:text-2xl font-black font-display font-mono ${
-                      surplusCash > 0 || isFullyCovered ? 'text-emerald-400' : 'text-amber-400'
+                      surplusCash > 0 || isFullyCovered ? 'text-emerald-400' : 'text-rose-400'
                     }`}>
                       {surplusCash > 0 ? `+${formatCurrency(surplusCash)}` : isFullyCovered ? '0 €' : `${formatCurrency(remainingGap)}`}
                       <span className="text-xs font-normal"> / m</span>
                     </div>
-                    <p className="text-[11px] text-emerald-300/90 leading-snug font-medium">
-                      {surplusCash > 0 ? `+${formatCurrency(surplusCash * 12)} / an réels` : isFullyCovered ? '100% autofinancé' : 'Reste à charge mensuel'}
+                    <p className="text-[11px] text-emerald-400 leading-snug font-medium">
+                      {availableBudget > 0
+                        ? `+${formatCurrency(availableBudget)} dans 5 ans`
+                        : isFullyCovered
+                        ? '100% autofinancé'
+                        : 'Reste à charge mensuel'}
                     </p>
                   </div>
                 </div>

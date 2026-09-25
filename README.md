@@ -25,21 +25,56 @@ Face à cela, le passage à la mobilité électrique est souvent perçu comme in
 
 L'indépendance et la rigueur scientifique sont les piliers de ce projet. Aucun constructeur, fournisseur d'énergie ou organisme de crédit ne sponsorise ce simulateur. Tous les calculs sont **exécutés localement dans votre navigateur** et **l'intégralité du code et des formules est consultable et auditable publiquement**.
 
-```
-   [ Budget Carburant Mensuel ]
-               │
-               ▼
-   ┌───────────────────────────────────────────────┐
-   │  1. Flux Open Data Carburants (par dép.)      │ ──► Kilométrage mensuel réel
-   │  2. Tarifs réglementés électricité (EDF/Bornes)│ ──► Coût de recharge mensuel
-   │  3. Économies d'entretien constatées (ADEME)  │ ──► Gain d'entretien (+30 €/m)
-   └───────────────────────────────────────────────┘
-               │
-               ▼
-    [ Mensualité Crédit VE ]  +  [ Recharge ]   ≤   [ Ancien Budget Carburant ]
-               │
-               ▼
-    ⚡ Zéro surcoût mensuel + Restitution de capital
+### Comment l'algorithme choisit votre voiture (sans jargon technique)
+
+Le simulateur ne cherche pas à vous vendre un modèle en particulier : il applique des règles de bon sens physique et financier pour trouver la voiture qui simplifie votre vie sans toucher à vos économies.
+
+```mermaid
+flowchart TD
+  classDef stepStyle fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc
+  classDef decisionStyle fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#ffffff
+  classDef outcomeStyle fill:#064e3b,stroke:#34d399,stroke-width:2px,color:#ffffff
+  classDef chargeStyle fill:#701a75,stroke:#f472b6,stroke-width:2px,color:#ffffff
+
+  subgraph S1["1. Vos 3 réponses de départ"]
+    IN1["Votre budget carburant mensuel<br/>(ex: 180 €/mois)"]:::stepStyle
+    IN2["Vos kilomètres quotidiens<br/>(ex: 50 km/jour)"]:::stepStyle
+    IN3["Votre logement<br/>(Maison avec prise ou Appartement sans prise)"]:::stepStyle
+  end
+
+  subgraph S2["2. Le filtre de bon sens : le confort adapté à votre route"]
+    FILTER_CONF{"Quel gabarit de voiture<br/>pour vos kilomètres quotidiens ?"}:::decisionStyle
+    
+    C1["Jusqu'à 40 km/jour<br/>(Courts trajets urbains & périurbains)"]:::stepStyle --> R1["✅ Micro-citadines autorisées<br/>(ex: Dacia Spring, Renault Twingo)"]:::outcomeStyle
+    C2["De 41 à 70 km/jour<br/>(Trajets domicile-travail classiques)"]:::stepStyle --> R2["✅ Citadines polyvalentes confortables<br/>(ex: Renault Zoé 52, Peugeot e-208)<br/>❌ Micro-citadines trop bruyantes écartées"]:::outcomeStyle
+    C3["De 71 à 119 km/jour<br/>(Voies rapides & autoroutes régulières)"]:::stepStyle --> R3["✅ Compactes routières obligatoires<br/>(ex: Nissan Leaf II, VW ID.3, MG4)<br/>❌ Toutes les citadines pures écartées"]:::outcomeStyle
+    C4["120 km/jour et plus<br/>(Grands rouleurs & pros de la route)"]:::stepStyle --> R4["✅ Grandes routières et grosses batteries (>= 300 à 350 km)<br/>(ex: MG4 64 kWh, Tesla Model 3, Kona 64)"]:::outcomeStyle
+
+    FILTER_CONF --> C1
+    FILTER_CONF --> C2
+    FILTER_CONF --> C3
+    FILTER_CONF --> C4
+  end
+
+  subgraph S3["3. La sélection financière : zéro euro de plus"]
+    AUTO_FIN{"Votre budget carburant paye-t-il<br/>la mensualité de la voiture ?"}:::decisionStyle
+    CHOICE1["🏆 Modèle Économique Recommandé<br/>La voiture la plus abordable qui vous redonne du cash net chaque mois"]:::outcomeStyle
+    CHOICE2["✨ Option Confort Supérieur<br/>La gamme au-dessus (plus spacieuse ou plus d'autonomie) autofinancée"]:::outcomeStyle
+
+    AUTO_FIN --> CHOICE1
+    AUTO_FIN --> CHOICE2
+  end
+
+  subgraph S4["4. Votre routine de recharge sans stress"]
+    HABITAT{"Où dort votre voiture ?"}:::decisionStyle
+    
+    HABITAT -- "En Maison" --> MAISON["Branchée comme votre smartphone !<br/>Une simple prise ordinaire redonne 120 km chaque nuit pour ~2 €.<br/>Vous partez chaque matin avec le plein."]:::chargeStyle
+    HABITAT -- "En Appartement" --> APPART["Aucune prise chez vous ? Aucun problème !<br/>La batterie absorbe 1 à 2 semaines de trajets.<br/>Une seule pause de 20 min pendant vos courses suffit."]:::chargeStyle
+  end
+
+  S1 --> S2
+  S2 --> S3
+  S3 --> S4
 ```
 
 ---
@@ -100,9 +135,9 @@ Pour garantir la justesse des calculs en situation réelle, le simulateur est é
 | Persona & Profil | Paramètres réels | Véhicule recommandé | Stratégie de recharge | Résultat & Impact financier |
 | :--- | :--- | :--- | :--- | :--- |
 | **Julien**<br>Navetteur périurbain | **70 km/j**<br>150 €/mois essence<br>Maison | **Renault Zoé R90** *(Option confort : Nissan Leaf II)* | Prise domestique la nuit (~2 € pour 70 km) | **Gain net direct en poche** dès le premier mois.<br>Entretien : **+25 €/mois** économisés. |
-| **Sandrine**<br>Ouvrière rurale en 3x8 | **90 km/j**<br>185 €/mois gazole<br>Maison | **Renault Zoé R90** (240 km réels) | Heures Creuses EDF en horaires décalés | **Autofinancement intégral** de la mensualité.<br>Entretien : **+30 €/mois** économisés. |
-| **Nathalie**<br>Infirmière libérale (IDEL) | **130 km/j**<br>250 €/mois gazole<br>Maison | **Renault Zoé R90** / **Nissan Leaf II** | Recharge de nuit complète couvrant toute la tournée | Remplacement sans stress de son outil de travail.<br>Entretien : **+45 €/mois** d'économies. |
-| **Marc**<br>Artisan électricien | **110 km/j**<br>240 €/mois gazole<br>Maison | **Berline compacte / utilitaire** | Prise à domicile la nuit | Baisse directe des charges d'exploitation.<br>Entretien : **+40 €/mois** économisés. |
+| **Sandrine**<br>Ouvrière rurale en 3x8 | **90 km/j**<br>185 €/mois gazole<br>Maison | **Nissan Leaf II** (Compacte routière) | Heures Creuses EDF en horaires décalés | **Autofinancement quasi-intégral** (~8 €/m en HC).<br>Entretien : **+30 €/mois** économisés. |
+| **Nathalie**<br>Infirmière libérale (IDEL) | **130 km/j**<br>250 €/mois gazole<br>Maison | **MG4 Luxury (64 kWh)** (365 km réels) | Recharge de nuit complète couvrant toute la tournée | Remplacement sécurisé d'un outil de travail pro.<br>Entretien : **+45 €/mois** d'économies. |
+| **Marc**<br>Artisan électricien | **110 km/j**<br>240 €/mois gazole<br>Maison | **Nissan Leaf II** *(Option : Peugeot e-2008)* | Prise à domicile la nuit | Baisse directe des charges d'exploitation.<br>Entretien : **+40 €/mois** économisés. |
 | **Karim**<br>Chauffeur VSL / Taxi | **180 km/j** (~4 320 km/mois)<br>360 €/mois gazole<br>Maison | **Volkswagen ID.3 / MG4 / Tesla Model 3** *(Citadines Zoé/Spring exclues)* | Prise domicile + appoint réseau | Confort routier adapté au gros roulage.<br>Entretien : **+65 €/mois** économisés. |
 | **Élodie**<br>Navetteuse en appartement | **50 km/j**<br>110 €/mois essence<br>Appartement (sans prise) | **Renault Zoé R90** (240 km d'autonomie) | Bornes publiques / supermarché (1 recharge de 20 min tous les 4 jours) | Rentable même au tarif borne (0,45 €/kWh).<br>Fini les arrêts en station-service. |
 | **Gérard**<br>Grand rouleur interurbain | **160 km/j** (~3 840 km/mois)<br>290 €/mois gazole<br>Maison | **Volkswagen ID.3 / MG4 / Hyundai Kona** *(Filtre confort routier)* | Prise à domicile nocturne | Remplacement d'une routière diesel amortie par le carburant.<br>Entretien : **+60 €/mois** économisés. |
@@ -110,7 +145,10 @@ Pour garantir la justesse des calculs en situation réelle, le simulateur est é
 
 > [!TIP]
 > **Règle de confort et de sécurité intégrée au simulateur :**  
-> Au-delà de 140 km/jour, l'algorithme applique une règle d'ergonomie et écarte automatiquement les micro-citadines (comme la Dacia Spring ou la Renault Zoé) pour orienter l'automobiliste vers des compactes et berlines routières (MG4, VW ID.3, Kona, Leaf II, Tesla Model 3) afin de concilier viabilité financière et sécurité/confort sur longue distance.
+> - Jusqu'à **40 km/jour** : Les micro-citadines économiques (Dacia Spring, Twingo) sont acceptées.  
+> - De **41 à 70 km/jour** : Les citadines polyvalentes (Renault Zoé, Peugeot e-208) apportent l'insonorisation nécessaire.  
+> - Au-delà de **70 km/jour** : L'algorithme écarte formellement toutes les citadines pour orienter exclusivement vers des compactes et berlines (Nissan Leaf II, VW ID.3, MG4, Tesla Model 3) afin de préserver votre dos et votre sécurité sur les voies rapides.  
+> - Dès **120 km/jour** : Exigence d'au moins **300 km réels**, portée à **350 km réels** dès 160 km/jour.
 
 ---
 
@@ -126,7 +164,7 @@ Pour exécuter le projet en local, lancer les tests ou inspecter l'environnement
 npm install
 npm run dev
 
-# Exécution de la suite de tests (111 tests unitaires et E2E)
+# Exécution de la suite de tests (154 tests unitaires et E2E)
 npm test
 ```
 

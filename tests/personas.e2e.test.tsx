@@ -124,11 +124,11 @@ describe('Tests E2E — Parcours Utilisateurs réels par Persona (Stop-Carburant
       housing: 'maison',
     });
 
-    // Victoire financière : récupération nette de cash
-    expect(await screen.findByRole('heading', { level: 2, name: /chaque mois dans votre poche/i })).toBeInTheDocument();
+    // À 90 km/j, les citadines sont exclues au profit du confort de compacte (Nissan Leaf II)
+    expect(await screen.findByRole('heading', { level: 2, name: /de votre poche/i })).toBeInTheDocument();
 
     // Recommandation d'un modèle économique adapté
-    expect(screen.getByText(/Achetez une Renault Zoé R90 maintenant !/i)).toBeInTheDocument();
+    expect(screen.getByText(/Achetez une Nissan Leaf II maintenant !/i)).toBeInTheDocument();
 
     // Déplier le détail financier pour tester les Heures Creuses (adaptées aux horaires décalés de 3x8)
     const detailsBtn = screen.getByRole('button', { name: /voir le détail des calculs financiers/i });
@@ -152,18 +152,18 @@ describe('Tests E2E — Parcours Utilisateurs réels par Persona (Stop-Carburant
       housing: 'maison',
     });
 
-    // Récupération de cash mensuel net
-    expect(await screen.findByRole('heading', { level: 2, name: /chaque mois dans votre poche/i })).toBeInTheDocument();
+    // À 130 km/j, la règle de confort écarte les citadines et impose une routière/compacte à grande batterie (MG4 Luxury 64 kWh)
+    expect(await screen.findByRole('heading', { level: 2, name: /de votre poche/i })).toBeInTheDocument();
 
-    // Le modèle recommandé couvre largement les 130 km quotidiens
-    expect(screen.getByText(/Achetez une Renault Zoé R90 maintenant !/i)).toBeInTheDocument();
+    // Le modèle recommandé couvre largement les 130 km quotidiens avec batterie de 64 kWh
+    expect(screen.getByText(/Achetez une MG4 Luxury maintenant !/i)).toBeInTheDocument();
 
     // Le conseil d'utilisation rassure sur le démarrage sur simple prise + installation équipement
     expect(screen.getByText(/Démarrez dès le premier jour sur une simple prise standard chez vous sans la moindre crainte/i)).toBeInTheDocument();
     expect(screen.getByText(/borne 7,4 kW|prise renforcée/i)).toBeInTheDocument();
 
     // Option confort présente
-    const comfortBtn = screen.getByRole('button', { name: /Option confort/i });
+    const comfortBtn = screen.getByRole('button', { name: /Option/i });
     expect(comfortBtn).toBeInTheDocument();
 
     // Vérifier les économies d'entretien substantielles de l'IDEL (+45 €/mois)
@@ -188,9 +188,9 @@ describe('Tests E2E — Parcours Utilisateurs réels par Persona (Stop-Carburant
     const detailsBtn = screen.getByRole('button', { name: /voir le détail des calculs financiers/i });
     fireEvent.click(detailsBtn);
 
-    // Vérifier le comparatif thermique vs électrique aux 100 km
+    // Vérifier le comparatif thermique vs électrique aux 100 km (Nissan Leaf II)
     expect(await screen.findByText(/Thermique actuelle/i)).toBeInTheDocument();
-    expect(screen.getByText(/Électrique \(Renault\)/i)).toBeInTheDocument();
+    expect(screen.getByText(/Électrique \(Nissan\)/i)).toBeInTheDocument();
 
     // Économies d'entretien (+40 €/mois)
     expect(screen.getAllByText(/\+40\s*€\s*\/ mois/i).length).toBeGreaterThanOrEqual(1);

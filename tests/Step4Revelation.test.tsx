@@ -78,7 +78,7 @@ describe('Composant Step4Revelation', () => {
       <Step4Revelation
         fuelBudget={380}
         housing="maison"
-        dailyKm={130}
+        dailyKm={50}
         prices={DEFAULT_PRICES}
         onModifyParams={vi.fn()}
       />
@@ -254,7 +254,7 @@ describe('Composant Step4Revelation', () => {
     });
   });
 
-  it('affiche le message d\'apport de reprise pour annuler le reste à charge sur l\'option confort et permet de l\'appliquer au clic', async () => {
+  it('affiche le message d\'apport de reprise pour annuler le reste à charge et permet de l\'appliquer au clic', async () => {
     // Scénario maison utilisateur : 300 € budget, 140 km/j, maison
     render(
       <Step4Revelation
@@ -269,22 +269,18 @@ describe('Composant Step4Revelation', () => {
     const revealBtn = screen.getByRole('button', { name: /voir où devrait plutôt aller cet argent/i });
     fireEvent.click(revealBtn);
 
-    // Initialement sur la Nissan Leaf II (recommandation économique couverte)
-    expect(await screen.findByText(/Achetez une Nissan Leaf II maintenant !/i)).toBeInTheDocument();
+    // À 140 km/j, la règle de confort écarte les petites batteries (< 300 km) et recommande une routière (MG4 Luxury 64 kWh)
+    expect(await screen.findByText(/Achetez une MG4 Luxury maintenant !/i)).toBeInTheDocument();
 
-    // Basculer vers l'option confort (Peugeot e-2008)
-    const comfortBtn = screen.getByRole('button', { name: /Option confort & plus grande autonomie/i });
-    fireEvent.click(comfortBtn);
-
-    // Vérifier l'affichage du reste à charge (+17 € / mois de votre poche !)
+    // Vérifier l'affichage du reste à charge (+36 € / mois de votre poche !)
     expect(await screen.findByText(/Plus que/i)).toBeInTheDocument();
-    expect(screen.getByText(/\+17/i)).toBeInTheDocument();
+    expect(screen.getByText(/\+36/i)).toBeInTheDocument();
 
-    // Vérifier la phrase demandée : "Avec un apport de 1 000 € (reprise véhicule), vous vous mettez à l'abri des futures augmentations."
+    // Vérifier la phrase demandée : "Avec un apport de 1 900 € (reprise véhicule), vous vous mettez à l'abri des futures augmentations."
     expect(screen.getByText(/Avec un apport de/i)).toBeInTheDocument();
     expect(screen.getByText(/vous vous mettez à l'abri des futures augmentations/i)).toBeInTheDocument();
 
-    const applyApportBtn = screen.getByRole('button', { name: /1.*000.*\(reprise véhicule\)/i });
+    const applyApportBtn = screen.getByRole('button', { name: /1.*900.*\(reprise véhicule\)/i });
     expect(applyApportBtn).toBeInTheDocument();
 
     // Cliquer sur le bouton d'apport
@@ -336,6 +332,64 @@ describe('Composant Step4Revelation', () => {
     const loanMonthlySpan = loanMonthlyLabel.parentElement?.querySelector('span.text-rose-400');
     expect(loanMonthlySpan).toBeInTheDocument();
     expect(loanMonthlySpan).toHaveClass('text-rose-400');
+  });
+
+  it('applique la règle des couleurs dans la vue essentielle : en cas d\'effort, la tuile en poche / mois passe en rouge avec le gain à 5 ans', async () => {
+    // 1. Scénario avec gain (200 € budget, 45 km/j) : tuile en poche / mois en vert
+    const { unmount } = render(
+      <Step4Revelation
+        fuelBudget={200}
+        housing="maison"
+        dailyKm={45}
+        prices={DEFAULT_PRICES}
+        onModifyParams={vi.fn()}
+      />
+    );
+
+    const revealBtn = screen.getByRole('button', { name: /voir où devrait plutôt aller cet argent/i });
+    fireEvent.click(revealBtn);
+
+    const pocketTileTitleGain = await screen.findByText(/3\. En poche \/ mois/i);
+    const pocketTileContainerGain = pocketTileTitleGain.closest('div.p-3\\.5');
+    expect(pocketTileTitleGain.parentElement).toHaveClass('text-emerald-400');
+    expect(pocketTileContainerGain).toHaveClass('border-emerald-500/40');
+    expect(pocketTileContainerGain?.querySelector('div.font-mono')).toHaveClass('text-emerald-400');
+    const subtextGain = pocketTileContainerGain?.querySelector('p');
+    expect(subtextGain).toHaveClass('text-emerald-400');
+    expect(subtextGain?.textContent).toMatch(/\+\d+.*dans 5 ans/);
+
+    unmount();
+
+    // 2. Scénario avec effort (300 € budget, 140 km/j : reste à charge de 17 €/m)
+    render(
+      <Step4Revelation
+        fuelBudget={300}
+        housing="maison"
+        dailyKm={140}
+        prices={DEFAULT_PRICES}
+        onModifyParams={vi.fn()}
+      />
+    );
+
+    const revealBtnEffort = screen.getByRole('button', { name: /voir où devrait plutôt aller cet argent/i });
+    fireEvent.click(revealBtnEffort);
+
+    const pocketTileTitleEffort = await screen.findByText(/3\. En poche \/ mois/i);
+    const pocketTileContainerEffort = pocketTileTitleEffort.closest('div.p-3\\.5');
+
+    // En cas d'effort : la tuile passe en rouge
+    expect(pocketTileContainerEffort).toHaveClass('border-rose-500/40');
+    expect(pocketTileTitleEffort.parentElement).toHaveClass('text-rose-400');
+
+    // Le montant de l'effort est en rouge
+    const effortAmount = pocketTileContainerEffort?.querySelector('div.font-mono');
+    expect(effortAmount).toHaveClass('text-rose-400');
+    expect(effortAmount?.textContent).toMatch(/\d+\s*€\s*\/ m/);
+
+    // Le sous-texte précise le gain dans 5 ans en vert
+    const subtext = pocketTileContainerEffort?.querySelector('p');
+    expect(subtext).toHaveClass('text-emerald-400');
+    expect(subtext?.textContent).toMatch(/\+\d+.*dans 5 ans/);
   });
 });
 

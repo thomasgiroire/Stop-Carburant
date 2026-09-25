@@ -3,6 +3,8 @@ import {
   getDailyUsageAdvice,
   carCoversDailyNeed,
   getTieredEVRecommendations,
+  isCarComfortableForDailyKm,
+  EVModelData,
 } from '../src/utils/evRecommendations';
 
 describe('evRecommendations - Éligibilité et messages vulgarisés', () => {
@@ -251,6 +253,124 @@ describe('evRecommendations - Éligibilité et messages vulgarisés', () => {
       if (rec.recommended.realRangeKm >= 360) {
         expect(rec.recommended.dailyAdvice?.badge).toContain('tous les 2 jours');
       }
+    });
+  });
+
+  describe('isCarComfortableForDailyKm - Nouveaux paliers de confort kilométrique', () => {
+    const springMock: EVModelData = {
+      model: 'Dacia Spring Confort Plus (27 kWh)',
+      yearRange: '2021-2024',
+      bodyType: 'citadine',
+      realRangeKm: 166,
+      realConsoKwh100: 13.5,
+      estimatedMarketPrice: 7500,
+      leboncoinSampleText: 'Dacia Spring',
+      strategyBadge: 'Citadine économique',
+      description: 'Micro-citadine urbaine',
+      chargeTimeNote: 'Prise standard',
+    };
+
+    const zoeMock: EVModelData = {
+      model: 'Renault Zoé Intens R110 (Batterie 52 kWh)',
+      yearRange: '2020-2024',
+      bodyType: 'citadine',
+      realRangeKm: 280,
+      realConsoKwh100: 15.5,
+      estimatedMarketPrice: 12490,
+      leboncoinSampleText: 'Zoé 52',
+      strategyBadge: 'Citadine polyvalente',
+      description: 'Citadine polyvalente',
+      chargeTimeNote: 'Prise standard',
+    };
+
+    const e208Mock: EVModelData = {
+      model: 'Peugeot e-208 GT / Allure (50 kWh)',
+      yearRange: '2020-2024',
+      bodyType: 'citadine',
+      realRangeKm: 271,
+      realConsoKwh100: 15.8,
+      estimatedMarketPrice: 14500,
+      leboncoinSampleText: 'e-208',
+      strategyBadge: 'Citadine polyvalente',
+      description: 'Citadine polyvalente',
+      chargeTimeNote: 'Prise standard',
+    };
+
+    const leafMock: EVModelData = {
+      model: 'Nissan Leaf II (40 kWh)',
+      yearRange: '2018-2023',
+      bodyType: 'compacte',
+      realRangeKm: 186,
+      realConsoKwh100: 16.5,
+      estimatedMarketPrice: 9950,
+      leboncoinSampleText: 'Leaf',
+      strategyBadge: 'Compacte',
+      description: 'Compacte économique',
+      chargeTimeNote: 'Prise standard',
+    };
+
+    const id3Mock: EVModelData = {
+      model: 'Volkswagen ID.3 Pro (58 kWh)',
+      yearRange: '2020-2024',
+      bodyType: 'compacte',
+      realRangeKm: 327,
+      realConsoKwh100: 16.2,
+      estimatedMarketPrice: 17900,
+      leboncoinSampleText: 'ID.3',
+      strategyBadge: 'Compacte routière',
+      description: 'Compacte familiale',
+      chargeTimeNote: 'Prise standard',
+    };
+
+    const teslaModel3Mock: EVModelData = {
+      model: 'Tesla Model 3 Standard (60 kWh)',
+      yearRange: '2021-2023',
+      bodyType: 'berline',
+      realRangeKm: 405,
+      realConsoKwh100: 15.2,
+      estimatedMarketPrice: 24500,
+      leboncoinSampleText: 'Model 3',
+      strategyBadge: 'Berline routière',
+      description: 'Berline routière',
+      chargeTimeNote: 'Prise standard',
+    };
+
+    it('Palier 1 : Micro-citadines (Spring, Twingo) autorisées jusqu\'à 40 km/j inclus et exclues au-delà', () => {
+      expect(isCarComfortableForDailyKm(springMock, 30)).toBe(true);
+      expect(isCarComfortableForDailyKm(springMock, 40)).toBe(true);
+      expect(isCarComfortableForDailyKm(springMock, 41)).toBe(false);
+      expect(isCarComfortableForDailyKm(springMock, 50)).toBe(false);
+      expect(isCarComfortableForDailyKm(springMock, 70)).toBe(false);
+    });
+
+    it('Palier 2 : Citadines polyvalentes (Zoé, e-208) autorisées jusqu\'à 70 km/j inclus et exclues dès 71 km/j', () => {
+      expect(isCarComfortableForDailyKm(zoeMock, 30)).toBe(true);
+      expect(isCarComfortableForDailyKm(zoeMock, 40)).toBe(true);
+      expect(isCarComfortableForDailyKm(zoeMock, 70)).toBe(true);
+      expect(isCarComfortableForDailyKm(zoeMock, 71)).toBe(false);
+      expect(isCarComfortableForDailyKm(zoeMock, 90)).toBe(false);
+      expect(isCarComfortableForDailyKm(zoeMock, 140)).toBe(false);
+
+      expect(isCarComfortableForDailyKm(e208Mock, 70)).toBe(true);
+      expect(isCarComfortableForDailyKm(e208Mock, 71)).toBe(false);
+    });
+
+    it('Palier 3 : Compactes et Berlines autorisées dès 70 km/j', () => {
+      expect(isCarComfortableForDailyKm(leafMock, 70)).toBe(true);
+      expect(isCarComfortableForDailyKm(leafMock, 90)).toBe(true);
+      expect(isCarComfortableForDailyKm(id3Mock, 90)).toBe(true);
+      expect(isCarComfortableForDailyKm(teslaModel3Mock, 90)).toBe(true);
+    });
+
+    it('Palier 4 : Dès 120 km/j, exige une autonomie réelle >= 300 km (écarte Leaf 40 kWh)', () => {
+      expect(isCarComfortableForDailyKm(leafMock, 120)).toBe(false); // 186 km < 300 km
+      expect(isCarComfortableForDailyKm(id3Mock, 120)).toBe(true);   // 327 km >= 300 km
+      expect(isCarComfortableForDailyKm(teslaModel3Mock, 120)).toBe(true); // 405 km >= 300 km
+    });
+
+    it('Palier 5 : Dès 160 km/j, réserve aux très grandes autonomies >= 350 km (écarte ID.3 58 kWh au profit de Model 3)', () => {
+      expect(isCarComfortableForDailyKm(id3Mock, 160)).toBe(false); // 327 km < 350 km
+      expect(isCarComfortableForDailyKm(teslaModel3Mock, 160)).toBe(true); // 405 km >= 350 km
     });
   });
 });
