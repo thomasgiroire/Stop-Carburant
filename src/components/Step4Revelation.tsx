@@ -40,6 +40,8 @@ interface Step4RevelationProps {
   dailyKm: number;
   prices?: EnergyPrices;
   isFaqVisible?: boolean;
+  initialTransformed?: boolean;
+  onTransformChange?: (transformed: boolean) => void;
   onToggleFaq?: () => void;
   onScrollToFaq?: () => void;
   onModifyParams: () => void;
@@ -52,12 +54,20 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
   dailyKm,
   prices = DEFAULT_PRICES,
   isFaqVisible = false,
+  initialTransformed = false,
+  onTransformChange,
   onToggleFaq,
   onScrollToFaq,
   onModifyParams,
   onActiveContextChange,
 }) => {
-  const [isTransformed, setIsTransformed] = useState<boolean>(false);
+  const [localTransformed, setLocalTransformed] = useState<boolean>(false);
+  const isTransformed = initialTransformed || localTransformed;
+
+  const handleSetTransformed = (val: boolean) => {
+    setLocalTransformed(val);
+    onTransformChange?.(val);
+  };
   const [showCalculationDetails, setShowCalculationDetails] = useState<boolean>(false);
   const [tier, setTier] = useState<EVTier>('recommended');
   const [loanMode, setLoanMode] = useState<LoanRateMode>('eco_1pct');
@@ -344,7 +354,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                 {/* Bouton manuel pour déclencher la révélation */}
                 <div className="pt-1">
                   <button
-                    onClick={() => setIsTransformed(true)}
+                    onClick={() => handleSetTransformed(true)}
                     className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 sm:px-7 py-3.5 sm:py-4 bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-display font-bold text-xs sm:text-sm uppercase tracking-wider rounded-xl shadow-xl shadow-rose-950/70 transition-all cursor-pointer group"
                   >
                     <span>Voir où devrait plutôt aller cet argent</span>

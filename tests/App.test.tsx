@@ -19,8 +19,8 @@ vi.mock('../src/services/geoService', async () => {
   };
 });
 
-describe('Parcours utilisateur App (Stop-Carburant)', () => {
-  it('affiche le Header et l\'étape 1 au chargement initial', () => {
+describe('Parcours utilisateur App (Stop-Carburant - Storytelling)', () => {
+  it('affiche le Header, la scène vectorielle animée et l\'étape 1 (Départ) au chargement initial', () => {
     render(<App />);
 
     // Header présent
@@ -28,46 +28,48 @@ describe('Parcours utilisateur App (Stop-Carburant)', () => {
     expect(titles.length).toBeGreaterThanOrEqual(1);
     expect(titles[0]).toBeInTheDocument();
 
-    // Bouton pour passer à l'étape suivante présent
-    const nextBtn = screen.getByRole('button', { name: /continuer/i });
+    // Théâtre scénique vectoriel présent
+    expect(screen.getByRole('img', { name: /animation du trajet narratif en voiture de profil/i })).toBeInTheDocument();
+
+    // Bouton pour lancer la route présent
+    const nextBtn = screen.getByRole('button', { name: /prendre la route/i });
     expect(nextBtn).toBeInTheDocument();
   });
 
-  it('permet de naviguer de l\'étape 1 à l\'étape 2 au clic sur Continuer', async () => {
+  it('permet de naviguer de l\'étape 1 (Départ) à l\'étape 2 (Trajet travail)', async () => {
     render(<App />);
 
-    const nextBtn = screen.getByRole('button', { name: /continuer/i });
+    const nextBtn = screen.getByRole('button', { name: /prendre la route/i });
     fireEvent.click(nextBtn);
 
-    // En étape 2, on demande le mode de stationnement / logement
-    expect(await screen.findByText(/Où dort votre voiture le soir/i)).toBeInTheDocument();
-    // Aucune mention de prise, borne ou véhicule électrique avant la dernière étape
+    // En étape 2, on demande les kilomètres du trajet quotidien
+    expect(await screen.findByText(/Combien de kilomètres faites-vous par jour/i)).toBeInTheDocument();
+    // Aucune mention de prise, borne ou véhicule électrique avant la révélation finale (Règle du Cheval de Troie)
     expect(screen.queryByText(/prise/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/borne/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/électrique/i)).not.toBeInTheDocument();
   });
 
-  it('navigue jusqu\'à l\'étape 3 et affiche le lien Open Source dans le footer', async () => {
+  it('navigue à travers tout le récit jusqu\'à la révélation finale et affiche le lien Open Source dans le footer', async () => {
     render(<App />);
 
-    // Étape 1 -> Étape 2
-    fireEvent.click(screen.getByRole('button', { name: /continuer/i }));
-    // Étape 2 -> Étape 3
-    fireEvent.click(await screen.findByRole('button', { name: /voir mon résultat/i }));
+    // Étape 1 (Départ) -> Étape 2 (Trajet)
+    fireEvent.click(screen.getByRole('button', { name: /prendre la route/i }));
 
-    // Bouton de révélation du résultat dans l'étape 3
-    const revealBtn = await screen.findByRole('button', { name: /voir où devrait plutôt aller cet argent/i });
-    expect(revealBtn).toBeInTheDocument();
-    fireEvent.click(revealBtn);
+    // Étape 2 (Trajet) -> Étape 3 (Station-service)
+    fireEvent.click(await screen.findByRole('button', { name: /rouler vers la station/i }));
+
+    // Étape 3 (Station-service) -> Étape 4 (Révélation & métamorphose)
+    fireEvent.click(await screen.findByRole('button', { name: /transformer ma dépense/i }));
 
     // Le lien footer "Méthodologie & Code Open Source" doit être visible avec lien GitHub officiel
-    const openSourceLink = await screen.findByRole('link', { name: /méthodologie & code open source/i });
+    const openSourceLink = await screen.findByRole('link', { name: /méthodologie & code open source/i }, { timeout: 3000 });
     expect(openSourceLink).toBeInTheDocument();
     expect(openSourceLink).toHaveAttribute('href', 'https://github.com/thomasgiroire/Stop-Carburant');
     expect(openSourceLink).toHaveAttribute('target', '_blank');
 
     // Le détail financier est consultable sans modale superflue
-    const detailsBtn = screen.getByRole('button', { name: /voir le détail des calculs financiers/i });
+    const detailsBtn = await screen.findByRole('button', { name: /voir le détail des calculs financiers/i }, { timeout: 3000 });
     expect(detailsBtn).toBeInTheDocument();
     fireEvent.click(detailsBtn);
     expect(await screen.findByText(/Coût aux 100 km/i)).toBeInTheDocument();

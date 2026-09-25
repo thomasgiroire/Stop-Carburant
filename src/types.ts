@@ -1,5 +1,6 @@
 export type HousingType = 'maison' | 'appartement';
 export type ElecTarifMode = 'HP' | 'HC';
+export type StoryStage = 'departure' | 'commute' | 'gas_station' | 'revelation';
 
 export interface SimulatorState {
   fuelBudget: number; // in € / month

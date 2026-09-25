@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
-import { Step1Hook } from './components/Step1Hook';
-import { Step2Combined } from './components/Step2Combined';
+import { StoryRouteScene } from './components/story/StoryRouteScene';
+import { StoryStepDeparture } from './components/story/StoryStepDeparture';
+import { StoryStepCommute } from './components/story/StoryStepCommute';
+import { StoryStepGasStation } from './components/story/StoryStepGasStation';
 import { Step4Revelation } from './components/Step4Revelation';
 import { AntiBiasFAQ } from './components/AntiBiasFAQ';
-import { HousingType, ActiveSimulationContext } from './types';
+import { HousingType, StoryStage, ActiveSimulationContext } from './types';
 import { Code2 } from 'lucide-react';
 import {
   EnergyPrices,
@@ -29,6 +31,7 @@ export default function App() {
   const [fuelBudget, setFuelBudget] = useState<number>(200);
   const [housing, setHousing] = useState<HousingType>('maison');
   const [dailyKm, setDailyKm] = useState<number>(45);
+  const [isTransformed, setIsTransformed] = useState<boolean>(false);
   const [isDeptModalOpen, setIsDeptModalOpen] = useState<boolean>(false);
   const [selectedDepartmentCode, setSelectedDepartmentCode] = useState<string | null>(getSavedDepartmentCode());
   const [selectedFuelType, setSelectedFuelType] = useState<FuelType>(getSavedFuelType());
@@ -100,6 +103,7 @@ export default function App() {
 
   const handleReset = () => {
     setCurrentStep(1);
+    setIsTransformed(false);
     setIsFaqVisible(false);
     setActiveContext({});
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -120,32 +124,54 @@ export default function App() {
     });
   };
 
+  const currentStage: StoryStage =
+    currentStep === 1
+      ? 'departure'
+      : currentStep === 2
+      ? 'commute'
+      : currentStep === 3
+      ? 'gas_station'
+      : 'revelation';
+
   return (
     <div className="min-h-[100dvh] bg-neutral-950 text-neutral-100 flex flex-col relative overflow-x-hidden">
       {/* Halos lumineux d'ambiance pour l'identité "La Faille Carburant" */}
       <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[500px] sm:w-[700px] h-[300px] bg-amber-500/10 blur-[130px] rounded-full" />
       <div className="pointer-events-none absolute top-1/3 -right-32 w-[350px] h-[350px] bg-emerald-500/5 blur-[120px] rounded-full" />
 
-      {/* Header épuré avec 3 étapes */}
+      {/* Header épuré avec 4 étapes narratives */}
       <Header
         currentStep={currentStep}
-        totalSteps={3}
+        totalSteps={4}
         onReset={handleReset}
         prices={prices}
         onOpenDepartmentSelector={() => setIsDeptModalOpen(true)}
+        onNavigateStep={(step) => {
+          setCurrentStep(step);
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }}
       />
 
-      {/* Parcours percutant en 3 clics - Mobile first sans vides inutiles */}
-      <main className="flex-1 flex flex-col justify-start sm:justify-center relative px-3 sm:px-4 py-4 sm:py-8">
+      {/* Parcours Storytelling "Le Grand Trajet" */}
+      <main className="flex-1 flex flex-col justify-start sm:justify-center relative px-3 sm:px-4 py-3 sm:py-6 max-w-4xl mx-auto w-full">
+        {/* Théâtre Scénique Vectoriel Animé */}
+        <StoryRouteScene
+          stage={currentStage}
+          housing={housing}
+          dailyKm={dailyKm}
+          fuelBudget={fuelBudget}
+          fuelPrice={prices.fuelPrice || 1.74}
+          isTransformed={isTransformed}
+          onSelectHousing={setHousing}
+        />
+
         <AnimatePresence mode="wait">
-          {/* Étape 1 : Budget carburant & Kilomètres par jour */}
+          {/* Étape 1 : Le Réveil / Départ (Maison vs Immeuble) */}
           {currentStep === 1 && (
-            <Step1Hook
-              key="step-1"
-              fuelBudget={fuelBudget}
-              dailyKm={dailyKm}
-              onSelectBudget={handleSelectBudget}
-              onChangeDailyKm={setDailyKm}
+            <StoryStepDeparture
+              key="step-departure"
+              housing={housing}
+              onChangeHousing={setHousing}
               onNext={() => {
                 setCurrentStep(2);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -153,13 +179,12 @@ export default function App() {
             />
           )}
 
-          {/* Étape 2 : Où dort la voiture */}
+          {/* Étape 2 : Le Trajet Quotidien (Kilomètres au travail) */}
           {currentStep === 2 && (
-            <Step2Combined
-              key="step-2"
-              fuelBudget={fuelBudget}
-              housing={housing}
-              onChangeHousing={setHousing}
+            <StoryStepCommute
+              key="step-commute"
+              dailyKm={dailyKm}
+              onChangeDailyKm={setDailyKm}
               onNext={() => {
                 setCurrentStep(3);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -171,15 +196,36 @@ export default function App() {
             />
           )}
 
-          {/* Étape 3 : Révélation (Actuellement vous dépensez XX -> Voiture Électrique d'occasion) */}
+          {/* Étape 3 : La Station-Service (Budget carburant & Électrochoc) */}
           {currentStep === 3 && (
-            <div key="step-3">
+            <StoryStepGasStation
+              key="step-gas-station"
+              fuelBudget={fuelBudget}
+              fuelPrice={prices.fuelPrice || 1.74}
+              onSelectBudget={handleSelectBudget}
+              onNext={() => {
+                setIsTransformed(true);
+                setCurrentStep(4);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+              onBack={() => {
+                setCurrentStep(2);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+              }}
+            />
+          )}
+
+          {/* Étape 4 : Révélation financière (La solution électrique qui rapporte) */}
+          {currentStep === 4 && (
+            <div key="step-revelation">
               <Step4Revelation
                 fuelBudget={fuelBudget}
                 housing={housing}
                 dailyKm={dailyKm}
                 prices={prices}
                 isFaqVisible={isFaqVisible}
+                initialTransformed={true}
+                onTransformChange={setIsTransformed}
                 onToggleFaq={handleToggleFaq}
                 onActiveContextChange={setActiveContext}
                 onModifyParams={() => {

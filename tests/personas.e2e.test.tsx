@@ -23,7 +23,7 @@ vi.mock('../src/services/geoService', async () => {
 
 /**
  * Fonction utilitaire d'automatisation E2E du parcours utilisateur complet :
- * Étape 1 (Sliders budget et km) -> Étape 2 (Logement) -> Étape 3 (Déclenchement révélation)
+ * Étape 1 (Logement / Départ) -> Étape 2 (Kilomètres au travail) -> Étape 3 (Budget carburant à la station & métamorphose)
  */
 async function runPersonaE2EJourney(options: {
   fuelBudget: number;
@@ -32,21 +32,8 @@ async function runPersonaE2EJourney(options: {
 }) {
   const renderResult = render(<App />);
 
-  // --- ÉTAPE 1 : Saisie des paramètres initiaux ---
-  const budgetSlider = renderResult.container.querySelector<HTMLInputElement>('#input-budget-slider');
-  expect(budgetSlider).toBeInTheDocument();
-  fireEvent.change(budgetSlider!, { target: { value: options.fuelBudget.toString() } });
-
-  const kmSlider = renderResult.container.querySelector<HTMLInputElement>('#input-daily-km');
-  expect(kmSlider).toBeInTheDocument();
-  fireEvent.change(kmSlider!, { target: { value: options.dailyKm.toString() } });
-
-  const continueBtnStep1 = screen.getByRole('button', { name: /continuer/i });
-  fireEvent.click(continueBtnStep1);
-
-  // --- ÉTAPE 2 : Mode de stationnement / logement ---
-  expect(await screen.findByText(/Où dort votre voiture le soir/i)).toBeInTheDocument();
-
+  // --- ÉTAPE 1 : Mode de logement (Départ) ---
+  expect(await screen.findByText(/D’où part votre voiture chaque matin/i)).toBeInTheDocument();
   if (options.housing === 'appartement') {
     const aptBtn = screen.getByRole('button', { name: /appartement/i });
     fireEvent.click(aptBtn);
@@ -54,20 +41,26 @@ async function runPersonaE2EJourney(options: {
     const maisonBtn = screen.getByRole('button', { name: /maison/i });
     fireEvent.click(maisonBtn);
   }
+  const startRouteBtn = screen.getByRole('button', { name: /prendre la route/i });
+  fireEvent.click(startRouteBtn);
 
-  const seeResultBtn = screen.getByRole('button', { name: /voir mon résultat/i });
-  fireEvent.click(seeResultBtn);
+  // --- ÉTAPE 2 : Trajet quotidien (Kilomètres au travail) ---
+  const kmSlider = (await screen.findByLabelText(/kilomètres par jour/i)) as HTMLInputElement;
+  expect(kmSlider).toBeInTheDocument();
+  fireEvent.change(kmSlider, { target: { value: options.dailyKm.toString() } });
+  const commuteBtn = screen.getByRole('button', { name: /rouler vers la station/i });
+  fireEvent.click(commuteBtn);
 
-  // --- ÉTAPE 3 : Révélation financière & Choc pétrolier ---
-  const revealBtn = await screen.findByRole('button', { name: /voir où devrait plutôt aller cet argent/i });
-  expect(revealBtn).toBeInTheDocument();
+  // --- ÉTAPE 3 : Station-service (Budget carburant & Déclenchement métamorphose) ---
+  const budgetSlider = (await screen.findByLabelText(/budget carburant par mois/i)) as HTMLInputElement;
+  expect(budgetSlider).toBeInTheDocument();
+  fireEvent.change(budgetSlider, { target: { value: options.fuelBudget.toString() } });
+  const transformBtn = screen.getByRole('button', { name: /transformer ma dépense/i });
+  fireEvent.click(transformBtn);
 
-  // Déclencher la transformation vers le véhicule électrique
-  fireEvent.click(revealBtn);
-
-  // Attendre la disparition du bouton initial
+  // --- ÉTAPE 4 : Révélation financière ---
   await waitFor(() => {
-    expect(screen.queryByRole('button', { name: /voir où devrait plutôt aller cet argent/i })).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /transformer ma dépense/i })).not.toBeInTheDocument();
   });
 
   return renderResult;
@@ -435,9 +428,9 @@ describe('Tests E2E — Parcours Utilisateurs réels par Persona (Stop-Carburant
       const restartBtn = screen.getByRole('button', { name: /recommencer/i });
       fireEvent.click(restartBtn);
 
-      // L'utilisateur est de retour à l'Étape 1
-      expect(await screen.findByRole('button', { name: /continuer/i })).toBeInTheDocument();
-      expect(screen.getByText(/Budget carburant par mois/i)).toBeInTheDocument();
+      // L'utilisateur est de retour à l'Étape 1 (Départ)
+      expect(await screen.findByRole('button', { name: /prendre la route/i })).toBeInTheDocument();
+      expect(screen.getByText(/D’où part votre voiture chaque matin/i)).toBeInTheDocument();
     });
   });
 });

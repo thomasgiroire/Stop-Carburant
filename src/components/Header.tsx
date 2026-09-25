@@ -7,14 +7,16 @@ interface HeaderProps {
   onReset?: () => void;
   prices?: EnergyPrices;
   onOpenDepartmentSelector?: () => void;
+  onNavigateStep?: (step: number) => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   currentStep,
-  totalSteps = 3,
+  totalSteps = 4,
   onReset,
   prices,
   onOpenDepartmentSelector,
+  onNavigateStep,
 }) => {
   return (
     <header className="w-full border-b border-neutral-800 bg-neutral-950/80 backdrop-blur-md sticky top-0 z-40">
@@ -67,20 +69,30 @@ export const Header: React.FC<HeaderProps> = ({
           </button>
         )}
 
-        {/* Progression en 3 étapes */}
-        <div className="flex items-center gap-1.5">
-          {Array.from({ length: totalSteps }, (_, i) => i + 1).map((step) => (
-            <div
-              key={step}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
-                step === currentStep
-                  ? 'w-6 bg-amber-500'
-                  : step < currentStep
-                  ? 'w-2.5 bg-emerald-500'
-                  : 'w-2 bg-neutral-800'
-              }`}
-            />
-          ))}
+        {/* Progression en 4 étapes */}
+        <div className="flex items-center gap-1.5" aria-label="Progression du parcours">
+          {Array.from({ length: totalSteps }, (_, i) => i + 1).map((step) => {
+            const isClickable = !!onNavigateStep && step < currentStep;
+            return (
+              <button
+                key={step}
+                type="button"
+                disabled={!isClickable}
+                onClick={() => isClickable && onNavigateStep(step)}
+                title={`Aller à l'étape ${step}`}
+                aria-label={`Étape ${step} sur ${totalSteps}${step === currentStep ? ' (active)' : ''}`}
+                className={`h-2 rounded-full transition-all duration-300 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                  isClickable ? 'cursor-pointer hover:opacity-80' : 'cursor-default'
+                } ${
+                  step === currentStep
+                    ? 'w-7 bg-amber-500 shadow-sm shadow-amber-500/50'
+                    : step < currentStep
+                    ? 'w-3 bg-emerald-500'
+                    : 'w-2 bg-neutral-800'
+                }`}
+              />
+            );
+          })}
         </div>
       </div>
     </header>
