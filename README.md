@@ -134,21 +134,23 @@ Pour garantir la justesse des calculs en situation réelle, le simulateur est é
 
 | Persona & Profil | Paramètres réels | Véhicule recommandé | Stratégie de recharge | Résultat & Impact financier |
 | :--- | :--- | :--- | :--- | :--- |
-| **Julien**<br>Navetteur périurbain | **70 km/j**<br>150 €/mois essence<br>Maison | **Renault Zoé R90** *(Option confort : Nissan Leaf II)* | Prise domestique la nuit (~2 € pour 70 km) | **Gain net direct en poche** dès le premier mois.<br>Entretien : **+25 €/mois** économisés. |
-| **Sandrine**<br>Ouvrière rurale en 3x8 | **90 km/j**<br>185 €/mois gazole<br>Maison | **Nissan Leaf II** (Compacte routière) | Heures Creuses EDF en horaires décalés | **Autofinancement quasi-intégral** (~8 €/m en HC).<br>Entretien : **+30 €/mois** économisés. |
-| **Nathalie**<br>Infirmière libérale (IDEL) | **130 km/j**<br>250 €/mois gazole<br>Maison | **MG4 Luxury (64 kWh)** (365 km réels) | Recharge de nuit complète couvrant toute la tournée | Remplacement sécurisé d'un outil de travail pro.<br>Entretien : **+45 €/mois** d'économies. |
-| **Marc**<br>Artisan électricien | **110 km/j**<br>240 €/mois gazole<br>Maison | **Nissan Leaf II** *(Option : Peugeot e-2008)* | Prise à domicile la nuit | Baisse directe des charges d'exploitation.<br>Entretien : **+40 €/mois** économisés. |
-| **Karim**<br>Chauffeur VSL / Taxi | **180 km/j** (~4 320 km/mois)<br>360 €/mois gazole<br>Maison | **Volkswagen ID.3 / MG4 / Tesla Model 3** *(Citadines Zoé/Spring exclues)* | Prise domicile + appoint réseau | Confort routier adapté au gros roulage.<br>Entretien : **+65 €/mois** économisés. |
-| **Élodie**<br>Navetteuse en appartement | **50 km/j**<br>110 €/mois essence<br>Appartement (sans prise) | **Renault Zoé R90** (240 km d'autonomie) | Bornes publiques / supermarché (1 recharge de 20 min tous les 4 jours) | Rentable même au tarif borne (0,45 €/kWh).<br>Fini les arrêts en station-service. |
-| **Gérard**<br>Grand rouleur interurbain | **160 km/j** (~3 840 km/mois)<br>290 €/mois gazole<br>Maison | **Volkswagen ID.3 / MG4 / Hyundai Kona** *(Filtre confort routier)* | Prise à domicile nocturne | Remplacement d'une routière diesel amortie par le carburant.<br>Entretien : **+60 €/mois** économisés. |
-| **Grand Rouleur 200 km/j**<br>Cadre / Navetteur longue distance | **200 km/j** (~4 800 km/mois)<br>450 €/mois gazole<br>Maison | **Tesla Model 3 / Grande routière** | Prise domestique nocturne | **200 € à 300 € / mois de cash net libéré** en roulant en berline haut de gamme.<br>Entretien : **+70 €/mois** économisés. |
+| **Julien**<br>Navetteur périurbain | **70 km/j**<br>150 €/mois essence<br>Maison | **Renault Zoé R90 (41 kWh)**<br>*(Option confort : Nissan Leaf II)* | Prise domestique la nuit (~2 € pour 70 km) | **+7 €/mois net direct en poche** (100% autofinancé).<br>Entretien : **+25 €/mois** économisés. |
+| **Sandrine**<br>Ouvrière rurale en 3x8 | **90 km/j**<br>185 €/mois gazole<br>Maison | **Nissan Leaf II (40 kWh)** (Compacte routière)<br>*(Option confort SUV : Peugeot e-2008)* | Heures Creuses EDF en horaires décalés | **Autofinancement quasi-intégral** (reste à charge de seulement ~8 €/m en HC).<br>Entretien : **+30 €/mois** économisés. |
+| **Nathalie**<br>Infirmière libérale (IDEL) | **130 km/j**<br>250 €/mois gazole<br>Maison | **MG4 Luxury (64 kWh)** (365 km réels)<br>*(Option confort SUV : Hyundai Kona Electric 64 kWh)* | Recharge de nuit complète couvrant toute la tournée | Remplacement sécurisé d'un outil pro sans risque d'autonomie.<br>Entretien : **+45 €/mois** d'économies. |
+| **Marc**<br>Artisan électricien | **110 km/j**<br>240 €/mois gazole<br>Maison | **Nissan Leaf II (40 kWh)**<br>*(Option confort SUV : Peugeot e-2008)* | Prise à domicile la nuit | **+45 €/mois net direct en poche** (100% autofinancé).<br>Baisse directe des charges pro. Entretien : **+40 €/mois** économisés. |
+| **Karim**<br>Chauffeur VSL / Taxi | **180 km/j** (~4 320 km/mois)<br>360 €/mois gazole<br>Maison | **MG4 Luxury (64 kWh)** (365 km réels)<br>*(Option confort SUV : Hyundai Kona Electric 64 kWh ou Tesla)* | Prise domicile nocturne / Wallbox | **+20 €/mois net direct en poche** (100% autofinancé).<br>Confort routier adapté au gros roulage. Entretien : **+65 €/mois** économisés. |
+| **Élodie**<br>Navetteuse en appartement | **50 km/j**<br>110 €/mois essence<br>Appartement (sans prise) | **Renault Zoé R90 (41 kWh)** (204 km réels) | Bornes publiques / supermarché (1 recharge de 20 min tous les 4 jours) | 4 jours d'autonomie entre charges. Rentable même au tarif borne (0,45 €/kWh).<br>Entretien : **+20 €/mois** économisés. |
+| **Gérard**<br>Grand rouleur interurbain | **160 km/j** (~3 840 km/mois)<br>290 €/mois gazole<br>Maison | **MG4 Luxury (64 kWh)** (365 km réels)<br>*(Option confort SUV : Hyundai Kona Electric 64 kWh)* | Prise à domicile nocturne | Remplacement d'une routière diesel amortie par le carburant.<br>Entretien : **+60 €/mois** économisés. |
+| **Grand Rouleur 200 km/j**<br>Cadre / Navetteur longue distance | **200 km/j** (~4 800 km/mois)<br>450 €/mois gazole<br>Maison | **Tesla Model 3 Standard (60 kWh)** (405 km réels)<br>*(Option confort SUV : Renault Scénic E-Tech EV87)* | Prise domestique nocturne | **+45 €/mois de cash net libéré** en roulant en berline haut de gamme.<br>Entretien : **+70 €/mois** économisés. |
+| **Grand Rouleur Intensif 235 km/j**<br>Gros rouleur autoroutier | **235 km/j** (~5 640 km/mois)<br>620 €/mois gazole<br>Maison | **Tesla Model 3 Standard (60 kWh)** (405 km réels)<br>*(Option confort : Tesla Model 3 Grande Autonomie, 483 km)* | Wallbox nocturne à domicile | **+210 €/mois de cash net direct en poche** (plus de 12 000 € net sur 5 ans).<br>Entretien : **+85 €/mois** économisés. |
 
 > [!TIP]
 > **Règle de confort et de sécurité intégrée au simulateur :**  
 > - Jusqu'à **40 km/jour** : Les micro-citadines économiques (Dacia Spring, Twingo) sont acceptées.  
 > - De **41 à 70 km/jour** : Les citadines polyvalentes (Renault Zoé, Peugeot e-208) apportent l'insonorisation nécessaire.  
-> - Au-delà de **70 km/jour** : L'algorithme écarte formellement toutes les citadines pour orienter exclusivement vers des compactes et berlines (Nissan Leaf II, VW ID.3, MG4, Tesla Model 3) afin de préserver votre dos et votre sécurité sur les voies rapides.  
+> - Au-delà de **70 km/jour** : L'algorithme écarte formellement toutes les citadines pour orienter exclusivement vers des compactes, SUV et berlines (Nissan Leaf II, VW ID.3, MG4, Peugeot e-2008, Hyundai Kona, Tesla Model 3) afin de préserver votre dos et votre sécurité sur les voies rapides.  
 > - Dès **120 km/jour** : Exigence d'au moins **300 km réels**, portée à **350 km réels** dès 160 km/jour.
+> - **Hiérarchie du catalogue** : Compactes routières (Niveau 2) → Berlines & SUV (Niveau 3, avec priorité aux SUV sur les breaks) → Breaks (Niveau 4, très grandes routières et maxi-coffres).
 
 ---
 
@@ -164,7 +166,7 @@ Pour exécuter le projet en local, lancer les tests ou inspecter l'environnement
 npm install
 npm run dev
 
-# Exécution de la suite de tests (154 tests unitaires et E2E)
+# Exécution de la suite de tests (156 tests unitaires et E2E)
 npm test
 ```
 
