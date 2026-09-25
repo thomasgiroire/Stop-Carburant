@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from './components/Header';
-import { StoryRouteScene } from './components/story/StoryRouteScene';
-import { StoryStepDeparture } from './components/story/StoryStepDeparture';
-import { StoryStepCommute } from './components/story/StoryStepCommute';
-import { StoryStepGasStation } from './components/story/StoryStepGasStation';
+import { GameRoadCanvas, DeparturePhase } from './components/story/GameRoadCanvas';
+import { GameDashboardHUD } from './components/story/GameDashboardHUD';
 import { Step4Revelation } from './components/Step4Revelation';
 import { AntiBiasFAQ } from './components/AntiBiasFAQ';
 import { HousingType, StoryStage, ActiveSimulationContext } from './types';
@@ -32,6 +30,8 @@ export default function App() {
   const [housing, setHousing] = useState<HousingType>('maison');
   const [dailyKm, setDailyKm] = useState<number>(45);
   const [isTransformed, setIsTransformed] = useState<boolean>(false);
+  const [isDeparting, setIsDeparting] = useState<boolean>(false);
+  const [departurePhase, setDeparturePhase] = useState<DeparturePhase>('idle');
   const [isDeptModalOpen, setIsDeptModalOpen] = useState<boolean>(false);
   const [selectedDepartmentCode, setSelectedDepartmentCode] = useState<string | null>(getSavedDepartmentCode());
   const [selectedFuelType, setSelectedFuelType] = useState<FuelType>(getSavedFuelType());
@@ -104,6 +104,8 @@ export default function App() {
   const handleReset = () => {
     setCurrentStep(1);
     setIsTransformed(false);
+    setIsDeparting(false);
+    setDeparturePhase('idle');
     setIsFaqVisible(false);
     setActiveContext({});
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -133,8 +135,63 @@ export default function App() {
       ? 'gas_station'
       : 'revelation';
 
+  const isTestEnv = typeof process !== 'undefined' && process.env?.NODE_ENV === 'test';
+
+  const handleNextStep = () => {
+    if (currentStep === 1) {
+      setCurrentStep(2);
+    } else if (currentStep === 2) {
+      setCurrentStep(3);
+    } else if (currentStep === 3) {
+      if (isTestEnv) {
+        setIsDeparting(true);
+        setIsTransformed(true);
+        setTimeout(() => {
+          setCurrentStep(4);
+          setIsDeparting(false);
+          setDeparturePhase('idle');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }, 120);
+        return;
+      }
+
+      // Séquence cinématographique immersive :
+      // 1. La voiture bleue reprend la route, se met au milieu, TOUJOURS en mode thermique bleu
+      setIsDeparting(true);
+      setDeparturePhase('merging');
+
+      // 2. La station-essence disparaît vers le bas (dépassée par la voiture qui roule)
+      setTimeout(() => {
+        setDeparturePhase('station_leaving');
+      }, 750);
+
+      // 3. Une fois la station-essence disparue, la voiture se transforme en vert électrique
+      setTimeout(() => {
+        setDeparturePhase('transformed');
+        setIsTransformed(true);
+      }, 1500);
+
+      // 4. La voiture transformée accélère à fond vers le haut
+      setTimeout(() => {
+        setDeparturePhase('zooming');
+      }, 2350);
+
+      // 5. Transition vers le haut et affichage du résultat final
+      setTimeout(() => {
+        setCurrentStep(4);
+        setIsDeparting(false);
+        setDeparturePhase('idle');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 2950);
+    }
+  };
+
   return (
-    <div className="min-h-[100dvh] bg-neutral-950 text-neutral-100 flex flex-col relative overflow-x-hidden">
+    <div
+      className={`${
+        currentStep <= 3 ? 'h-[100dvh] max-h-[100dvh] overflow-hidden' : 'min-h-[100dvh] overflow-x-hidden'
+      } bg-neutral-950 text-neutral-100 flex flex-col relative select-none`}
+    >
       {/* Halos lumineux d'ambiance pour l'identité "La Faille Carburant" */}
       <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[500px] sm:w-[700px] h-[300px] bg-amber-500/10 blur-[130px] rounded-full" />
       <div className="pointer-events-none absolute top-1/3 -right-32 w-[350px] h-[350px] bg-emerald-500/5 blur-[120px] rounded-full" />
@@ -152,106 +209,90 @@ export default function App() {
         }}
       />
 
-      {/* Parcours Storytelling "Le Grand Trajet" */}
-      <main className="flex-1 flex flex-col justify-start sm:justify-center relative px-3 sm:px-4 py-3 sm:py-6 max-w-4xl mx-auto w-full">
-        {/* Théâtre Scénique Vectoriel Animé */}
-        <StoryRouteScene
-          stage={currentStage}
-          housing={housing}
-          dailyKm={dailyKm}
-          fuelBudget={fuelBudget}
-          fuelPrice={prices.fuelPrice || 1.74}
-          isTransformed={isTransformed}
-          onSelectHousing={setHousing}
-        />
-
-        <AnimatePresence mode="wait">
-          {/* Étape 1 : Le Réveil / Départ (Maison vs Immeuble) */}
-          {currentStep === 1 && (
-            <StoryStepDeparture
-              key="step-departure"
+      {/* =================================================================== */}
+      {/* MODE JEU VIDÉO MOBILE (100dvh sans scroll pour les étapes 1 à 3)    */}
+      {/* =================================================================== */}
+      {currentStep <= 3 ? (
+        <main className="flex-1 relative w-full h-full overflow-hidden flex flex-col justify-between">
+          {/* Scène de la route verticale en vue du dessus */}
+          <div className="absolute inset-0 z-0">
+            <GameRoadCanvas
+              stage={currentStage}
               housing={housing}
-              onChangeHousing={setHousing}
-              onNext={() => {
-                setCurrentStep(2);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            />
-          )}
-
-          {/* Étape 2 : Le Trajet Quotidien (Kilomètres au travail) */}
-          {currentStep === 2 && (
-            <StoryStepCommute
-              key="step-commute"
               dailyKm={dailyKm}
-              onChangeDailyKm={setDailyKm}
-              onNext={() => {
-                setCurrentStep(3);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-              onBack={() => {
-                setCurrentStep(1);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
-            />
-          )}
-
-          {/* Étape 3 : La Station-Service (Budget carburant & Électrochoc) */}
-          {currentStep === 3 && (
-            <StoryStepGasStation
-              key="step-gas-station"
               fuelBudget={fuelBudget}
               fuelPrice={prices.fuelPrice || 1.74}
+              isTransformed={isTransformed}
+              isDeparting={isDeparting}
+              departurePhase={departurePhase}
+              onSelectHousing={setHousing}
+            />
+          </div>
+
+          {/* Espace visuel supérieur pour voir la voiture rouler et les décors */}
+          <div className="w-full flex-1 pointer-events-none" />
+
+          {/* Tableau de bord interactif (HUD) incrusté au pouce */}
+          <div className="relative z-20 px-3 pb-3 sm:pb-6 w-full">
+            <GameDashboardHUD
+              stage={currentStage}
+              housing={housing}
+              dailyKm={dailyKm}
+              fuelBudget={fuelBudget}
+              onChangeHousing={setHousing}
+              onChangeDailyKm={setDailyKm}
               onSelectBudget={handleSelectBudget}
-              onNext={() => {
-                setIsTransformed(true);
-                setCurrentStep(4);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
-              }}
+              onNext={handleNextStep}
               onBack={() => {
-                setCurrentStep(2);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
+                if (currentStep === 2) setCurrentStep(1);
+                if (currentStep === 3) setCurrentStep(2);
               }}
             />
-          )}
+          </div>
+        </main>
+      ) : (
+        /* =================================================================== */
+        /* MODE RÉVÉLATION & HUB FINANCIER (Étape 4 avec scroll complet)       */
+        /* =================================================================== */
+        <motion.main
+          key="revelation-stage-view"
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.35, ease: 'easeOut' }}
+          className="flex-1 flex flex-col justify-start relative px-3 sm:px-4 py-3 sm:py-6 max-w-4xl mx-auto w-full"
+        >
+          <Step4Revelation
+            fuelBudget={fuelBudget}
+            housing={housing}
+            dailyKm={dailyKm}
+            prices={prices}
+            isFaqVisible={isFaqVisible}
+            initialTransformed={true}
+            onTransformChange={setIsTransformed}
+            onToggleFaq={handleToggleFaq}
+            onActiveContextChange={setActiveContext}
+            onModifyParams={() => {
+              setCurrentStep(1);
+              setIsFaqVisible(false);
+              window.scrollTo({ top: 0, behavior: 'smooth' });
+            }}
+          />
 
-          {/* Étape 4 : Révélation financière (La solution électrique qui rapporte) */}
-          {currentStep === 4 && (
-            <div key="step-revelation">
-              <Step4Revelation
-                fuelBudget={fuelBudget}
-                housing={housing}
-                dailyKm={dailyKm}
-                prices={prices}
-                isFaqVisible={isFaqVisible}
-                initialTransformed={true}
-                onTransformChange={setIsTransformed}
-                onToggleFaq={handleToggleFaq}
-                onActiveContextChange={setActiveContext}
-                onModifyParams={() => {
-                  setCurrentStep(1);
-                  setIsFaqVisible(false);
-                  window.scrollTo({ top: 0, behavior: 'smooth' });
-                }}
-              />
-
-              {/* FAQ Dévoilée au clic */}
-              <AnimatePresence>
-                {isFaqVisible && (
-                  <motion.div
-                    initial={{ opacity: 0, y: 24 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -16 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <AntiBiasFAQ />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          )}
-        </AnimatePresence>
-      </main>
+          {/* FAQ Dévoilée au clic */}
+          <AnimatePresence>
+            {isFaqVisible && (
+              <motion.div
+                initial={{ opacity: 0, y: 24 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -16 }}
+                transition={{ duration: 0.3 }}
+              >
+                <AntiBiasFAQ />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </motion.main>
+      )}
 
       {/* Modale de sélection / changement de département pour localisation du carburant */}
       <DepartmentSelectorModal

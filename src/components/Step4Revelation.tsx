@@ -388,6 +388,9 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                         transition={{ type: 'spring', damping: 14, stiffness: 180 }}
                         className="text-2xl sm:text-4xl md:text-5xl font-black font-display text-white tracking-tight leading-tight"
                       >
+                        <span className="block text-emerald-400 text-lg sm:text-2xl font-bold mb-1">
+                          Vous gagnez +{formatCurrency(surplusCash)} par mois en plus !
+                        </span>
                         Récupérez{' '}
                         <span className="text-emerald-400 font-black inline-block drop-shadow-[0_0_20px_rgba(52,211,153,0.4)]">
                           {formatCurrency(surplusCash)}

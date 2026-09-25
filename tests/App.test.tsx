@@ -29,7 +29,7 @@ describe('Parcours utilisateur App (Stop-Carburant - Storytelling)', () => {
     expect(titles[0]).toBeInTheDocument();
 
     // Théâtre scénique vectoriel présent
-    expect(screen.getByRole('img', { name: /animation du trajet narratif en voiture de profil/i })).toBeInTheDocument();
+    expect(screen.getByRole('img', { name: /animation du trajet narratif en voiture/i })).toBeInTheDocument();
 
     // Bouton pour lancer la route présent
     const nextBtn = screen.getByRole('button', { name: /prendre la route/i });
