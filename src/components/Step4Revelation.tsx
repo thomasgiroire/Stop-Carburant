@@ -558,11 +558,10 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                 type="button"
                 id="btn-mode-essential"
                 onClick={() => setViewMode('essential')}
-                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-display font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                  viewMode === 'essential'
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-display font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${viewMode === 'essential'
                     ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20'
                     : 'text-neutral-400 hover:text-white'
-                }`}
+                  }`}
               >
                 <Sparkles className="w-3.5 h-3.5 shrink-0" />
                 <span>Vue Essentielle</span>
@@ -572,11 +571,10 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                 id="btn-mode-detailed"
                 aria-label="Voir le détail des calculs financiers"
                 onClick={() => setViewMode('detailed')}
-                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-display font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
-                  viewMode === 'detailed'
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-display font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${viewMode === 'detailed'
                     ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20'
                     : 'text-neutral-400 hover:text-white'
-                }`}
+                  }`}
               >
                 <Calculator className="w-3.5 h-3.5 shrink-0" />
                 <span>Détail des calculs</span>
@@ -623,22 +621,18 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                   </div>
 
                   {/* Chiffre 3 : Pouvoir d'achat net libéré */}
-                  <div className={`p-3.5 rounded-2xl bg-neutral-900/90 space-y-1 shadow-lg ${
-                    surplusCash > 0 || isFullyCovered
+                  <div className={`p-3.5 rounded-2xl bg-neutral-900/90 space-y-1 shadow-lg ${surplusCash > 0 || isFullyCovered
                       ? 'border border-emerald-500/40 shadow-emerald-950/20'
                       : 'border border-rose-500/40 shadow-rose-950/20'
-                  }`}>
-                    <div className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 ${
-                      surplusCash > 0 || isFullyCovered ? 'text-emerald-400' : 'text-rose-400'
                     }`}>
-                      <Zap className={`w-3.5 h-3.5 shrink-0 ${
-                        surplusCash > 0 || isFullyCovered ? 'text-emerald-400' : 'text-rose-400'
-                      }`} />
+                    <div className={`text-[11px] font-bold uppercase tracking-wider flex items-center gap-1 ${surplusCash > 0 || isFullyCovered ? 'text-emerald-400' : 'text-rose-400'
+                      }`}>
+                      <Zap className={`w-3.5 h-3.5 shrink-0 ${surplusCash > 0 || isFullyCovered ? 'text-emerald-400' : 'text-rose-400'
+                        }`} />
                       <span>3. En poche / mois</span>
                     </div>
-                    <div className={`text-xl sm:text-2xl font-black font-display font-mono ${
-                      surplusCash > 0 || isFullyCovered ? 'text-emerald-400' : 'text-rose-400'
-                    }`}>
+                    <div className={`text-xl sm:text-2xl font-black font-display font-mono ${surplusCash > 0 || isFullyCovered ? 'text-emerald-400' : 'text-rose-400'
+                      }`}>
                       {surplusCash > 0 ? `+${formatCurrency(surplusCash)}` : isFullyCovered ? '0 €' : `${formatCurrency(remainingGap)}`}
                       <span className="text-xs font-normal"> / m</span>
                     </div>
@@ -646,8 +640,8 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                       {availableBudget > 0
                         ? `+${formatCurrency(availableBudget)} dans 5 ans`
                         : isFullyCovered
-                        ? '100% autofinancé'
-                        : 'Reste à charge mensuel'}
+                          ? '100% autofinancé'
+                          : 'Reste à charge mensuel'}
                     </p>
                   </div>
                 </div>
@@ -679,13 +673,12 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                     <span className="text-neutral-400 hidden sm:inline text-[11px]">
                       {surplusCash > 0 ? 'Gain net :' : isFullyCovered ? 'Bilan :' : 'Effort :'}
                     </span>
-                    <span className={`font-mono font-black text-xs sm:text-sm px-2.5 py-1 rounded-xl whitespace-nowrap ${
-                      surplusCash > 0
+                    <span className={`font-mono font-black text-xs sm:text-sm px-2.5 py-1 rounded-xl whitespace-nowrap ${surplusCash > 0
                         ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
                         : isFullyCovered
-                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                        : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
-                    }`}>
+                          ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                          : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
+                      }`}>
                       {surplusCash > 0 ? `+${formatCurrency(surplusCash)} / mois` : isFullyCovered ? '100% financé' : `+${formatCurrency(remainingGap)} / mois`}
                     </span>
                   </div>
@@ -704,7 +697,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                       <div className="flex items-center gap-2 min-w-0 pr-2">
                         <Database className="w-4 h-4 text-amber-400 shrink-0" />
                         <span className="font-semibold text-neutral-200 truncate">
-                          Explorer le référentiel Open Data ({EVDatabaseService.getAllModels().length} véhicules certifiés)
+                          Explorer les {EVDatabaseService.getAllModels().length} véhicules du comparateur
                         </span>
                       </div>
                       <span className="text-amber-400 font-bold text-xs shrink-0 group-hover:translate-x-0.5 transition-transform flex items-center gap-1">
@@ -791,11 +784,10 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                             type="button"
                             id="btn-tarif-hp"
                             onClick={() => setUserForcedTarif('HP')}
-                            className={`min-h-[44px] py-2 px-2 rounded-xl text-center text-xs font-semibold cursor-pointer transition-all flex flex-col justify-center items-center ${
-                              activeTarif === 'HP'
+                            className={`min-h-[44px] py-2 px-2 rounded-xl text-center text-xs font-semibold cursor-pointer transition-all flex flex-col justify-center items-center ${activeTarif === 'HP'
                                 ? 'bg-neutral-800 text-white border border-neutral-500 font-bold shadow-sm'
                                 : 'bg-neutral-950/70 text-neutral-400 border border-neutral-800 hover:text-white'
-                            }`}
+                              }`}
                           >
                             <span className="leading-tight">Tarif fixe (~0,20 € : {formatCurrency(simHP.electricityCost)}/mois)</span>
                           </button>
@@ -803,11 +795,10 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                             type="button"
                             id="btn-tarif-hc"
                             onClick={() => setUserForcedTarif('HC')}
-                            className={`min-h-[44px] py-2 px-2 rounded-xl text-center text-xs font-semibold cursor-pointer transition-all flex flex-col justify-center items-center ${
-                              activeTarif === 'HC'
+                            className={`min-h-[44px] py-2 px-2 rounded-xl text-center text-xs font-semibold cursor-pointer transition-all flex flex-col justify-center items-center ${activeTarif === 'HC'
                                 ? 'bg-neutral-800 text-emerald-300 border border-emerald-500/60 font-bold shadow-sm shadow-emerald-950/30'
                                 : 'bg-neutral-950/70 text-neutral-400 border border-neutral-800 hover:text-white'
-                            }`}
+                              }`}
                           >
                             <span className="leading-tight">Heures Creuses (~0,16 € : {formatCurrency(simHC.electricityCost)}/mois)</span>
                           </button>
@@ -866,11 +857,10 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                         type="button"
                         id="btn-loan-eco"
                         onClick={() => setLoanMode('eco_1pct')}
-                        className={`min-h-[48px] p-2.5 sm:p-3 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center ${
-                          loanMode === 'eco_1pct'
+                        className={`min-h-[48px] p-2.5 sm:p-3 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center ${loanMode === 'eco_1pct'
                             ? 'bg-neutral-800 border-emerald-500 text-emerald-400 font-bold shadow-sm'
                             : 'bg-neutral-950/70 border-neutral-800 text-neutral-400 hover:text-white'
-                        }`}
+                          }`}
                       >
                         <div className="text-xs font-bold">Prêt Éco-Mobilité (1,00% TAEG)</div>
                       </button>
@@ -879,11 +869,10 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                         type="button"
                         id="btn-loan-standard"
                         onClick={() => setLoanMode('standard_4_9pct')}
-                        className={`min-h-[48px] p-2.5 sm:p-3 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center ${
-                          loanMode === 'standard_4_9pct'
+                        className={`min-h-[48px] p-2.5 sm:p-3 rounded-xl border text-center transition-all cursor-pointer flex flex-col items-center justify-center ${loanMode === 'standard_4_9pct'
                             ? 'bg-neutral-800 border-neutral-500 text-white font-bold shadow-sm'
                             : 'bg-neutral-950/70 border-neutral-800 text-neutral-400 hover:text-white'
-                        }`}
+                          }`}
                       >
                         <div className="text-xs font-bold">Crédit auto standard (4,90% TAEG)</div>
                       </button>
@@ -945,11 +934,10 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                               key={preset}
                               type="button"
                               onClick={() => setDownPayment(preset)}
-                              className={`h-9 min-w-[52px] px-3 rounded-lg text-xs font-mono font-semibold cursor-pointer transition-all flex items-center justify-center ${
-                                clampedDownPayment === preset
+                              className={`h-9 min-w-[52px] px-3 rounded-lg text-xs font-mono font-semibold cursor-pointer transition-all flex items-center justify-center ${clampedDownPayment === preset
                                   ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/50 font-bold shadow-sm'
                                   : 'bg-neutral-900 text-neutral-300 hover:text-white border border-neutral-700/80 active:bg-neutral-800'
-                              }`}
+                                }`}
                             >
                               {preset >= 1000 ? `${preset / 1000}k€` : `${preset}€`}
                             </button>
@@ -1031,11 +1019,10 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                                 key={type}
                                 type="button"
                                 onClick={() => setSelectedEquipmentType(type)}
-                                className={`min-h-[50px] p-2.5 sm:p-3 rounded-xl border text-left transition-all cursor-pointer relative flex flex-col justify-center ${
-                                  isSelected
+                                className={`min-h-[50px] p-2.5 sm:p-3 rounded-xl border text-left transition-all cursor-pointer relative flex flex-col justify-center ${isSelected
                                     ? 'bg-neutral-800 border-emerald-500 text-white shadow-md'
                                     : 'bg-neutral-950/70 border-neutral-800 text-neutral-400 hover:text-neutral-200'
-                                }`}
+                                  }`}
                               >
                                 {isRec && (
                                   <span className="absolute -top-2 right-2 text-[10px] font-bold px-1.5 py-0.2 rounded bg-emerald-500 text-black shadow">
@@ -1054,11 +1041,10 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                         </div>
 
                         {/* Diagnostic Vendredi soir & Rendement physique */}
-                        <div className={`p-3 rounded-xl border text-xs space-y-1.5 ${
-                          activeSimulation.isComfortSufficient
+                        <div className={`p-3 rounded-xl border text-xs space-y-1.5 ${activeSimulation.isComfortSufficient
                             ? 'bg-emerald-950/30 border-emerald-500/30 text-emerald-200'
                             : 'bg-amber-950/30 border-amber-500/30 text-amber-200'
-                        }`}>
+                          }`}>
                           <div className="flex items-center justify-between font-semibold gap-2">
                             <span>État de la batterie le vendredi soir :</span>
                             <span className="font-mono font-bold text-sm shrink-0 whitespace-nowrap">
@@ -1200,7 +1186,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                   </div>
                 </div>
               </motion.div>
-              )}
+            )}
 
             {/* CTA final : TROP BEAU POUR ÊTRE VRAI ? VOYEZ CE QUE LES PÉTROLIERS VOUS CACHENT */}
             <div className="flex justify-center pt-1">
