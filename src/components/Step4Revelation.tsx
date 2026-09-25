@@ -664,13 +664,15 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 shrink-0">
-                    <span className="text-neutral-400 hidden sm:inline text-[11px]">Gain net :</span>
+                    <span className="text-neutral-400 hidden sm:inline text-[11px]">
+                      {surplusCash > 0 ? 'Gain net :' : isFullyCovered ? 'Bilan :' : 'Effort :'}
+                    </span>
                     <span className={`font-mono font-black text-xs sm:text-sm px-2.5 py-1 rounded-xl whitespace-nowrap ${
                       surplusCash > 0
                         ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
                         : isFullyCovered
                         ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
-                        : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                        : 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
                     }`}>
                       {surplusCash > 0 ? `+${formatCurrency(surplusCash)} / mois` : isFullyCovered ? '100% financé' : `+${formatCurrency(remainingGap)} / mois`}
                     </span>
@@ -752,7 +754,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                     <div className="space-y-2.5 text-xs sm:text-sm py-1">
                       <div className="flex items-center justify-between gap-2 text-neutral-300">
                         <span className="min-w-0 pr-1">Votre budget carburant :</span>
-                        <span className="font-mono font-bold text-amber-400 shrink-0 whitespace-nowrap">
+                        <span className="font-mono font-bold text-emerald-400 shrink-0 whitespace-nowrap">
                           +{formatCurrency(sim.fuelBudget)} / mois
                         </span>
                       </div>
@@ -766,7 +768,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
 
                       <div className="flex items-center justify-between gap-2 text-neutral-300">
                         <span className="min-w-0 pr-1">Coût de recharge ({housing === 'maison' ? 'domicile' : 'bornes'}) :</span>
-                        <span className="font-mono font-bold text-emerald-400 shrink-0 whitespace-nowrap">
+                        <span className="font-mono font-bold text-rose-400 shrink-0 whitespace-nowrap">
                           - {formatCurrency(sim.electricityCost)} / mois
                         </span>
                       </div>
@@ -802,7 +804,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
 
                       <div className="flex items-center justify-between gap-2 text-neutral-300">
                         <span className="min-w-0 pr-1">Mensualité voiture ({currentEV.model.split(' ')[0]}) :</span>
-                        <span className="font-mono font-bold text-white shrink-0 whitespace-nowrap">
+                        <span className="font-mono font-bold text-rose-400 shrink-0 whitespace-nowrap">
                           - {formatCurrency(carMonthly)} / mois
                         </span>
                       </div>
@@ -827,8 +829,8 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                           </>
                         ) : (
                           <>
-                            <span className="text-amber-400 font-bold text-xs sm:text-sm">Effort d'épargne restant :</span>
-                            <span className="font-mono font-black text-amber-400 text-sm sm:text-base shrink-0 whitespace-nowrap">
+                            <span className="text-rose-400 font-bold text-xs sm:text-sm">Effort d'épargne restant :</span>
+                            <span className="font-mono font-black text-rose-400 text-sm sm:text-base shrink-0 whitespace-nowrap">
                               +{formatCurrency(remainingGap)} / mois
                             </span>
                           </>
@@ -896,7 +898,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                       {equipmentNetCostToFinance > 0 && (
                         <div className="flex items-center justify-between gap-2 text-xs">
                           <span className="text-neutral-400">Équipement de recharge ({activeEquipment.shortName}) :</span>
-                          <span className="font-mono text-emerald-400 font-semibold shrink-0">+{formatCurrency(equipmentNetCostToFinance)} net</span>
+                          <span className="font-mono text-rose-400 font-semibold shrink-0">+{formatCurrency(equipmentNetCostToFinance)} net</span>
                         </div>
                       )}
 
@@ -967,7 +969,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                           {clampedDownPayment > 0 ? 'Mensualité avec apport (5 ans) :' : 'Mensualité sans apport (5 ans) :'}
                         </span>
                         <div className="text-right shrink-0">
-                          <span className="font-mono font-bold text-emerald-400 text-sm">~{carMonthly} € / mois</span>
+                          <span className="font-mono font-bold text-rose-400 text-sm">~{carMonthly} € / mois</span>
                           {equipmentMonthly > 0 && (
                             <div className="text-[10px] text-neutral-400">
                               dont ~{equipmentMonthly} €/mois pour la recharge
@@ -1075,7 +1077,9 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                               )}
                               <div className="flex items-center justify-between font-semibold text-white gap-2">
                                 <span>Reste à charge net :</span>
-                                <span className="font-mono text-emerald-400 font-bold shrink-0">{formatCurrency(activeEquipment.netCost)}</span>
+                                <span className={`font-mono font-bold shrink-0 ${activeEquipment.netCost > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+                                  {formatCurrency(activeEquipment.netCost)}
+                                </span>
                               </div>
 
                               {/* Option d'intégration au prêt */}
@@ -1094,7 +1098,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                                       Intégrer l'équipement au prêt du véhicule
                                     </span>
                                   </div>
-                                  <span className="font-mono font-bold text-emerald-400 shrink-0 whitespace-nowrap">
+                                  <span className="font-mono font-bold text-rose-400 shrink-0 whitespace-nowrap">
                                     +{equipmentMonthly} € / mois
                                   </span>
                                 </label>

@@ -294,6 +294,49 @@ describe('Composant Step4Revelation', () => {
     expect(screen.queryByText(/Plus que/i)).not.toBeInTheDocument();
     expect(await screen.findByText(/chaque mois dans votre poche !|sans débourser/i)).toBeInTheDocument();
   });
+
+  it('applique une cohérence de couleur stricte dans le détail financier : dépenses en rouge et gains en vert', async () => {
+    render(
+      <Step4Revelation
+        fuelBudget={200}
+        housing="maison"
+        dailyKm={45}
+        prices={DEFAULT_PRICES}
+        onModifyParams={vi.fn()}
+      />
+    );
+
+    const revealBtn = screen.getByRole('button', { name: /voir où devrait plutôt aller cet argent/i });
+    fireEvent.click(revealBtn);
+
+    // Déplier le détail financier
+    const detailsBtn = await screen.findByRole('button', { name: /voir le détail des calculs financiers/i });
+    fireEvent.click(detailsBtn);
+
+    // 1. Gains en vert (emerald)
+    const fuelBudgetLabel = screen.getByText(/Votre budget carburant :/i);
+    const fuelBudgetSpan = fuelBudgetLabel.parentElement?.querySelector('span.font-mono');
+    expect(fuelBudgetSpan).toHaveClass('text-emerald-400');
+
+    const maintLabel = screen.getByText(/Économies d'entretien \(fourchette basse\) :/i);
+    const maintSpan = maintLabel.parentElement?.querySelector('span.font-mono');
+    expect(maintSpan).toHaveClass('text-emerald-400');
+
+    // 2. Dépenses en rouge (rose)
+    const rechargeLabel = screen.getByText(/Coût de recharge/i);
+    const rechargeSpan = rechargeLabel.parentElement?.querySelector('span.font-mono');
+    expect(rechargeSpan).toHaveClass('text-rose-400');
+
+    const carMonthlyLabel = screen.getByText(/Mensualité voiture/i);
+    const carMonthlySpan = carMonthlyLabel.parentElement?.querySelector('span.font-mono');
+    expect(carMonthlySpan).toHaveClass('text-rose-400');
+
+    // 3. Mensualité de prêt dans le bloc Financement en rouge (rose)
+    const loanMonthlyLabel = screen.getByText(/Mensualité sans apport \(5 ans\) :/i);
+    const loanMonthlySpan = loanMonthlyLabel.parentElement?.querySelector('span.text-rose-400');
+    expect(loanMonthlySpan).toBeInTheDocument();
+    expect(loanMonthlySpan).toHaveClass('text-rose-400');
+  });
 });
 
 

@@ -369,7 +369,7 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
                     <div className="pt-3 border-t border-neutral-800/80 space-y-3">
                       <div className="flex items-center justify-between text-xs">
                         <span className="text-neutral-400">Mensualité estimée (60 mois) :</span>
-                        <span className="font-bold text-white font-mono">
+                        <span className="font-bold text-rose-400 font-mono">
                           ~{formatCurrency(fin.monthlyLoan)}/mois
                         </span>
                       </div>
@@ -379,7 +379,7 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
                         className={`p-2.5 rounded-xl border text-xs flex items-center justify-between ${
                           fin.is100PctAutofinanced
                             ? 'bg-emerald-950/40 border-emerald-800/60 text-emerald-300'
-                            : 'bg-amber-950/30 border-amber-800/50 text-amber-300'
+                            : 'bg-rose-950/30 border-rose-800/50 text-rose-300'
                         }`}
                       >
                         <span className="font-semibold">
