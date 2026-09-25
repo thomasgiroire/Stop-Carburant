@@ -462,11 +462,12 @@ export function isCarComfortableForDailyKm(
 }
 
 /**
- * Détermine le niveau de catégorie du véhicule (Option B : 4 niveaux) :
+ * Détermine le niveau de catégorie du véhicule (Option B : 5 niveaux) :
  * - Niveau 0 : Micro-citadines dépouillées (Dacia Spring, Renault Twingo)
  * - Niveau 1 : Citadines polyvalentes (Renault Zoé, Peugeot e-208, Opel Corsa-e, Fiat 500e, BMW i3, Renault 5...)
  * - Niveau 2 : Compactes (Nissan Leaf II, Citroën ë-C4, Volkswagen ID.3, MG4, Renault Mégane E-Tech...)
- * - Niveau 3 : Berlines routières, SUV & Breaks (Tesla Model 3, Model Y, Kona, e-Niro, ID.4, EV6...)
+ * - Niveau 3 : Berlines routières & SUV (Tesla Model 3, Model Y, Kona, e-Niro, ID.4, EV6...)
+ * - Niveau 4 : Breaks (Grandes routières & Très grandes batteries en dernier, ex: MG5 Break, e-308 SW...)
  */
 export function getCarCategoryLevel(car: EVModelData): number {
   if (car.model.includes('Spring') || car.model.includes('Twingo')) {
@@ -484,6 +485,12 @@ export function getCarCategoryLevel(car: EVModelData): number {
   }
   if (car.bodyType === 'compacte') {
     return 2;
+  }
+  if (car.bodyType === 'berline' || car.bodyType === 'suv') {
+    return 3;
+  }
+  if (car.bodyType === 'break') {
+    return 4;
   }
   return 3;
 }
@@ -514,9 +521,12 @@ export function pickBestEconomicModel(
   const closeCandidates = carsWithCost.filter((c) => c.monthly - minMonthly < 9);
 
   // On favorise les modèles avec la plus grosse batterie
+  // Règle métier : les SUV sont priorisés avant les Breaks
   closeCandidates.sort((a, b) => {
     if (b.battery !== a.battery) return b.battery - a.battery;
     if (b.car.realRangeKm !== a.car.realRangeKm) return b.car.realRangeKm - a.car.realRangeKm;
+    if (a.car.bodyType === 'suv' && b.car.bodyType === 'break') return -1;
+    if (a.car.bodyType === 'break' && b.car.bodyType === 'suv') return 1;
     return a.monthly - b.monthly;
   });
 
@@ -629,16 +639,19 @@ export function getTieredEVRecommendations(
       profitableSuperiorCars.length > 0 ? profitableSuperiorCars : immediateSuperiorCars;
 
     // On sélectionne le modèle le moins cher (mensualité minimale, avec plus grande autonomie en cas d'égalité)
+    // Règle métier : les SUV sont priorisés avant les Breaks
     const sortedSuperior = [...poolToSelectFrom].sort((a, b) => {
       const monthlyA = calculateEVFinancing(a.estimatedMarketPrice, loanMode, 60).monthly;
       const monthlyB = calculateEVFinancing(b.estimatedMarketPrice, loanMode, 60).monthly;
       if (monthlyA !== monthlyB) return monthlyA - monthlyB;
+      if (a.bodyType === 'suv' && b.bodyType === 'break') return -1;
+      if (a.bodyType === 'break' && b.bodyType === 'suv') return 1;
       return b.realRangeKm - a.realRangeKm;
     });
 
     comfortModel = sortedSuperior[0];
   } else {
-    // Cas de repli : pas de catégorie supérieure disponible (ex: modèle recommandé déjà au niveau 3, ou segment forcé)
+    // Cas de repli : pas de catégorie supérieure disponible (ex: modèle recommandé déjà au niveau maximal, ou segment forcé)
     // On prend parmi les autres modèles couvrants celui qui offre le meilleur confort / autonomie,
     // en priorisant les autofinancés
     const otherCars = coveringCars.filter((c) => c.model !== recommendedModel.model);
@@ -650,8 +663,11 @@ export function getTieredEVRecommendations(
 
       const pool = profitableOtherCars.length > 0 ? profitableOtherCars : otherCars;
       // Pour le confort au sein de la même catégorie haute, on favorise la plus grande autonomie / grand routier
+      // Règle métier : les SUV sont priorisés avant les Breaks
       const sortedByRange = [...pool].sort((a, b) => {
         if (b.realRangeKm !== a.realRangeKm) return b.realRangeKm - a.realRangeKm;
+        if (a.bodyType === 'suv' && b.bodyType === 'break') return -1;
+        if (a.bodyType === 'break' && b.bodyType === 'suv') return 1;
         const monthlyA = calculateEVFinancing(a.estimatedMarketPrice, loanMode, 60).monthly;
         const monthlyB = calculateEVFinancing(b.estimatedMarketPrice, loanMode, 60).monthly;
         return monthlyA - monthlyB;

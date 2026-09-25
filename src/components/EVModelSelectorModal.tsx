@@ -173,8 +173,8 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
                 { id: 'citadine', label: 'Citadines' },
                 { id: 'compacte', label: 'Compactes' },
                 { id: 'berline', label: 'Berlines' },
-                { id: 'break', label: 'Breaks' },
                 { id: 'suv', label: 'SUV' },
+                { id: 'break', label: 'Breaks' },
               ].map((tab) => (
                 <button
                   key={tab.id}

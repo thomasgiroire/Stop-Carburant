@@ -691,6 +691,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                     <button
                       type="button"
                       id="btn-open-ev-catalog"
+                      aria-label={`Explorer le référentiel Open Data (${EVDatabaseService.getAllModels().length} véhicules certifiés)`}
                       onClick={() => setIsModelSelectorOpen(true)}
                       className="w-full min-h-[44px] py-2.5 px-3.5 rounded-xl bg-neutral-900/80 hover:bg-neutral-800/80 border border-neutral-700/70 hover:border-amber-500/50 text-xs text-neutral-200 transition-all flex items-center justify-between cursor-pointer group text-left"
                     >

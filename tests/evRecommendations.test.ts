@@ -146,7 +146,7 @@ describe('evRecommendations - Éligibilité et messages vulgarisés', () => {
   });
 
   describe('Hiérarchie des catégories et Option Confort (Option B)', () => {
-    it('classe correctement les véhicules dans les 4 niveaux de l\'Option B', async () => {
+    it('classe correctement les véhicules dans les 5 niveaux de l\'Option B (Break en dernier)', async () => {
       const { getCarCategoryLevel } = await import('../src/utils/evRecommendations');
       
       expect(getCarCategoryLevel({ model: 'Dacia Spring Confort Plus (27 kWh)', bodyType: 'citadine' } as any)).toBe(0);
@@ -157,6 +157,16 @@ describe('evRecommendations - Éligibilité et messages vulgarisés', () => {
       expect(getCarCategoryLevel({ model: 'Citroën ë-C4 (50 kWh)', bodyType: 'compacte' } as any)).toBe(2);
       expect(getCarCategoryLevel({ model: 'Tesla Model 3 Standard (60 kWh)', bodyType: 'berline' } as any)).toBe(3);
       expect(getCarCategoryLevel({ model: 'Hyundai Kona Electric (64 kWh)', bodyType: 'suv' } as any)).toBe(3);
+      expect(getCarCategoryLevel({ model: 'Peugeot e-308 SW Break', bodyType: 'break' } as any)).toBe(4);
+      expect(getCarCategoryLevel({ model: 'MG MG5 EV Break Long Range', bodyType: 'break' } as any)).toBe(4);
+    });
+
+    it('priorise les SUV avant les Breaks dans la recommandation de confort supérieur', () => {
+      // Pour une compacte recommandée (MG4), l'option confort privilégie le niveau 3 (Berlines & SUV comme le Kona) avant le break (MG5)
+      const rec = getTieredEVRecommendations(130, 219, 'maison');
+      expect(rec.recommended.bodyType).toBe('compacte');
+      expect(rec.economy.bodyType).toBe('suv');
+      expect(rec.economy.model).toContain('Kona');
     });
 
     it('propose une alternative confort issue de la catégorie supérieure avec priorité aux autofinancés', () => {
