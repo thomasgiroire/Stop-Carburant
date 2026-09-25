@@ -22,13 +22,16 @@ import {
   saveUserFuelType,
 } from './services/geoService';
 import { DepartmentSelectorModal } from './components/DepartmentSelectorModal';
+import { estimateMonthlyFuelBudget } from './utils/calculator';
 import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [fuelBudget, setFuelBudget] = useState<number>(200);
-  const [housing, setHousing] = useState<HousingType>('maison');
   const [dailyKm, setDailyKm] = useState<number>(45);
+  const [fuelBudget, setFuelBudget] = useState<number>(() => {
+    return estimateMonthlyFuelBudget(45, DEFAULT_PRICES.fuelPrice || 1.74).medianBudget;
+  });
+  const [housing, setHousing] = useState<HousingType>('maison');
   const [isTransformed, setIsTransformed] = useState<boolean>(false);
   const [isDeparting, setIsDeparting] = useState<boolean>(false);
   const [departurePhase, setDeparturePhase] = useState<DeparturePhase>('idle');
@@ -108,9 +111,17 @@ export default function App() {
     setFuelBudget(amount);
   };
 
+  const handleChangeDailyKm = (km: number) => {
+    setDailyKm(km);
+    const median = estimateMonthlyFuelBudget(km, prices.fuelPrice || 1.74).medianBudget;
+    setFuelBudget(median);
+  };
+
   const handleReset = () => {
     clearDepartureTimeouts();
     setCurrentStep(1);
+    setDailyKm(45);
+    setFuelBudget(estimateMonthlyFuelBudget(45, prices.fuelPrice || 1.74).medianBudget);
     setIsTransformed(false);
     setIsDeparting(false);
     setDeparturePhase('idle');
@@ -149,6 +160,8 @@ export default function App() {
     if (currentStep === 1) {
       setCurrentStep(2);
     } else if (currentStep === 2) {
+      const median = estimateMonthlyFuelBudget(dailyKm, prices.fuelPrice || 1.74).medianBudget;
+      setFuelBudget(median);
       setCurrentStep(3);
     } else if (currentStep === 3) {
       clearDepartureTimeouts();
@@ -276,8 +289,9 @@ export default function App() {
                     housing={housing}
                     dailyKm={dailyKm}
                     fuelBudget={fuelBudget}
+                    fuelPrice={prices.fuelPrice || 1.74}
                     onChangeHousing={setHousing}
-                    onChangeDailyKm={setDailyKm}
+                    onChangeDailyKm={handleChangeDailyKm}
                     onSelectBudget={handleSelectBudget}
                     onNext={handleNextStep}
                     onBack={() => {

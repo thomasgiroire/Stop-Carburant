@@ -118,5 +118,38 @@ describe('Parcours utilisateur App (Stop-Carburant - Storytelling)', () => {
       expect(screen.queryByText(/Combien s’évapore à la pompe chaque mois/i)).not.toBeInTheDocument();
     });
   });
+
+  it('positionne automatiquement le curseur sur la moyenne et colore le slider sans afficher de détails superflus', async () => {
+    render(<App />);
+
+    // Étape 1 -> Étape 2
+    fireEvent.click(screen.getByRole('button', { name: /prendre la route/i }));
+
+    // Étape 2 : Définir 45 km/jour
+    const kmSlider = await screen.findByLabelText(/kilomètres par jour/i);
+    fireEvent.change(kmSlider, { target: { value: '45' } });
+
+    // Étape 2 -> Étape 3 (Station-service)
+    fireEvent.click(screen.getByRole('button', { name: /rouler vers la station/i }));
+
+    // Étape 3 : Les détails textuels et encadrés ne doivent PAS être affichés
+    expect(screen.queryByText(/Estimation pour vos/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Zone probable/i)).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /caler sur la moyenne/i })).not.toBeInTheDocument();
+
+    // Vérifier que le slider a bien la couleur sur son trait (linear-gradient)
+    const budgetSlider = await screen.findByLabelText(/budget carburant par mois/i);
+    expect(budgetSlider).toBeInTheDocument();
+    expect(budgetSlider.getAttribute('style')).toContain('linear-gradient');
+
+    // Le curseur est automatiquement positionné sur la moyenne (120 € pour 45 km/j à 1.74 €/L)
+    expect(budgetSlider).toHaveValue('120');
+    expect(screen.getByText('120 €')).toBeInTheDocument();
+
+    // L'utilisateur reste libre d'ajuster le montant au final
+    fireEvent.change(budgetSlider, { target: { value: '180' } });
+    expect(budgetSlider).toHaveValue('180');
+    expect(screen.getByText('180 €')).toBeInTheDocument();
+  });
 });
 

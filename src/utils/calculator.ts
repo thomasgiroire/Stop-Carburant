@@ -127,6 +127,46 @@ export function calculateImplicitDailyKm(fuelBudget: number, fuelPrice: number =
   return Math.min(400, Math.max(10, rounded));
 }
 
+export interface FuelBudgetRange {
+  minBudget: number;
+  maxBudget: number;
+  medianBudget: number;
+}
+
+/**
+ * Extrapole la fourchette de budget carburant mensuel probable en fonction du kilométrage quotidien et du prix du carburant.
+ * - Basé sur un rythme moyen d'utilisation (~24 à 28 jours/mois)
+ * - Fourchette de consommation thermique réaliste :
+ *   - Basse (véhicule sobre / diesel / route fluide) : ~5.5 L / 100 km
+ *   - Moyenne (parc moyen français) : ~6.5 L / 100 km (CONSTANTS.C_THERM)
+ *   - Haute (essence urbaine / SUV / trajets courts fréquents) : ~7.5 L / 100 km
+ * Arrondi au pas de 10 € pour coïncider avec les crans du slider.
+ */
+export function estimateMonthlyFuelBudget(
+  dailyKm: number,
+  fuelPrice: number = CONSTANTS.P_CARB
+): FuelBudgetRange {
+  const safeDailyKm = Math.max(10, dailyKm);
+  const safePrice = Math.max(0.5, fuelPrice);
+
+  // Estimation basse : 5.5 L/100 km sur 24 jours
+  const rawMin = safeDailyKm * 24 * 0.055 * safePrice;
+  // Estimation médiane : 6.5 L/100 km sur 24 jours (référence C_THERM)
+  const rawMedian = safeDailyKm * 24 * (CONSTANTS.C_THERM / 100) * safePrice;
+  // Estimation haute : 7.5 L/100 km sur 27 jours (usage quotidien intensif / ville)
+  const rawMax = safeDailyKm * 27 * 0.075 * safePrice;
+
+  const minBudget = Math.min(650, Math.max(30, Math.round(rawMin / 10) * 10));
+  const medianBudget = Math.min(650, Math.max(minBudget, Math.round(rawMedian / 10) * 10));
+  const maxBudget = Math.min(650, Math.max(Math.min(650, medianBudget + 10), Math.round(rawMax / 10) * 10));
+
+  return {
+    minBudget,
+    maxBudget,
+    medianBudget,
+  };
+}
+
 export function formatCurrency(amount: number): string {
   return new Intl.NumberFormat('fr-FR', {
     style: 'currency',

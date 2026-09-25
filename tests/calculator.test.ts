@@ -1,5 +1,11 @@
 import { describe, it, expect } from 'vitest';
-import { calculateSimulation, calculateImplicitDailyKm, formatCurrency, formatNumber } from '../src/utils/calculator';
+import {
+  calculateSimulation,
+  calculateImplicitDailyKm,
+  estimateMonthlyFuelBudget,
+  formatCurrency,
+  formatNumber,
+} from '../src/utils/calculator';
 import { DEFAULT_PRICES } from '../src/services/energyPrices';
 
 describe('Calculateur financier (Stop-Carburant)', () => {
@@ -98,5 +104,36 @@ describe('Calculateur financier (Stop-Carburant)', () => {
   it('formate correctement les nombres', () => {
     const formatted = formatNumber(12000);
     expect(formatted.replace(/\s/g, '')).toContain('12000');
+  });
+
+  describe('estimateMonthlyFuelBudget (extrapolation km -> budget mensuel)', () => {
+    it('calcule une fourchette et une médiane cohérentes pour 45 km/jour à 1.74 €/L', () => {
+      const range = estimateMonthlyFuelBudget(45, 1.74);
+      // 45 km/j * 24j * 5.5% * 1.74 = ~103€ -> 100€
+      expect(range.minBudget).toBe(100);
+      // 45 km/j * 24j * 6.5% * 1.74 = ~122€ -> 120€
+      expect(range.medianBudget).toBe(120);
+      // 45 km/j * 27j * 7.5% * 1.74 = ~158€ -> 160€
+      expect(range.maxBudget).toBe(160);
+      expect(range.minBudget).toBeLessThanOrEqual(range.medianBudget);
+      expect(range.medianBudget).toBeLessThanOrEqual(range.maxBudget);
+    });
+
+    it('calcule une fourchette réaliste pour les gros rouleurs (ex: 120 km/jour)', () => {
+      const range = estimateMonthlyFuelBudget(120, 1.74);
+      expect(range.minBudget).toBe(280);
+      expect(range.medianBudget).toBe(330);
+      expect(range.maxBudget).toBe(420);
+    });
+
+    it('respecte les limites physiques du slider (min 30€, max 650€) et pas de 10€', () => {
+      const rangeLow = estimateMonthlyFuelBudget(5, 1.74);
+      expect(rangeLow.minBudget).toBeGreaterThanOrEqual(30);
+      expect(rangeLow.minBudget % 10).toBe(0);
+
+      const rangeHigh = estimateMonthlyFuelBudget(300, 2.0);
+      expect(rangeHigh.maxBudget).toBeLessThanOrEqual(650);
+      expect(rangeHigh.maxBudget % 10).toBe(0);
+    });
   });
 });

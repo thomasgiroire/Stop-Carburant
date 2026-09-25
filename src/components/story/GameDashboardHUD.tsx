@@ -1,6 +1,8 @@
 import React from 'react';
 import { ArrowRight, ChevronLeft, Home, Building2, Flame, Gauge, Sparkles } from 'lucide-react';
 import { HousingType, StoryStage } from '../../types';
+import { estimateMonthlyFuelBudget } from '../../utils/calculator';
+import { CONSTANTS } from '../../constants';
 import { motion, AnimatePresence } from 'motion/react';
 
 interface GameDashboardHUDProps {
@@ -8,6 +10,7 @@ interface GameDashboardHUDProps {
   housing: HousingType;
   dailyKm: number;
   fuelBudget: number;
+  fuelPrice?: number;
   onChangeHousing: (housing: HousingType) => void;
   onChangeDailyKm: (km: number) => void;
   onSelectBudget: (budget: number) => void;
@@ -23,6 +26,7 @@ export const GameDashboardHUD: React.FC<GameDashboardHUDProps> = ({
   housing,
   dailyKm,
   fuelBudget,
+  fuelPrice = CONSTANTS.P_CARB,
   onChangeHousing,
   onChangeDailyKm,
   onSelectBudget,
@@ -31,6 +35,13 @@ export const GameDashboardHUD: React.FC<GameDashboardHUDProps> = ({
 }) => {
   const estimatedMonthlyKm = Math.round(dailyKm * 30.5);
   const fiveYearsLoss = fuelBudget * 60;
+  const estimatedRange = estimateMonthlyFuelBudget(dailyKm, fuelPrice);
+  const SLIDER_MIN = 30;
+  const SLIDER_MAX = 650;
+  const rangeSpan = SLIDER_MAX - SLIDER_MIN;
+  const startPercent = Math.max(0, Math.min(100, ((estimatedRange.minBudget - SLIDER_MIN) / rangeSpan) * 100));
+  const endPercent = Math.max(0, Math.min(100, ((estimatedRange.maxBudget - SLIDER_MIN) / rangeSpan) * 100));
+  const sliderTrackGradient = `linear-gradient(to right, #262626 0%, #262626 ${startPercent.toFixed(1)}%, rgba(245, 158, 11, 0.45) ${startPercent.toFixed(1)}%, rgba(245, 158, 11, 0.45) ${endPercent.toFixed(1)}%, #262626 ${endPercent.toFixed(1)}%, #262626 100%)`;
 
   return (
     <div className="w-full max-w-lg mx-auto z-20">
@@ -214,19 +225,28 @@ export const GameDashboardHUD: React.FC<GameDashboardHUDProps> = ({
                 </span>
               </div>
 
-              {/* Slider budget */}
+              {/* Slider budget avec le trait horizontal surlignant la zone probable */}
               <div className="px-1 pt-1">
-                <input
-                  id="input-budget-slider"
-                  aria-label="Budget carburant par mois"
-                  type="range"
-                  min="30"
-                  max="650"
-                  step="10"
-                  value={fuelBudget}
-                  onChange={(e) => onSelectBudget(Number(e.target.value))}
-                  className="w-full h-2.5 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-amber-500 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
-                />
+                <div className="relative w-full">
+                  <input
+                    id="input-budget-slider"
+                    aria-label="Budget carburant par mois"
+                    type="range"
+                    min={SLIDER_MIN}
+                    max={SLIDER_MAX}
+                    step="10"
+                    value={fuelBudget}
+                    onChange={(e) => onSelectBudget(Number(e.target.value))}
+                    style={{ background: sliderTrackGradient }}
+                    className="w-full h-2.5 rounded-lg appearance-none cursor-pointer accent-amber-500 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
+                  />
+                </div>
+
+                {/* Repères sous le slider : min et max */}
+                <div className="flex justify-between items-center text-[10px] font-mono text-neutral-500 px-0.5 mt-1">
+                  <span>{SLIDER_MIN} €</span>
+                  <span>{SLIDER_MAX} €</span>
+                </div>
               </div>
 
               {/* Raccourcis rapides calibrés (Cowan <= 4, min-h 44px) */}
