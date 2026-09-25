@@ -381,19 +381,16 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                   {(surplusCash > 0 || isFullyCovered) && <VictoryCelebration />}
 
                   {surplusCash > 0 ? (
-                    <div className="py-2 sm:py-3 relative z-10 space-y-1 sm:space-y-1.5">
+                    <div className="py-2 sm:py-3 relative z-10 space-y-2 sm:space-y-2.5">
                       <motion.h2
                         initial={{ scale: 0.92, y: 8 }}
                         animate={{ scale: 1, y: 0 }}
                         transition={{ type: 'spring', damping: 14, stiffness: 180 }}
                         className="text-2xl sm:text-4xl md:text-5xl font-black font-display text-white tracking-tight leading-tight"
                       >
-                        <span className="block text-emerald-400 text-lg sm:text-2xl font-bold mb-1">
-                          Vous gagnez +{formatCurrency(surplusCash)} par mois en plus !
-                        </span>
                         Récupérez{' '}
                         <span className="text-emerald-400 font-black inline-block drop-shadow-[0_0_20px_rgba(52,211,153,0.4)]">
-                          {formatCurrency(surplusCash)}
+                          +{formatCurrency(surplusCash)}
                         </span>{' '}
                         chaque mois dans votre poche !
                       </motion.h2>
