@@ -121,7 +121,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-neutral-950 text-neutral-100 flex flex-col selection:bg-amber-500 selection:text-neutral-950 relative overflow-x-hidden">
+    <div className="min-h-[100dvh] bg-neutral-950 text-neutral-100 flex flex-col relative overflow-x-hidden">
       {/* Halos lumineux d'ambiance pour l'identité "La Faille Carburant" */}
       <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 w-[500px] sm:w-[700px] h-[300px] bg-amber-500/10 blur-[130px] rounded-full" />
       <div className="pointer-events-none absolute top-1/3 -right-32 w-[350px] h-[350px] bg-emerald-500/5 blur-[120px] rounded-full" />
@@ -223,7 +223,7 @@ export default function App() {
       />
 
       {/* Footer minimaliste */}
-      <footer className="border-t border-neutral-900 bg-neutral-950 py-6 px-4 text-center text-xs text-neutral-600">
+      <footer className="border-t border-neutral-900 bg-neutral-950 py-6 px-4 text-center text-xs text-neutral-400">
         <div className="max-w-xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
           <span>Stop Carburant — Zéro bla-bla • StopCarburant.fr</span>
           <div className="flex items-center gap-4 text-[11px]">
@@ -231,15 +231,16 @@ export default function App() {
               href="https://github.com/thomasgiroire/Stop-Carburant"
               target="_blank"
               rel="noopener noreferrer"
-              className="hover:text-neutral-300 transition-colors flex items-center gap-1 text-neutral-400 underline decoration-dotted"
-              title="Code source ouvert, algorithmes et calculs vérifiables sur GitHub"
+              className="hover:text-neutral-200 transition-colors flex items-center gap-1 text-neutral-400 underline decoration-dotted focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded"
+              title="Code source ouvert, algorithmes et calculs vérifiables sur GitHub (ouvre un nouvel onglet)"
+              aria-label="Méthodologie & Code Open Source sur GitHub (ouvre un nouvel onglet)"
             >
               <Code2 className="w-3.5 h-3.5 text-amber-400" />
               <span>Méthodologie & Code Open Source</span>
             </a>
             <button
               onClick={handleReset}
-              className="hover:text-amber-400 cursor-pointer transition-colors"
+              className="hover:text-amber-400 cursor-pointer transition-colors focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1.5 py-0.5"
             >
               Recommencer
             </button>

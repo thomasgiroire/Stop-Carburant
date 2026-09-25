@@ -38,6 +38,18 @@ export const DepartmentSelectorModal: React.FC<DepartmentSelectorModalProps> = (
     setFuelType(selectedFuelType);
   }, [selectedFuelType]);
 
+  // Fermeture accessible avec la touche Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   const filteredDepartments = useMemo(() => {
     if (!search.trim()) return DEPARTMENTS;
     const q = search.trim().toLowerCase();
@@ -75,8 +87,17 @@ export const DepartmentSelectorModal: React.FC<DepartmentSelectorModalProps> = (
 
   return (
     <AnimatePresence>
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm">
+      <div 
+        className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-sm"
+        onClick={(e) => {
+          if (e.target === e.currentTarget) onClose();
+        }}
+      >
         <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="dept-modal-title"
+          aria-describedby="dept-modal-desc"
           initial={{ opacity: 0, scale: 0.95, y: 10 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.95, y: 10 }}
@@ -90,18 +111,19 @@ export const DepartmentSelectorModal: React.FC<DepartmentSelectorModalProps> = (
                 <MapPin className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="text-base sm:text-lg font-bold text-white font-display">
+                <h2 id="dept-modal-title" className="text-base sm:text-lg font-bold text-white font-display">
                   Localiser le prix du carburant
                 </h2>
-                <p className="text-xs text-neutral-400">
+                <p id="dept-modal-desc" className="text-xs text-neutral-400">
                   Sélectionnez votre département et votre type de carburant
                 </p>
               </div>
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 transition-colors cursor-pointer"
+              className="p-2 rounded-lg text-neutral-400 hover:text-white hover:bg-neutral-800 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none transition-colors cursor-pointer"
               title="Fermer"
+              aria-label="Fermer la fenêtre de localisation"
             >
               <X className="w-5 h-5" />
             </button>
@@ -128,9 +150,9 @@ export const DepartmentSelectorModal: React.FC<DepartmentSelectorModalProps> = (
                     key={f.id}
                     type="button"
                     onClick={() => handleFuelTypeChange(f.id)}
-                    className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer truncate text-center ${
+                    className={`px-2.5 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer truncate text-center focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                       isActive
-                        ? 'bg-amber-500 text-neutral-950 font-bold shadow-md shadow-amber-500/20'
+                        ? 'bg-amber-500 text-black font-bold shadow-md shadow-amber-500/20'
                         : 'bg-neutral-800/80 hover:bg-neutral-800 text-neutral-300 hover:text-white border border-neutral-700/60'
                     }`}
                   >
@@ -151,12 +173,12 @@ export const DepartmentSelectorModal: React.FC<DepartmentSelectorModalProps> = (
                 placeholder="Numéro ou nom du département (ex: 33, Gironde, Paris...)"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full bg-neutral-900 border border-neutral-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:border-amber-500 transition-colors"
+                className="w-full bg-neutral-900 border border-neutral-700/80 rounded-xl pl-10 pr-4 py-2.5 text-sm text-neutral-100 placeholder:text-neutral-500 focus:outline-none focus:border-amber-500 focus-visible:ring-2 focus-visible:ring-amber-500 transition-colors"
               />
               {search && (
                 <button
                   onClick={() => setSearch('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400 hover:text-white"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-neutral-400 hover:text-white focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded"
                 >
                   Effacer
                 </button>
@@ -173,7 +195,7 @@ export const DepartmentSelectorModal: React.FC<DepartmentSelectorModalProps> = (
                   onSelectDepartment(null, fuelType);
                   onClose();
                 }}
-                className={`w-full flex items-center justify-between p-3 rounded-xl text-left transition-all cursor-pointer ${
+                className={`w-full flex items-center justify-between p-3 rounded-xl text-left transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                   !selectedDepartmentCode
                     ? 'bg-amber-500/10 border border-amber-500/30'
                     : 'hover:bg-neutral-800/60'
@@ -218,7 +240,7 @@ export const DepartmentSelectorModal: React.FC<DepartmentSelectorModalProps> = (
                     onSelectDepartment(dept.code, fuelType);
                     onClose();
                   }}
-                  className={`w-full flex items-center justify-between p-3 rounded-xl text-left transition-all cursor-pointer ${
+                  className={`w-full flex items-center justify-between p-3 rounded-xl text-left transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                     isSelected
                       ? 'bg-amber-500/10 border border-amber-500/30'
                       : 'hover:bg-neutral-800/60'

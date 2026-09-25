@@ -299,6 +299,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
       transition={{ duration: 0.25 }}
       className="w-full max-w-2xl mx-auto px-3 sm:px-4 py-5 sm:py-10"
     >
+      <h1 className="sr-only">Résultat de votre simulation Stop Carburant</h1>
       {/* Carte centrale animée de transformation */}
       <div className="bg-neutral-900/90 border border-neutral-800 rounded-2xl sm:rounded-3xl p-4 sm:p-7 mb-6 sm:mb-8 shadow-2xl relative overflow-hidden">
         <div className="relative min-h-[200px] flex items-center justify-center">
@@ -1042,7 +1043,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                 {isFaqVisible ? (
                   <ChevronUp className="w-4 h-4 text-amber-400 group-hover:-translate-y-0.5 transition-transform shrink-0" />
                 ) : (
-                  <ArrowDown className="w-4 h-4 text-amber-400 animate-bounce group-hover:translate-y-0.5 transition-transform shrink-0" />
+                  <ArrowDown className="w-4 h-4 text-amber-400 group-hover:translate-y-1 transition-transform shrink-0" />
                 )}
               </button>
             </div>

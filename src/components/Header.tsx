@@ -19,10 +19,12 @@ export const Header: React.FC<HeaderProps> = ({
   return (
     <header className="w-full border-b border-neutral-800 bg-neutral-950/80 backdrop-blur-md sticky top-0 z-40">
       <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-        <div 
+        <button 
+          type="button"
           onClick={onReset}
-          className="flex items-center gap-2 cursor-pointer group"
+          className="flex items-center gap-2 cursor-pointer group rounded-lg p-1 -m-1 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none text-left"
           title="Recommencer la simulation"
+          aria-label="Stop Carburant"
         >
           <span className="relative flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
@@ -34,15 +36,16 @@ export const Header: React.FC<HeaderProps> = ({
           <span className="hidden sm:inline-flex text-[10px] font-mono px-1.5 py-0.5 rounded bg-neutral-900 border border-neutral-800 text-neutral-400">
             StopCarburant.fr
           </span>
-        </div>
+        </button>
 
         {/* Badge OpenData en direct des stations */}
         {prices && (
           <button
             type="button"
             onClick={onOpenDepartmentSelector}
-            className="hidden md:inline-flex items-center gap-2 text-xs bg-neutral-900/90 border border-neutral-800 hover:border-neutral-700 px-3 py-1 rounded-full text-neutral-300 shadow-inner transition-colors cursor-pointer"
+            className="hidden md:inline-flex items-center gap-2 text-xs bg-neutral-900/90 border border-neutral-800 hover:border-neutral-700 px-3 py-1 rounded-full text-neutral-300 shadow-inner transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             title="Cliquer pour changer de département ou de carburant"
+            aria-label="Changer de département ou de carburant pour les prix Open Data"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>

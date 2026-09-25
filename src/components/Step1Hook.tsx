@@ -39,9 +39,9 @@ export const Step1Hook: React.FC<Step1HookProps> = ({
       <div className="bg-neutral-900/90 border border-neutral-800 rounded-3xl p-5 sm:p-8 mb-6 shadow-2xl space-y-6">
         {/* Paramètre 1 : Budget carburant */}
         <div>
-          <span className="text-xs uppercase tracking-wider text-neutral-400 font-bold block mb-1">
+          <label htmlFor="input-budget-slider" className="text-xs uppercase tracking-wider text-neutral-400 font-bold block mb-1">
             Budget carburant par mois
-          </span>
+          </label>
           <div className="text-5xl sm:text-6xl font-black font-display text-amber-400 tracking-tight my-2">
             {fuelBudget} <span className="text-xl sm:text-2xl text-neutral-400 font-normal">€ / mois</span>
           </div>
@@ -56,21 +56,21 @@ export const Step1Hook: React.FC<Step1HookProps> = ({
               step="10"
               value={fuelBudget}
               onChange={(e) => onSelectBudget(Number(e.target.value))}
-              className="w-full h-3 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+              className="w-full h-3 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-amber-500 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
             />
           </div>
 
-          {/* Raccourcis rapides directs */}
+          {/* Raccourcis rapides directs au pouce (touch target >= 44px) */}
           <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
             {BUDGET_PRESETS.map((preset) => (
               <button
                 key={preset}
                 type="button"
                 onClick={() => onSelectBudget(preset)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-mono font-bold transition-all cursor-pointer ${
+                className={`px-3.5 py-2.5 min-h-[44px] min-w-[58px] rounded-xl text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-center focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                   fuelBudget === preset
-                    ? 'bg-amber-500 text-neutral-950 shadow-md shadow-amber-500/30'
-                    : 'bg-neutral-800 text-neutral-400 hover:text-white hover:bg-neutral-700'
+                    ? 'bg-amber-500 text-black font-extrabold shadow-md shadow-amber-500/30'
+                    : 'bg-neutral-800 text-neutral-300 hover:text-white hover:bg-neutral-700'
                 }`}
               >
                 {preset} €
@@ -98,7 +98,7 @@ export const Step1Hook: React.FC<Step1HookProps> = ({
             step="5"
             value={dailyKm}
             onChange={(e) => onChangeDailyKm(Number(e.target.value))}
-            className="w-full h-3 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-amber-500"
+            className="w-full h-3 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-amber-500 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
           />
         </div>
       </div>
@@ -107,7 +107,7 @@ export const Step1Hook: React.FC<Step1HookProps> = ({
       <button
         id="btn-continue-step1"
         onClick={onNext}
-        className="w-full sm:w-auto min-w-[280px] min-h-[54px] inline-flex items-center justify-center gap-2 px-8 py-4 bg-amber-500 hover:bg-amber-400 text-neutral-950 font-display font-black text-base tracking-wide rounded-2xl shadow-xl shadow-amber-500/25 transition-all cursor-pointer uppercase"
+        className="w-full sm:w-auto min-w-[280px] min-h-[54px] inline-flex items-center justify-center gap-2 px-8 py-4 bg-amber-500 hover:bg-amber-400 text-black font-display font-black text-base tracking-wide rounded-2xl shadow-xl shadow-amber-500/25 transition-all cursor-pointer uppercase focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
       >
         <span>CONTINUER</span>
         <ArrowRight className="w-5 h-5 stroke-[2.5]" />

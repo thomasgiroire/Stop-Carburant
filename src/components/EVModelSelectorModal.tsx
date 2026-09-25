@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   X,
@@ -82,11 +82,32 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
     });
   }, [allModels, selectedBodyType, minRange, searchQuery, onlyProfitable, userFuelBudget, dailyKm, loanMode]);
 
+  // Fermeture accessible avec la touche Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        onClose();
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/85 backdrop-blur-md overflow-y-auto"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <motion.div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ev-modal-title"
+        aria-describedby="ev-modal-desc"
         initial={{ opacity: 0, scale: 0.95, y: 15 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
         exit={{ opacity: 0, scale: 0.95, y: 15 }}
@@ -105,18 +126,18 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
                 OpenEV Data v1.24 & ADEME
               </span>
             </div>
-            <h2 className="text-xl sm:text-2xl font-black text-white">
+            <h2 id="ev-modal-title" className="text-xl sm:text-2xl font-black text-white">
               Catalogue de Véhicules Électriques
             </h2>
-            <p className="text-xs sm:text-sm text-neutral-400 mt-0.5">
+            <p id="ev-modal-desc" className="text-xs sm:text-sm text-neutral-400 mt-0.5">
               Choisissez n'importe quel modèle pour comparer instantanément vos économies réelles de carburant.
             </p>
           </div>
 
           <button
             onClick={onClose}
-            className="p-2 rounded-xl bg-neutral-800/80 hover:bg-neutral-700 text-neutral-400 hover:text-white transition-colors cursor-pointer shrink-0"
-            aria-label="Fermer"
+            className="p-2 rounded-xl bg-neutral-800/80 hover:bg-neutral-700 text-neutral-400 hover:text-white focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none transition-colors cursor-pointer shrink-0"
+            aria-label="Fermer le catalogue de véhicules"
           >
             <X className="w-5 h-5" />
           </button>
@@ -288,8 +309,8 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
                         </div>
 
                         {isSelected && (
-                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500 text-neutral-950 shrink-0">
-                            <Check className="w-3 h-3" /> Modèle actif
+                          <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-emerald-500 text-black shrink-0">
+                            <Check className="w-3 h-3 stroke-[3]" /> Modèle actif
                           </span>
                         )}
                       </div>
@@ -378,10 +399,10 @@ export const EVModelSelectorModal: React.FC<EVModelSelectorModalProps> = ({
                           onSelectModel(car);
                           onClose();
                         }}
-                        className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                        className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-2 focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:outline-none ${
                           isSelected
                             ? 'bg-neutral-800 text-neutral-300 hover:bg-neutral-700'
-                            : 'bg-emerald-500 hover:bg-emerald-400 text-neutral-950 shadow-md shadow-emerald-950/40'
+                            : 'bg-emerald-500 hover:bg-emerald-400 text-black font-extrabold shadow-md shadow-emerald-950/40'
                         }`}
                       >
                         {isSelected ? 'Conserver ce modèle' : 'Choisir ce modèle pour la simulation'}

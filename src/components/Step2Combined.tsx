@@ -33,9 +33,10 @@ export const Step2Combined: React.FC<Step2CombinedProps> = ({
         <div className="grid grid-cols-2 gap-3 sm:gap-4">
           <button
             type="button"
+            aria-pressed={housing === 'maison'}
             id="btn-housing-maison"
             onClick={() => onChangeHousing('maison')}
-            className={`p-5 sm:p-7 rounded-2xl border text-center flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
+            className={`p-5 sm:p-7 rounded-2xl border text-center flex flex-col items-center justify-center gap-3 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
               housing === 'maison'
                 ? 'bg-amber-500/15 border-amber-500 text-amber-400 ring-2 ring-amber-400/30 shadow-lg shadow-amber-500/10'
                 : 'bg-neutral-800/80 border-neutral-700/60 text-neutral-300 hover:bg-neutral-800 hover:text-white'
@@ -49,9 +50,10 @@ export const Step2Combined: React.FC<Step2CombinedProps> = ({
 
           <button
             type="button"
+            aria-pressed={housing === 'appartement'}
             id="btn-housing-appartement"
             onClick={() => onChangeHousing('appartement')}
-            className={`p-5 sm:p-7 rounded-2xl border text-center flex flex-col items-center justify-center gap-3 transition-all cursor-pointer ${
+            className={`p-5 sm:p-7 rounded-2xl border text-center flex flex-col items-center justify-center gap-3 transition-all cursor-pointer focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
               housing === 'appartement'
                 ? 'bg-amber-500/15 border-amber-500 text-amber-400 ring-2 ring-amber-400/30 shadow-lg shadow-amber-500/10'
                 : 'bg-neutral-800/80 border-neutral-700/60 text-neutral-300 hover:bg-neutral-800 hover:text-white'
@@ -70,7 +72,7 @@ export const Step2Combined: React.FC<Step2CombinedProps> = ({
         <button
           id="btn-back-step-1"
           onClick={onBack}
-          className="w-full sm:w-auto px-5 py-3.5 text-neutral-400 hover:text-white bg-neutral-900/80 border border-neutral-800 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer min-h-[48px]"
+          className="w-full sm:w-auto px-5 py-3.5 text-neutral-400 hover:text-white bg-neutral-900/80 border border-neutral-800 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5 cursor-pointer min-h-[48px] focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
         >
           <ChevronLeft className="w-4 h-4" />
           <span>Retour</span>
@@ -79,7 +81,7 @@ export const Step2Combined: React.FC<Step2CombinedProps> = ({
         <button
           id="btn-see-result"
           onClick={onNext}
-          className="w-full sm:w-auto min-w-[260px] min-h-[52px] inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:py-4 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-neutral-950 font-display font-black text-base tracking-wide rounded-xl shadow-lg shadow-amber-500/25 transition-all hover:scale-101 active:scale-98 cursor-pointer uppercase"
+          className="w-full sm:w-auto min-w-[260px] min-h-[52px] inline-flex items-center justify-center gap-2 px-8 py-3.5 sm:py-4 bg-gradient-to-r from-amber-500 to-amber-400 hover:from-amber-400 hover:to-amber-300 text-black font-display font-black text-base tracking-wide rounded-xl shadow-lg shadow-amber-500/25 transition-all hover:scale-101 active:scale-98 cursor-pointer uppercase focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
         >
           <span>VOIR MON RÉSULTAT</span>
           <ArrowRight className="w-5 h-5 stroke-[2.5]" />

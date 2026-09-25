@@ -38,7 +38,9 @@ export const AntiBiasFAQ: React.FC = () => {
               <button
                 id={`faq-btn-${item.id}`}
                 onClick={() => toggleItem(item.id)}
-                className="w-full p-4 sm:p-5 flex items-center justify-between text-left cursor-pointer gap-3"
+                aria-expanded={isOpen}
+                aria-controls={`faq-answer-${item.id}`}
+                className="w-full p-4 sm:p-5 flex items-center justify-between text-left cursor-pointer gap-3 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
               >
                 <span className="font-display font-bold text-sm sm:text-base text-neutral-200 leading-snug">
                   {item.myth}
@@ -52,6 +54,9 @@ export const AntiBiasFAQ: React.FC = () => {
               <AnimatePresence>
                 {isOpen && (
                   <motion.div
+                    id={`faq-answer-${item.id}`}
+                    role="region"
+                    aria-labelledby={`faq-btn-${item.id}`}
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
@@ -68,7 +73,8 @@ export const AntiBiasFAQ: React.FC = () => {
                         href={item.sourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-amber-400 hover:text-amber-300 underline font-medium"
+                        aria-label={`Source ${item.sourceName} (ouvre un nouvel onglet)`}
+                        className="inline-flex items-center gap-1 text-amber-400 hover:text-amber-300 underline font-medium focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none rounded px-1 py-0.5"
                       >
                         <span>{item.sourceName}</span>
                         <ExternalLink className="w-3 h-3" />

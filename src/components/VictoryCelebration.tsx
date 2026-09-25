@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { motion } from 'motion/react';
+import { motion, useReducedMotion } from 'motion/react';
 
 interface Particle {
   id: number;
@@ -25,8 +25,11 @@ const CELEBRATION_COLORS = [
 ];
 
 export const VictoryCelebration: React.FC = () => {
+  const shouldReduceMotion = useReducedMotion();
+
   // Générer des particules festives pseudo-aléatoires de manière stable
   const particles: Particle[] = useMemo(() => {
+    if (shouldReduceMotion) return [];
     const list: Particle[] = [];
     const count = 42;
 
@@ -57,7 +60,19 @@ export const VictoryCelebration: React.FC = () => {
       });
     }
     return list;
-  }, []);
+  }, [shouldReduceMotion]);
+
+  if (shouldReduceMotion) {
+    return (
+      <div
+        aria-hidden="true"
+        data-testid="victory-celebration"
+        className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center overflow-visible"
+      >
+        <div className="absolute w-48 h-48 rounded-full bg-gradient-to-r from-emerald-500/20 via-amber-400/10 to-transparent blur-xl opacity-60" />
+      </div>
+    );
+  }
 
   return (
     <div
