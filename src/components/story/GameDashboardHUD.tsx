@@ -15,8 +15,8 @@ interface GameDashboardHUDProps {
   onBack: () => void;
 }
 
-const KM_PRESETS = [25, 45, 70, 110, 160];
-const BUDGET_PRESETS = [100, 200, 300, 400, 600];
+const KM_PRESETS = [30, 50, 80, 120];
+const BUDGET_PRESETS = [100, 150, 200, 300];
 
 export const GameDashboardHUD: React.FC<GameDashboardHUDProps> = ({
   stage,
@@ -64,7 +64,7 @@ export const GameDashboardHUD: React.FC<GameDashboardHUDProps> = ({
                   id="btn-housing-maison"
                   aria-pressed={housing === 'maison'}
                   onClick={() => onChangeHousing('maison')}
-                  className={`p-3 rounded-2xl border text-center flex items-center justify-center gap-2.5 transition-all cursor-pointer min-h-[50px] focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                  className={`p-3 rounded-2xl border text-center flex items-center justify-center gap-2.5 transition-all cursor-pointer min-h-[52px] focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                     housing === 'maison'
                       ? 'bg-amber-500/20 border-amber-500 text-amber-400 ring-1 ring-amber-400/40 shadow-md shadow-amber-500/10'
                       : 'bg-neutral-800/80 border-neutral-700/60 text-neutral-300 hover:bg-neutral-800 hover:text-white'
@@ -79,9 +79,9 @@ export const GameDashboardHUD: React.FC<GameDashboardHUDProps> = ({
                   id="btn-housing-appartement"
                   aria-pressed={housing === 'appartement'}
                   onClick={() => onChangeHousing('appartement')}
-                  className={`p-3 rounded-2xl border text-center flex items-center justify-center gap-2.5 transition-all cursor-pointer min-h-[50px] focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                  className={`p-3 rounded-2xl border text-center flex items-center justify-center gap-2.5 transition-all cursor-pointer min-h-[52px] focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                     housing === 'appartement'
-                      ? 'bg-sky-500/20 border-sky-400 text-sky-400 ring-1 ring-sky-400/40 shadow-md shadow-sky-500/10'
+                      ? 'bg-amber-500/20 border-amber-500 text-amber-400 ring-1 ring-amber-400/40 shadow-md shadow-amber-500/10'
                       : 'bg-neutral-800/80 border-neutral-700/60 text-neutral-300 hover:bg-neutral-800 hover:text-white'
                   }`}
                 >
@@ -124,7 +124,7 @@ export const GameDashboardHUD: React.FC<GameDashboardHUDProps> = ({
                     Soit ~<strong className="text-neutral-200">{estimatedMonthlyKm.toLocaleString('fr-FR')} km</strong> chaque mois
                   </p>
                 </div>
-                <span className="text-2xl sm:text-3xl font-black font-display text-sky-400 font-mono shrink-0 ml-2">
+                <span className="text-2xl sm:text-3xl font-black font-display text-amber-400 font-mono shrink-0 ml-2">
                   {dailyKm} km
                 </span>
               </div>
@@ -136,25 +136,25 @@ export const GameDashboardHUD: React.FC<GameDashboardHUDProps> = ({
                   aria-label="Kilomètres par jour"
                   type="range"
                   min="10"
-                  max="400"
+                  max="250"
                   step="5"
                   value={dailyKm}
                   onChange={(e) => onChangeDailyKm(Number(e.target.value))}
-                  className="w-full h-2.5 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-sky-500 focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:outline-none"
+                  className="w-full h-2.5 bg-neutral-800 rounded-lg appearance-none cursor-pointer accent-amber-500 focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none"
                 />
               </div>
 
-              {/* Raccourcis rapides */}
-              <div className="flex items-center justify-between gap-1.5 flex-wrap">
+              {/* Raccourcis rapides calibrés (Cowan <= 4, min-h 44px) */}
+              <div className="grid grid-cols-4 gap-2">
                 {KM_PRESETS.map((preset) => (
                   <button
                     key={preset}
                     type="button"
                     onClick={() => onChangeDailyKm(preset)}
-                    className={`flex-1 py-1.5 min-h-[38px] rounded-lg text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-center focus-visible:ring-2 focus-visible:ring-sky-500 focus-visible:outline-none ${
+                    className={`py-2 min-h-[44px] rounded-xl text-xs sm:text-sm font-mono font-bold transition-all cursor-pointer flex items-center justify-center focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                       dailyKm === preset
-                        ? 'bg-sky-500 text-black font-extrabold shadow-sm'
-                        : 'bg-neutral-800 text-neutral-300 hover:text-white'
+                        ? 'bg-amber-500 text-black font-extrabold shadow-md shadow-amber-500/20'
+                        : 'bg-neutral-800/90 border border-neutral-700/60 text-neutral-300 hover:text-white hover:bg-neutral-700/80'
                     }`}
                   >
                     {preset} km
@@ -221,7 +221,7 @@ export const GameDashboardHUD: React.FC<GameDashboardHUDProps> = ({
                   aria-label="Budget carburant par mois"
                   type="range"
                   min="30"
-                  max="1200"
+                  max="650"
                   step="10"
                   value={fuelBudget}
                   onChange={(e) => onSelectBudget(Number(e.target.value))}
@@ -229,17 +229,17 @@ export const GameDashboardHUD: React.FC<GameDashboardHUDProps> = ({
                 />
               </div>
 
-              {/* Raccourcis rapides */}
-              <div className="flex items-center justify-between gap-1.5 flex-wrap">
+              {/* Raccourcis rapides calibrés (Cowan <= 4, min-h 44px) */}
+              <div className="grid grid-cols-4 gap-2">
                 {BUDGET_PRESETS.map((preset) => (
                   <button
                     key={preset}
                     type="button"
                     onClick={() => onSelectBudget(preset)}
-                    className={`flex-1 py-1.5 min-h-[38px] rounded-lg text-xs font-mono font-bold transition-all cursor-pointer flex items-center justify-center focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
+                    className={`py-2 min-h-[44px] rounded-xl text-xs sm:text-sm font-mono font-bold transition-all cursor-pointer flex items-center justify-center focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:outline-none ${
                       fuelBudget === preset
-                        ? 'bg-amber-500 text-black font-extrabold shadow-sm'
-                        : 'bg-neutral-800 text-neutral-300 hover:text-white'
+                        ? 'bg-amber-500 text-black font-extrabold shadow-md shadow-amber-500/20'
+                        : 'bg-neutral-800/90 border border-neutral-700/60 text-neutral-300 hover:text-white hover:bg-neutral-700/80'
                     }`}
                   >
                     {preset} €

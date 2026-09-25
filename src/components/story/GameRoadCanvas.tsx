@@ -45,16 +45,16 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
 
     switch (stage) {
       case 'departure':
-        // Au départ en bas de l'écran : orientée vers le haut et la route centrale
+        // Au départ en bas de l'écran : orientée sur l'allée vers la route
         return housing === 'maison'
-          ? { x: 75, y: 345, rotate: 28 }
-          : { x: 325, y: 345, rotate: -28 };
+          ? { x: 88, y: 340, rotate: 34 }
+          : { x: 312, y: 340, rotate: -34 };
       case 'commute':
         // En trajet travail, la voiture est centrée sur la voie, roulant à pleine allure vers le haut
         return { x: 200, y: 250, rotate: 0 };
       case 'gas_station':
         // Arrêtée sous l'auvent de la station-service devant la pompe
-        return { x: 268, y: 195, rotate: 8 };
+        return { x: 268, y: 232, rotate: 8 };
       case 'revelation':
         return { x: 200, y: -280, rotate: 0 };
       default:
@@ -354,7 +354,7 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
                   onClick={() => onSelectHousing?.('appartement')}
                   className="cursor-pointer"
                   opacity="0.45"
-                  transform="translate(325, 345) rotate(-28)"
+                  transform="translate(312, 340) rotate(-34)"
                 >
                   <rect x="-17" y="-30" width="34" height="60" rx="8" fill="#000000" opacity="0.4" />
                   <rect x="-15" y="-28" width="30" height="56" rx="7" fill="#1e3a8a" stroke="#3b82f6" strokeWidth="1" />
@@ -369,7 +369,7 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
                   onClick={() => onSelectHousing?.('maison')}
                   className="cursor-pointer"
                   opacity="0.45"
-                  transform="translate(75, 345) rotate(28)"
+                  transform="translate(88, 340) rotate(34)"
                 >
                   <rect x="-17" y="-30" width="34" height="60" rx="8" fill="#000000" opacity="0.4" />
                   <rect x="-15" y="-28" width="30" height="56" rx="7" fill="#1e3a8a" stroke="#3b82f6" strokeWidth="1" />
@@ -405,12 +405,12 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
                 }}
               >
                 {/* Entrée de station pavée menant depuis la route */}
-                <path d="M288,155 L315,140 L385,140 L385,270 L288,270 Z" fill="#1e1c1b" opacity="0.9" />
+                <path d="M288,192 L315,177 L385,177 L385,307 L288,307 Z" fill="#1e1c1b" opacity="0.9" />
 
                 {/* Auvent de la station-service - Reste STRICTEMENT une station carburant */}
                 <rect
                   x="292"
-                  y="145"
+                  y="182"
                   width="95"
                   height="115"
                   rx="4"
@@ -422,7 +422,7 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
                 {/* Enseigne Station Essence */}
                 <rect
                   x="298"
-                  y="151"
+                  y="188"
                   width="83"
                   height="18"
                   rx="2"
@@ -430,7 +430,7 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
                 />
                 <text
                   x="340"
-                  y="164"
+                  y="201"
                   textAnchor="middle"
                   fill="#ffffff"
                   fontSize="9"
@@ -443,7 +443,7 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
                 {/* Îlot et Borne / Pompe à essence */}
                 <rect
                   x="305"
-                  y="185"
+                  y="222"
                   width="24"
                   height="45"
                   rx="3"
@@ -454,19 +454,19 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
                 {/* Témoin de plein en cours (clignotant rouge) */}
                 <motion.circle
                   cx="317"
-                  cy="198"
+                  cy="235"
                   r="4"
                   fill="#f43f5e"
                   initial={{ opacity: 0.4 }}
                   animate={{ opacity: [0.4, 1, 0.4] }}
                   transition={{ repeat: Infinity, duration: 1 }}
                 />
-                <line x1="311" y1="212" x2="323" y2="212" stroke="#64748b" strokeWidth="2" />
+                <line x1="311" y1="249" x2="323" y2="249" stroke="#64748b" strokeWidth="2" />
 
                 {/* Totem des prix du carburant en direct (reste en €/L) */}
                 <rect
                   x="305"
-                  y="240"
+                  y="277"
                   width="70"
                   height="22"
                   rx="3"
@@ -476,7 +476,7 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
                 />
                 <text
                   x="340"
-                  y="255"
+                  y="292"
                   textAnchor="middle"
                   fill="#f43f5e"
                   fontSize="9"

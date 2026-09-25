@@ -16,11 +16,12 @@ colors:
   accent-amber: "#f59e0b"
   cta-from: "#e11d48"
   cta-to: "#d97706"
+  white: "#ffffff"
 typography:
   display:
-    fontFamily: "'Space Grotesk', 'Plus Jakarta Sans', sans-serif"
+    fontFamily: "'Outfit', 'Plus Jakarta Sans', sans-serif"
     fontWeight: 700
-    letterSpacing: "-0.02em"
+    letterSpacing: "-0.01em"
   body:
     fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif"
     fontWeight: 400
@@ -92,7 +93,7 @@ La palette repose sur un fond sombre profond (`neutral-950`), ponctué d'accents
 
 ## 3. Typography
 
-- **Police Titres & Chiffres Chocs (`font-display`) :** `Space Grotesk`, complétée par `Plus Jakarta Sans`. Graisses 700/800 pour accentuer l'impact des montants et des questions directes.
+- **Police Titres & Chiffres Chocs (`font-display`) :** `Outfit`, complétée par `Plus Jakarta Sans`. Graisses 700/800 géométriques, nettes et aérées, pour une lisibilité parfaite sur smartphone et des chiffres d'impact équilibrés.
 - **Police Courante (`font-sans`) :** `Plus Jakarta Sans`, lisible et nette sur écrans mobiles de toutes résolutions.
 - **Police Données Financières (`font-mono`) :** Police monospace système pour l'alignement strict des tableaux comparatifs, factures et montants en euros.
 
@@ -143,6 +144,11 @@ Pour la comparaison financière de l'étape 4 :
 - Décomposition ligne à ligne façon facture nette (`divide-y divide-neutral-800`).
 - Suppression des cartes imbriquées sur plusieurs niveaux pour une lisibilité immédiate.
 - Mention claire des unités (ex: `/ mois` au lieu de l'abréviation ambiguë `/ m`).
+
+### 7.3. Double Mode Révélation (Vue Essentielle vs Détail Précis)
+- **Sélecteur 100% exclusif :** Bascule claire entre deux modes sans actions redondantes :
+  - *Vue Essentielle :* Les 3 chiffres chocs au pouce (Perte carburant, Coût électrique, Gain net direct) et le véhicule d'occasion recommandé, sans accordéon superflu en dessous.
+  - *Détail des calculs :* Audit financier complet continu au format Ticket de Caisse (sans sous-onglets), surmonté d'un bandeau récapitulatif fixe (*sticky*) pour observer en temps réel l'impact de l'apport de reprise, du tarif électricité (HP/HC) et du prêt.
 
 ---
 

@@ -68,7 +68,6 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
     setLocalTransformed(val);
     onTransformChange?.(val);
   };
-  const [showCalculationDetails, setShowCalculationDetails] = useState<boolean>(false);
   const [tier, setTier] = useState<EVTier>('recommended');
   const [loanMode, setLoanMode] = useState<LoanRateMode>('eco_1pct');
   const [downPayment, setDownPayment] = useState<number>(0);
@@ -78,6 +77,7 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
   const [selectedEquipmentType, setSelectedEquipmentType] = useState<ChargingEquipmentType | null>(null);
   const [userEquipmentChoice, setUserEquipmentChoice] = useState<boolean | null>(null);
   const [isMaintenanceDetailOpen, setIsMaintenanceDetailOpen] = useState<boolean>(false);
+  const [viewMode, setViewMode] = useState<'essential' | 'detailed'>('essential');
 
   // 1. Déterminer les véhicules recommandés selon le budget carburant libéré
   const baseSimHP = calculateSimulation(fuelBudget, housing, dailyKm, prices, 'HP');
@@ -552,41 +552,140 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
             transition={{ duration: 0.4, delay: 0.2 }}
             className="space-y-6"
           >
-            {/* Accès au détail des calculs */}
-            <div>
+            {/* Sélecteur de mode d'affichage exclusif : Vue Essentielle vs Détail Précis */}
+            <div className="flex items-center justify-center p-1 bg-neutral-900/90 border border-neutral-800 rounded-2xl w-full max-w-sm mx-auto shadow-lg">
               <button
-                onClick={() => setShowCalculationDetails(!showCalculationDetails)}
-                className="w-full p-3 sm:p-4 rounded-xl bg-neutral-900 border border-neutral-800 hover:border-neutral-700 flex items-center justify-between text-[11px] sm:text-xs text-neutral-300 font-bold uppercase tracking-wider cursor-pointer"
+                type="button"
+                id="btn-mode-essential"
+                onClick={() => setViewMode('essential')}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-display font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                  viewMode === 'essential'
+                    ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20'
+                    : 'text-neutral-400 hover:text-white'
+                }`}
               >
-                <span className="flex items-center gap-2">
-                  <Calculator className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>Voir le détail des calculs financiers</span>
-                </span>
-                {showCalculationDetails ? <ChevronUp className="w-4 h-4 shrink-0" /> : <ChevronDown className="w-4 h-4 shrink-0" />}
+                <Sparkles className="w-3.5 h-3.5 shrink-0" />
+                <span>Vue Essentielle</span>
               </button>
+              <button
+                type="button"
+                id="btn-mode-detailed"
+                aria-label="Voir le détail des calculs financiers"
+                onClick={() => setViewMode('detailed')}
+                className={`flex-1 py-2.5 px-3 rounded-xl text-xs sm:text-sm font-display font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 ${
+                  viewMode === 'detailed'
+                    ? 'bg-amber-500 text-black shadow-md shadow-amber-500/20'
+                    : 'text-neutral-400 hover:text-white'
+                }`}
+              >
+                <Calculator className="w-3.5 h-3.5 shrink-0" />
+                <span>Détail des calculs</span>
+              </button>
+            </div>
 
-              <AnimatePresence>
-                {showCalculationDetails && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="mt-3 p-4 sm:p-6 rounded-3xl bg-neutral-900 border border-neutral-800 text-neutral-300 space-y-4 shadow-2xl"
+            {/* VUE 1 : VUE ESSENTIELLE (Uniquement les 3 chiffres chocs au pouce) */}
+            {viewMode === 'essential' ? (
+              <motion.div
+                key="view-essential"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="w-full max-w-xl mx-auto"
+              >
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-left">
+                  {/* Chiffre 1 : Ancien Carburant */}
+                  <div className="p-3.5 rounded-2xl bg-neutral-900/90 border border-rose-500/30 space-y-1">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-rose-400 flex items-center gap-1">
+                      <Flame className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                      <span>1. Perte carburant</span>
+                    </div>
+                    <div className="text-xl sm:text-2xl font-black font-display text-white font-mono">
+                      {formatCurrency(sim.fuelBudget)} <span className="text-xs text-neutral-400 font-normal">/ m</span>
+                    </div>
+                    <p className="text-[11px] text-neutral-400 leading-snug">
+                      <strong className="text-rose-400 font-mono">{formatCurrency(fiveYearsLoss)}</strong> gaspillés en 5 ans
+                    </p>
+                  </div>
+
+                  {/* Chiffre 2 : Nouvelle Mensualité Tout Compris */}
+                  <div className="p-3.5 rounded-2xl bg-neutral-900/90 border border-neutral-800 space-y-1">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-neutral-300 flex items-center gap-1">
+                      <Car className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                      <span>2. Voiture + Élec</span>
+                    </div>
+                    <div className="text-xl sm:text-2xl font-black font-display text-white font-mono">
+                      {formatCurrency(carMonthly + sim.electricityCost)} <span className="text-xs text-neutral-400 font-normal">/ m</span>
+                    </div>
+                    <p className="text-[11px] text-neutral-400 leading-snug">
+                      Voiture ({formatCurrency(carMonthly)}) + électricité ({formatCurrency(sim.electricityCost)})
+                    </p>
+                  </div>
+
+                  {/* Chiffre 3 : Pouvoir d'achat net libéré */}
+                  <div className="p-3.5 rounded-2xl bg-neutral-900/90 border border-emerald-500/40 space-y-1 shadow-lg shadow-emerald-950/20">
+                    <div className="text-[11px] font-bold uppercase tracking-wider text-emerald-400 flex items-center gap-1">
+                      <Zap className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                      <span>3. En poche / mois</span>
+                    </div>
+                    <div className={`text-xl sm:text-2xl font-black font-display font-mono ${
+                      surplusCash > 0 || isFullyCovered ? 'text-emerald-400' : 'text-amber-400'
+                    }`}>
+                      {surplusCash > 0 ? `+${formatCurrency(surplusCash)}` : isFullyCovered ? '0 €' : `${formatCurrency(remainingGap)}`}
+                      <span className="text-xs font-normal"> / m</span>
+                    </div>
+                    <p className="text-[11px] text-emerald-300/90 leading-snug font-medium">
+                      {surplusCash > 0 ? `+${formatCurrency(surplusCash * 12)} / an réels` : isFullyCovered ? '100% autofinancé' : 'Reste à charge mensuel'}
+                    </p>
+                  </div>
+                </div>
+              </motion.div>
+            ) : (
+              /* VUE 2 : DÉTAIL DES CALCULS FINANCIERS (Vue continue sans sous-onglets) */
+              <motion.div
+                key="view-detailed"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                transition={{ duration: 0.2 }}
+                className="w-full max-w-xl mx-auto space-y-4"
+              >
+                {/* Bandeau récapitulatif fixe/sticky des 3 grandeurs clés */}
+                <div className="sticky top-2 z-30 p-3 sm:p-3.5 rounded-2xl bg-neutral-900/95 border border-neutral-700/80 backdrop-blur-md shadow-xl flex items-center justify-between gap-2 text-xs">
+                  <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
+                    <span className="text-rose-400 font-bold whitespace-nowrap">⛽ {formatCurrency(sim.fuelBudget)}</span>
+                    <span className="text-neutral-500">➔</span>
+                    <span className="text-neutral-200 font-bold whitespace-nowrap">⚡ {formatCurrency(carMonthly + sim.electricityCost)}</span>
+                  </div>
+                  <div className="flex items-center gap-2 shrink-0">
+                    <span className="text-neutral-400 hidden sm:inline text-[11px]">Gain net :</span>
+                    <span className={`font-mono font-black text-xs sm:text-sm px-2.5 py-1 rounded-xl ${
+                      surplusCash > 0
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                        : isFullyCovered
+                        ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                        : 'bg-amber-500/20 text-amber-400 border border-amber-500/40'
+                    }`}>
+                      {surplusCash > 0 ? `+${formatCurrency(surplusCash)}/m` : isFullyCovered ? '100% financé' : `+${formatCurrency(remainingGap)}/m`}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-4 sm:p-6 rounded-3xl bg-neutral-900 border border-neutral-800 text-neutral-300 space-y-4 shadow-2xl">
+                  {/* Bouton d'accès au Référentiel Open Data complet */}
+                  <button
+                    type="button"
+                    id="btn-open-ev-catalog"
+                    onClick={() => setIsModelSelectorOpen(true)}
+                    className="w-full py-3 px-4 rounded-2xl bg-neutral-950 border border-neutral-800 hover:border-neutral-700 text-xs text-neutral-300 hover:text-white transition-all flex items-center justify-between cursor-pointer group text-left"
                   >
-                    {/* Bouton d'accès au Référentiel Open Data complet */}
-                    <button
-                      type="button"
-                      id="btn-open-ev-catalog"
-                      onClick={() => setIsModelSelectorOpen(true)}
-                      className="w-full py-3 px-4 rounded-2xl bg-neutral-950 border border-neutral-800 hover:border-neutral-700 text-xs text-neutral-300 hover:text-white transition-all flex items-center justify-between cursor-pointer group text-left"
-                    >
-                      <span className="font-semibold text-neutral-200">
-                        Explorer le référentiel Open Data ({EVDatabaseService.getAllModels().length} véhicules certifiés)
-                      </span>
-                      <span className="text-amber-400 font-bold text-xs shrink-0 group-hover:translate-x-0.5 transition-transform">
-                        Changer de modèle →
-                      </span>
-                    </button>
+                    <span className="font-semibold text-neutral-200">
+                      Explorer le référentiel Open Data ({EVDatabaseService.getAllModels().length} véhicules certifiés)
+                    </span>
+                    <span className="text-amber-400 font-bold text-xs shrink-0 group-hover:translate-x-0.5 transition-transform">
+                      Changer de modèle →
+                    </span>
+                  </button>
 
                     {/* Comparatif coût aux 100 km Thermique vs Électrique */}
                     <div className="p-4 rounded-2xl bg-neutral-950 border border-neutral-800 space-y-3">
@@ -1033,10 +1132,9 @@ export const Step4Revelation: React.FC<Step4RevelationProps> = ({
                         )}
                       </AnimatePresence>
                     </div>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+                  </div>
+                </motion.div>
+              )}
 
             {/* CTA final : TROP BEAU POUR ÊTRE VRAI ? VOYEZ CE QUE LES PÉTROLIERS VOUS CACHENT */}
             <div className="flex justify-center pt-1">

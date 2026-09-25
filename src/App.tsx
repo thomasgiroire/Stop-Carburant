@@ -215,25 +215,27 @@ export default function App() {
       {currentStep <= 3 ? (
         <main className="flex-1 relative w-full h-full overflow-hidden flex flex-col justify-between">
           {/* Scène de la route verticale en vue du dessus */}
-          <div className="absolute inset-0 z-0">
-            <GameRoadCanvas
-              stage={currentStage}
-              housing={housing}
-              dailyKm={dailyKm}
-              fuelBudget={fuelBudget}
-              fuelPrice={prices.fuelPrice || 1.74}
-              isTransformed={isTransformed}
-              isDeparting={isDeparting}
-              departurePhase={departurePhase}
-              onSelectHousing={setHousing}
-            />
+          <div className="absolute inset-0 z-0 flex items-center justify-center bg-neutral-950">
+            <div className="w-full h-full max-w-xl mx-auto relative overflow-hidden">
+              <GameRoadCanvas
+                stage={currentStage}
+                housing={housing}
+                dailyKm={dailyKm}
+                fuelBudget={fuelBudget}
+                fuelPrice={prices.fuelPrice || 1.74}
+                isTransformed={isTransformed}
+                isDeparting={isDeparting}
+                departurePhase={departurePhase}
+                onSelectHousing={setHousing}
+              />
+            </div>
           </div>
 
           {/* Espace visuel supérieur pour voir la voiture rouler et les décors */}
           <div className="w-full flex-1 pointer-events-none" />
 
           {/* Tableau de bord interactif (HUD) incrusté au pouce */}
-          <div className="relative z-20 px-3 pb-3 sm:pb-6 w-full">
+          <div className="relative z-20 px-3 pb-3 sm:pb-6 w-full max-w-xl mx-auto">
             <GameDashboardHUD
               stage={currentStage}
               housing={housing}
