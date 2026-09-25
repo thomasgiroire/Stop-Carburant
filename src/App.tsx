@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Header } from './components/Header';
 import { GameRoadCanvas, DeparturePhase } from './components/story/GameRoadCanvas';
 import { GameDashboardHUD } from './components/story/GameDashboardHUD';
@@ -38,6 +38,12 @@ export default function App() {
   const [activeContext, setActiveContext] = useState<ActiveSimulationContext>({});
   const [isFaqVisible, setIsFaqVisible] = useState<boolean>(false);
   const [prices, setPrices] = useState<EnergyPrices>(DEFAULT_PRICES);
+  const departureTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([]);
+
+  const clearDepartureTimeouts = () => {
+    departureTimeoutsRef.current.forEach((id) => clearTimeout(id));
+    departureTimeoutsRef.current = [];
+  };
 
   // Récupération dynamique et silencieuse de la localisation IP et des prix en direct
   useEffect(() => {
@@ -66,6 +72,7 @@ export default function App() {
 
     return () => {
       isMounted = false;
+      clearDepartureTimeouts();
     };
   }, []);
 
@@ -102,6 +109,7 @@ export default function App() {
   };
 
   const handleReset = () => {
+    clearDepartureTimeouts();
     setCurrentStep(1);
     setIsTransformed(false);
     setIsDeparting(false);
@@ -143,46 +151,51 @@ export default function App() {
     } else if (currentStep === 2) {
       setCurrentStep(3);
     } else if (currentStep === 3) {
+      clearDepartureTimeouts();
       if (isTestEnv) {
         setIsDeparting(true);
         setIsTransformed(true);
-        setTimeout(() => {
+        const tTest = setTimeout(() => {
           setCurrentStep(4);
           setIsDeparting(false);
           setDeparturePhase('idle');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }, 120);
+        departureTimeoutsRef.current.push(tTest);
         return;
       }
 
       // Séquence cinématographique immersive :
       // 1. La voiture bleue reprend la route, se met au milieu, TOUJOURS en mode thermique bleu
+      // Le panel de questions disparaît dès le départ de la voiture de la station-essence
       setIsDeparting(true);
       setDeparturePhase('merging');
 
       // 2. La station-essence disparaît vers le bas (dépassée par la voiture qui roule)
-      setTimeout(() => {
+      const t1 = setTimeout(() => {
         setDeparturePhase('station_leaving');
       }, 750);
 
       // 3. Une fois la station-essence disparue, la voiture se transforme en vert électrique
-      setTimeout(() => {
+      const t2 = setTimeout(() => {
         setDeparturePhase('transformed');
         setIsTransformed(true);
       }, 1500);
 
       // 4. La voiture transformée accélère à fond vers le haut
-      setTimeout(() => {
+      const t3 = setTimeout(() => {
         setDeparturePhase('zooming');
       }, 2350);
 
       // 5. Transition vers le haut et affichage du résultat final
-      setTimeout(() => {
+      const t4 = setTimeout(() => {
         setCurrentStep(4);
         setIsDeparting(false);
         setDeparturePhase('idle');
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }, 2950);
+
+      departureTimeoutsRef.current.push(t1, t2, t3, t4);
     }
   };
 
@@ -204,7 +217,10 @@ export default function App() {
         prices={prices}
         onOpenDepartmentSelector={() => setIsDeptModalOpen(true)}
         onNavigateStep={(step) => {
+          clearDepartureTimeouts();
           setCurrentStep(step);
+          setIsDeparting(false);
+          setDeparturePhase('idle');
           window.scrollTo({ top: 0, behavior: 'smooth' });
         }}
       />
@@ -235,21 +251,43 @@ export default function App() {
           <div className="w-full flex-1 pointer-events-none" />
 
           {/* Tableau de bord interactif (HUD) incrusté au pouce */}
-          <div className="relative z-20 px-3 pb-3 sm:pb-6 w-full max-w-xl mx-auto">
-            <GameDashboardHUD
-              stage={currentStage}
-              housing={housing}
-              dailyKm={dailyKm}
-              fuelBudget={fuelBudget}
-              onChangeHousing={setHousing}
-              onChangeDailyKm={setDailyKm}
-              onSelectBudget={handleSelectBudget}
-              onNext={handleNextStep}
-              onBack={() => {
-                if (currentStep === 2) setCurrentStep(1);
-                if (currentStep === 3) setCurrentStep(2);
-              }}
-            />
+          <div
+            className={`relative z-20 px-3 pb-3 sm:pb-6 w-full max-w-xl mx-auto ${
+              isDeparting ? 'pointer-events-none' : ''
+            }`}
+          >
+            <AnimatePresence>
+              {!isDeparting && (
+                <motion.div
+                  key="game-hud-panel"
+                  initial={{ opacity: 0, y: 16 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{
+                    opacity: 0,
+                    y: 40,
+                    scale: 0.96,
+                    transition: { duration: 0.35, ease: 'easeOut' },
+                  }}
+                  transition={{ duration: 0.2 }}
+                  className="w-full"
+                >
+                  <GameDashboardHUD
+                    stage={currentStage}
+                    housing={housing}
+                    dailyKm={dailyKm}
+                    fuelBudget={fuelBudget}
+                    onChangeHousing={setHousing}
+                    onChangeDailyKm={setDailyKm}
+                    onSelectBudget={handleSelectBudget}
+                    onNext={handleNextStep}
+                    onBack={() => {
+                      if (currentStep === 2) setCurrentStep(1);
+                      if (currentStep === 3) setCurrentStep(2);
+                    }}
+                  />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
         </main>
       ) : (
@@ -274,7 +312,10 @@ export default function App() {
             onToggleFaq={handleToggleFaq}
             onActiveContextChange={setActiveContext}
             onModifyParams={() => {
+              clearDepartureTimeouts();
               setCurrentStep(1);
+              setIsDeparting(false);
+              setDeparturePhase('idle');
               setIsFaqVisible(false);
               window.scrollTo({ top: 0, behavior: 'smooth' });
             }}

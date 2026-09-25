@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from 'vitest';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import App from '../src/App';
 
 // Mock pour fetchLiveEnergyPrices afin d'éviter les appels réseau réels pendant les tests
@@ -94,4 +94,29 @@ describe('Parcours utilisateur App (Stop-Carburant - Storytelling)', () => {
     // La modale se ferme et le header reflète le département sélectionné (33)
     expect(await screen.findByText(/En direct \(33\) :/i)).toBeInTheDocument();
   });
+
+  it('fait disparaître immédiatement le panel de questions lors du clic sur transformer ma dépense', async () => {
+    render(<App />);
+
+    // Étape 1 -> Étape 2
+    fireEvent.click(screen.getByRole('button', { name: /prendre la route/i }));
+
+    // Étape 2 -> Étape 3
+    fireEvent.click(await screen.findByRole('button', { name: /rouler vers la station/i }));
+
+    // Étape 3 : le panel de questions est affiché
+    const transformBtn = await screen.findByRole('button', { name: /transformer ma dépense/i });
+    expect(transformBtn).toBeInTheDocument();
+    expect(screen.getByText(/Combien s’évapore à la pompe chaque mois/i)).toBeInTheDocument();
+
+    // Clic sur transformer ma dépense
+    fireEvent.click(transformBtn);
+
+    // Le panel de questions et son bouton disparaissent pendant le départ de la voiture
+    await waitFor(() => {
+      expect(screen.queryByRole('button', { name: /transformer ma dépense/i })).not.toBeInTheDocument();
+      expect(screen.queryByText(/Combien s’évapore à la pompe chaque mois/i)).not.toBeInTheDocument();
+    });
+  });
 });
+
