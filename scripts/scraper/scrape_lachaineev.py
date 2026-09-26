@@ -70,6 +70,16 @@ LACHAINEEV_TO_CATALOG_RULES: List[Tuple[str, List[str]]] = [
     ("tesla-model-3-highland", [r"tesla-model-3-propulsion.*highland", r"tesla-model-3-propulsion.*2025"]),
     ("tesla-model-3-long-range", [r"tesla-model-3-lr-propulsion", r"tesla-model-3-lr"]),
     ("tesla-model-y-propulsion", [r"tesla-model-y-propulsion"]),
+    ("citroen-e-c3-aircross-44", [r"e-c3-aircross", r"c3\s*aircross"]),
+    ("fiat-600e-54", [r"fiat-600e", r"\b600e\b"]),
+    ("opel-mokka-e-50", [r"mokka-e", r"mokka"]),
+    ("hyundai-ioniq5-77", [r"ioniq-5", r"ioniq\s*5"]),
+    ("smart-hashtag-1-66", [r"smart-1", r"smart-hashtag-1", r"smart\s*#1"]),
+    ("byd-atto3-60", [r"byd-atto-3", r"atto\s*3"]),
+    ("renault-scenic-ev60", [r"scenic.*60", r"scenic-ev60"]),
+    ("renault-5-ev40", [r"renault-5.*40", r"r5.*40"]),
+    ("mg-zs-ev-50", [r"mg-zs-ev", r"mg\s*zs"]),
+    ("bmw-ix1-edrive20-65", [r"bmw-ix1", r"\bix1\b"]),
 ]
 
 

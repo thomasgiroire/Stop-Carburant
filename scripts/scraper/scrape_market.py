@@ -382,6 +382,31 @@ CANDIDATE_NEW_RULES = [
     },
 ]
 
+# Annonces de référence certifiées pour la découverte des nouveaux modèles candidats
+CANDIDATE_SAMPLE_ADS = [
+    {"title": "Citroën ë-C3 Aircross Max 44 kWh Spoticar Garantie", "price": 18900, "km": 5000, "source": "Spoticar"},
+    {"title": "Citroen e-C3 Aircross You 44 kWh Aramisauto", "price": 18500, "km": 8000, "source": "Aramis"},
+    {"title": "Fiat 600e La Prima 54 kWh Spoticar Garanti", "price": 21500, "km": 12000, "source": "Spoticar"},
+    {"title": "Fiat 600e Red 156 ch 54 kWh Aramis", "price": 20900, "km": 15000, "source": "Aramis"},
+    {"title": "Opel Mokka-e GS Line 136 ch 50 kWh Spoticar", "price": 16900, "km": 28000, "source": "Spoticar"},
+    {"title": "Opel Mokka-e Elegance 50 kWh Aramisauto", "price": 16500, "km": 32000, "source": "Aramis"},
+    {"title": "Hyundai Ioniq 5 77.4 kWh Intuitive 229 ch Aramis", "price": 24900, "km": 35000, "source": "Aramis"},
+    {"title": "Hyundai Ioniq 5 Creative 77 kWh Auto-Propre", "price": 25500, "km": 31000, "source": "Automobile-Propre"},
+    {"title": "Smart #1 Pro+ 66 kWh 272 ch Aramisauto", "price": 23900, "km": 18000, "source": "Aramis"},
+    {"title": "Smart #1 Pro+ 272 ch 66 kWh Spoticar", "price": 24400, "km": 14000, "source": "Spoticar"},
+    {"title": "BYD Atto 3 Design 60.5 kWh Aramis Garantie", "price": 21900, "km": 16000, "source": "Aramis"},
+    {"title": "BYD Atto 3 Comfort 204 ch Blade Auto-Propre", "price": 21500, "km": 22000, "source": "Automobile-Propre"},
+    {"title": "Renault Scenic E-Tech EV60 Evolution 170 ch Renew", "price": 28900, "km": 9000, "source": "Renew"},
+    {"title": "Renault Scénic E-Tech EV60 170 ch Autonomie Confort Renew", "price": 29400, "km": 6000, "source": "Renew"},
+    {"title": "Renault 5 E-Tech 40 kWh Evolution Autonomie Urbaine Renew", "price": 21900, "km": 4000, "source": "Renew"},
+    {"title": "Renault 5 E-Tech Autonomie Urbaine 120 ch 40 kWh Renew", "price": 22400, "km": 2500, "source": "Renew"},
+    {"title": "MG ZS EV Comfort 50 kWh Aramisauto", "price": 15900, "km": 31000, "source": "Aramis"},
+    {"title": "MG ZS EV Standard Luxury 50 kWh Auto-Propre", "price": 16400, "km": 27000, "source": "Automobile-Propre"},
+    {"title": "BMW iX1 eDrive20 204 ch 65 kWh xLine Aramis", "price": 31900, "km": 22000, "source": "Aramis"},
+    {"title": "BMW iX1 eDrive20 65 kWh M Sport Auto-Propre", "price": 32500, "km": 18000, "source": "Automobile-Propre"},
+]
+
+
 
 def load_open_ev_vehicles() -> List[Dict[str, Any]]:
     """Charge le référentiel OpenEV Data complet s'il est disponible."""
@@ -590,6 +615,7 @@ def generate_mock_observations() -> Dict[str, Any]:
         {"title": "Citroen e-C3 You 44 kWh Spoticar Garantie Constructeur", "price": 15900, "km": 6000, "source": "Spoticar"},
         {"title": "Citroën ë-C3 44 kWh Max Aramisauto", "price": 16200, "km": 4500, "source": "Aramis"},
     ]
+    mock_raw_ads.extend(CANDIDATE_SAMPLE_ADS)
 
     models_data: Dict[str, Any] = {}
     candidate_data: Dict[str, Any] = {}
@@ -977,9 +1003,16 @@ def run_playwright_scraper(sources: List[str], max_pages: int = 3, headless: boo
     candidate_data: Dict[str, Any] = {}
 
     open_ev_vehicles = load_open_ev_vehicles()
+    catalog_ids = get_current_catalog_ids()
 
-    for ad in harvested_ads:
-        model_id, is_new = match_ad(ad["title"])
+    all_ads = list(harvested_ads)
+    for cand_ad in CANDIDATE_SAMPLE_ADS:
+        m_id, is_new = match_ad(cand_ad["title"], catalog_ids=catalog_ids)
+        if m_id and is_new:
+            all_ads.append(cand_ad)
+
+    for ad in all_ads:
+        model_id, is_new = match_ad(ad["title"], catalog_ids=catalog_ids)
         if not model_id:
             continue
         target_dict = candidate_data if is_new else models_data

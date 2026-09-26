@@ -158,8 +158,7 @@ Pour garantir la justesse des calculs en situation réelle, le simulateur est é
 
 Pour exécuter le projet en local, lancer les tests ou inspecter l'environnement Docker :
 
-👉 **Consultez le [Guide de Développement pour les Développeurs](docs/DEVELOPMENT.md)**  
-👉 **Consultez le [Cahier des Charges initial](docs/cahier_des_charges_simulateur_la_faille_carburant.md)**
+👉 **Consultez le [Guide de Développement pour les Développeurs](docs/DEVELOPMENT.md)**
 
 ```bash
 # Lancement rapide en local

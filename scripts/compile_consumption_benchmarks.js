@@ -87,7 +87,9 @@ function run() {
       consoInflationFactor: stats.averageConsoInflationFactor || 1.14,
     };
 
-    let effectiveRealRange = car.realRangeKm;
+    const baselineNominalRealRange = car.nominalRealRangeKm || car.realRangeKm;
+    const baselineNominalHighwayRange = car.nominalHighwayRangeKm || car.highwayRangeKm;
+    let effectiveRealRange = baselineNominalRealRange;
     let effectiveRealConso = car.realConsoKwh100;
     let effectiveDiscountPct = 0;
     let isDirect = false;
@@ -103,8 +105,8 @@ function run() {
           : segment.rangeDiscountMixedPct
       );
 
-      if (car.realRangeKm && car.realRangeKm > 0 && car.realRangeKm <= car.wltpRangeKm) {
-        effectiveRealRange = car.realRangeKm;
+      if (baselineNominalRealRange && baselineNominalRealRange > 0 && baselineNominalRealRange <= car.wltpRangeKm) {
+        effectiveRealRange = baselineNominalRealRange;
         effectiveRealConso = car.realConsoKwh100;
         effectiveDiscountPct = Math.round(((effectiveRealRange - car.wltpRangeKm) / car.wltpRangeKm) * 1000) / 10;
       } else if (directTest.realRangeKm && directTest.realRangeKm <= car.wltpRangeKm && (!directTest.wltpRangeKm || Math.abs(directTest.wltpRangeKm - car.wltpRangeKm) < 50)) {
@@ -120,8 +122,8 @@ function run() {
       calibratedMatchesCount++;
       // Véhicule sans test direct La Chaîne EV :
       // Si déjà calibré avec ADEME / test IRL, on calcule son discount exact vs WLTP
-      if (car.realRangeKm && car.realRangeKm > 0 && car.realRangeKm <= car.wltpRangeKm) {
-        effectiveRealRange = car.realRangeKm;
+      if (baselineNominalRealRange && baselineNominalRealRange > 0 && baselineNominalRealRange <= car.wltpRangeKm) {
+        effectiveRealRange = baselineNominalRealRange;
         effectiveRealConso = car.realConsoKwh100;
         effectiveDiscountPct = Math.round(((effectiveRealRange - car.wltpRangeKm) / car.wltpRangeKm) * 1000) / 10;
       } else {
@@ -134,7 +136,9 @@ function run() {
 
     const highwayRange = (isDirect && directTest?.highwayRangeKm && directTest.highwayRangeKm < effectiveRealRange)
       ? directTest.highwayRangeKm
-      : Math.round(car.wltpRangeKm * (1 + (segment.rangeDiscountHighwayPct / 100)));
+      : (baselineNominalHighwayRange && baselineNominalHighwayRange < effectiveRealRange
+          ? baselineNominalHighwayRange
+          : Math.round(car.wltpRangeKm * (1 + (segment.rangeDiscountHighwayPct / 100))));
 
     const highwayConso = (isDirect && directTest?.highwayConsoKwh100)
       ? directTest.highwayConsoKwh100
