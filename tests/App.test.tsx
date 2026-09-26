@@ -44,6 +44,10 @@ describe('Parcours utilisateur App (Stop-Carburant - Storytelling)', () => {
 
     // En étape 2, on demande les kilomètres du trajet quotidien
     expect(await screen.findByText(/Combien de kilomètres faites-vous par jour/i)).toBeInTheDocument();
+    // Le curseur de kilomètre est positionné par défaut à 50 km
+    const kmSlider = screen.getByLabelText(/kilomètres par jour/i);
+    expect(kmSlider).toHaveValue('50');
+    expect(screen.getAllByText('50 km').length).toBe(2);
     // Aucune mention de prise, borne ou véhicule électrique avant la révélation finale (Règle du Cheval de Troie)
     expect(screen.queryByText(/prise/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/borne/i)).not.toBeInTheDocument();

@@ -14,7 +14,7 @@ import { EnergyPrices, DEFAULT_PRICES } from '../services/energyPrices';
 export function calculateSimulation(
   fuelBudget: number,
   housing: HousingType = 'maison',
-  dailyKm: number = 45,
+  dailyKm: number = 50,
   prices: EnergyPrices = DEFAULT_PRICES,
   forcedTarif?: ElecTarifMode,
   customConsoElec?: number

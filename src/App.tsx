@@ -27,9 +27,9 @@ import { motion, AnimatePresence } from 'motion/react';
 
 export default function App() {
   const [currentStep, setCurrentStep] = useState<number>(1);
-  const [dailyKm, setDailyKm] = useState<number>(45);
+  const [dailyKm, setDailyKm] = useState<number>(50);
   const [fuelBudget, setFuelBudget] = useState<number>(() => {
-    return estimateMonthlyFuelBudget(45, DEFAULT_PRICES.fuelPrice || 1.74).medianBudget;
+    return estimateMonthlyFuelBudget(50, DEFAULT_PRICES.fuelPrice || 1.74).medianBudget;
   });
   const [housing, setHousing] = useState<HousingType>('maison');
   const [isTransformed, setIsTransformed] = useState<boolean>(false);
@@ -120,8 +120,8 @@ export default function App() {
   const handleReset = () => {
     clearDepartureTimeouts();
     setCurrentStep(1);
-    setDailyKm(45);
-    setFuelBudget(estimateMonthlyFuelBudget(45, prices.fuelPrice || 1.74).medianBudget);
+    setDailyKm(50);
+    setFuelBudget(estimateMonthlyFuelBudget(50, prices.fuelPrice || 1.74).medianBudget);
     setIsTransformed(false);
     setIsDeparting(false);
     setDeparturePhase('idle');
