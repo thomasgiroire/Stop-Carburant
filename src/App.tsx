@@ -178,24 +178,23 @@ export default function App() {
         return;
       }
 
-      // Séquence cinématographique immersive :
-      // 1. La voiture bleue reprend la route, se met au milieu, TOUJOURS en mode thermique bleu
-      // Le panel de questions disparaît dès le départ de la voiture de la station-essence
+      // Séquence cinématographique Retour vers le futur :
+      // 1. La DeLorean reprend la route depuis la station-service et se cale au milieu de la voie
       setIsDeparting(true);
       setDeparturePhase('merging');
 
-      // 2. La station-essence disparaît vers le bas (dépassée par la voiture qui roule)
+      // 2. La station-service essence disparaît vers le bas (dépassée par la DeLorean)
       const t1 = setTimeout(() => {
         setDeparturePhase('station_leaving');
       }, 750);
 
-      // 3. Une fois la station-essence disparue, la voiture se transforme en vert électrique
+      // 3. Activation temporelle : traces de pneus d'éclairs jaillissant derrière les roues arrière
       const t2 = setTimeout(() => {
         setDeparturePhase('transformed');
         setIsTransformed(true);
       }, 1500);
 
-      // 4. La voiture transformée accélère à fond vers le haut
+      // 4. Passage à 88 mph : la DeLorean accélère à fond vers le haut avec ses traces d'éclairs
       const t3 = setTimeout(() => {
         setDeparturePhase('zooming');
       }, 2350);

@@ -70,8 +70,8 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
     departurePhase === 'transformed' ||
     departurePhase === 'zooming';
 
-  // Règle formelle : la voiture reste THERMIQUE BLEUE tant que la station n'a pas disparu !
-  // La métamorphose électrique ne s'active QUE lors de la phase 'transformed' ou 'zooming'
+  // Activation temporelle Retour vers le futur : les traces d'éclairs s'activent
+  // lors de la phase 'transformed' et de l'accélération supersonique 'zooming' (88 mph)
   const isCarElectric =
     departurePhase === 'transformed' ||
     departurePhase === 'zooming' ||
@@ -101,23 +101,46 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
             <stop offset="100%" stopColor="#0c1f13" />
           </linearGradient>
 
-          {/* Faisceau lumineux des phares actifs */}
+          {/* Faisceau lumineux des phares actifs (halogène chaud -> xénon bleu intense temporel) */}
           <radialGradient id="headlightBeamActive" cx="50%" cy="100%" r="90%">
             <stop
               offset="0%"
-              stopColor={isCarElectric ? 'rgba(52, 211, 153, 0.6)' : 'rgba(254, 240, 138, 0.5)'}
+              stopColor={isCarElectric ? 'rgba(56, 189, 248, 0.75)' : 'rgba(254, 240, 138, 0.55)'}
             />
             <stop
               offset="65%"
-              stopColor={isCarElectric ? 'rgba(16, 185, 129, 0.2)' : 'rgba(253, 224, 71, 0.15)'}
+              stopColor={isCarElectric ? 'rgba(14, 165, 233, 0.25)' : 'rgba(253, 224, 71, 0.15)'}
             />
             <stop offset="100%" stopColor="transparent" />
           </radialGradient>
 
-          {/* Néon vert sous châssis électrique */}
-          <filter id="neonGlow" x="-30%" y="-30%" width="160%" height="160%">
-            <feGaussianBlur stdDeviation="6" result="blur" />
-            <feComposite in="SourceGraphic" in2="blur" operator="over" />
+          {/* Dégradé acier inoxydable brossé pour la DeLorean */}
+          <linearGradient id="deloreanBodyGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#64748b" />
+            <stop offset="20%" stopColor="#94a3b8" />
+            <stop offset="50%" stopColor="#cbd5e1" />
+            <stop offset="80%" stopColor="#94a3b8" />
+            <stop offset="100%" stopColor="#64748b" />
+          </linearGradient>
+
+          {/* Dégradé relief capot DeLorean */}
+          <linearGradient id="deloreanHoodGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="#475569" />
+            <stop offset="25%" stopColor="#94a3b8" />
+            <stop offset="50%" stopColor="#cbd5e1" />
+            <stop offset="75%" stopColor="#94a3b8" />
+            <stop offset="100%" stopColor="#475569" />
+          </linearGradient>
+
+          {/* Lueur électrique temporelle Retour vers le futur */}
+          <filter id="lightningGlow" x="-50%" y="-50%" width="200%" height="200%">
+            <feGaussianBlur stdDeviation="3.5" result="blur1" />
+            <feGaussianBlur stdDeviation="7" result="blur2" />
+            <feMerge>
+              <feMergeNode in="blur2" />
+              <feMergeNode in="blur1" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
           </filter>
         </defs>
 
@@ -177,6 +200,29 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
               : { duration: 0.3 }
           }
         />
+
+        {/* Traces de pneus brûlées résiduelles sur l'asphalte laissées lors de l'accélération temporelle (88 mph) */}
+        <AnimatePresence>
+          {departurePhase === 'zooming' && (
+            <motion.g
+              id="road-temporal-burn-tracks"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: [0, 1, 0.95] }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              {/* Trace pneu gauche sur l'asphalte */}
+              <line x1="181" y1="260" x2="181" y2="480" stroke="#0284c7" strokeWidth="7" strokeLinecap="round" opacity="0.6" filter="url(#lightningGlow)" />
+              <line x1="181" y1="260" x2="181" y2="480" stroke="#38bdf8" strokeWidth="4" strokeLinecap="round" />
+              <line x1="181" y1="260" x2="181" y2="480" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" />
+
+              {/* Trace pneu droit sur l'asphalte */}
+              <line x1="219" y1="260" x2="219" y2="480" stroke="#0284c7" strokeWidth="7" strokeLinecap="round" opacity="0.6" filter="url(#lightningGlow)" />
+              <line x1="219" y1="260" x2="219" y2="480" stroke="#38bdf8" strokeWidth="4" strokeLinecap="round" />
+              <line x1="219" y1="260" x2="219" y2="480" stroke="#ffffff" strokeWidth="1.8" strokeLinecap="round" />
+            </motion.g>
+          )}
+        </AnimatePresence>
 
         {/* =================================================================== */}
         {/* ÉTAPE 1 : DÉCOR DE DÉPART EN BAS DE L'ÉCRAN                         */}
@@ -353,14 +399,23 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
                   id="car-parked-appartement"
                   onClick={() => onSelectHousing?.('appartement')}
                   className="cursor-pointer"
-                  opacity="0.45"
+                  opacity="0.5"
                   transform="translate(312, 340) rotate(-34)"
                 >
-                  <rect x="-17" y="-30" width="34" height="60" rx="8" fill="#000000" opacity="0.4" />
-                  <rect x="-15" y="-28" width="30" height="56" rx="7" fill="#1e3a8a" stroke="#3b82f6" strokeWidth="1" />
-                  <rect x="-10" y="-3" width="20" height="18" rx="2" fill="#0f172a" />
-                  <circle cx="-10" cy="-27" r="2" fill="#64748b" />
-                  <circle cx="10" cy="-27" r="2" fill="#64748b" />
+                  <rect x="-19" y="-34" width="38" height="68" rx="3" fill="#000000" opacity="0.45" />
+                  <rect x="-22" y="-27" width="5.5" height="13" rx="1.5" fill="#18181b" />
+                  <rect x="16.5" y="-27" width="5.5" height="13" rx="1.5" fill="#18181b" />
+                  <rect x="-22.5" y="12" width="6.5" height="15" rx="1.5" fill="#18181b" />
+                  <rect x="16" y="12" width="6.5" height="15" rx="1.5" fill="#18181b" />
+                  <path d="M -16,-33 L 16,-33 L 17.5,-12 L 18,31 L -18,31 L -17.5,-12 Z" fill="#64748b" stroke="#475569" strokeWidth="1" />
+                  <rect x="-14" y="-29.5" width="28" height="17" rx="0.5" fill="#475569" />
+                  <polygon points="-13,-12 13,-12 11,-1 -11,-1" fill="#0f172a" />
+                  <rect x="-11" y="-1" width="22" height="12" fill="#64748b" />
+                  <polygon points="-12,11.5 12,11.5 13.5,23.5 -13.5,23.5" fill="#0a0a0a" />
+                  <line x1="-12" y1="16" x2="12" y2="16" stroke="#27272a" strokeWidth="1.2" />
+                  <line x1="-12.5" y1="20" x2="12.5" y2="20" stroke="#27272a" strokeWidth="1.2" />
+                  <circle cx="-10" cy="-32" r="1.5" fill="#64748b" />
+                  <circle cx="10" cy="-32" r="1.5" fill="#64748b" />
                 </g>
               ) : (
                 /* Voiture stationnée devant la maison */
@@ -368,14 +423,23 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
                   id="car-parked-maison"
                   onClick={() => onSelectHousing?.('maison')}
                   className="cursor-pointer"
-                  opacity="0.45"
+                  opacity="0.5"
                   transform="translate(88, 340) rotate(34)"
                 >
-                  <rect x="-17" y="-30" width="34" height="60" rx="8" fill="#000000" opacity="0.4" />
-                  <rect x="-15" y="-28" width="30" height="56" rx="7" fill="#1e3a8a" stroke="#3b82f6" strokeWidth="1" />
-                  <rect x="-10" y="-3" width="20" height="18" rx="2" fill="#0f172a" />
-                  <circle cx="-10" cy="-27" r="2" fill="#64748b" />
-                  <circle cx="10" cy="-27" r="2" fill="#64748b" />
+                  <rect x="-19" y="-34" width="38" height="68" rx="3" fill="#000000" opacity="0.45" />
+                  <rect x="-22" y="-27" width="5.5" height="13" rx="1.5" fill="#18181b" />
+                  <rect x="16.5" y="-27" width="5.5" height="13" rx="1.5" fill="#18181b" />
+                  <rect x="-22.5" y="12" width="6.5" height="15" rx="1.5" fill="#18181b" />
+                  <rect x="16" y="12" width="6.5" height="15" rx="1.5" fill="#18181b" />
+                  <path d="M -16,-33 L 16,-33 L 17.5,-12 L 18,31 L -18,31 L -17.5,-12 Z" fill="#64748b" stroke="#475569" strokeWidth="1" />
+                  <rect x="-14" y="-29.5" width="28" height="17" rx="0.5" fill="#475569" />
+                  <polygon points="-13,-12 13,-12 11,-1 -11,-1" fill="#0f172a" />
+                  <rect x="-11" y="-1" width="22" height="12" fill="#64748b" />
+                  <polygon points="-12,11.5 12,11.5 13.5,23.5 -13.5,23.5" fill="#0a0a0a" />
+                  <line x1="-12" y1="16" x2="12" y2="16" stroke="#27272a" strokeWidth="1.2" />
+                  <line x1="-12.5" y1="20" x2="12.5" y2="20" stroke="#27272a" strokeWidth="1.2" />
+                  <circle cx="-10" cy="-32" r="1.5" fill="#64748b" />
+                  <circle cx="10" cy="-32" r="1.5" fill="#64748b" />
                 </g>
               )}
             </motion.g>
@@ -515,23 +579,195 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
             fill="url(#headlightBeamActive)"
           />
 
-          {/* Halo néon vert sous châssis (s'active UNIQUEMENT quand la station a disparu) */}
-          <motion.ellipse
-            cx="0"
-            cy="0"
-            rx="28"
-            ry="45"
-            fill="#10b981"
-            filter="url(#neonGlow)"
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{
-              opacity: isCarElectric ? [0, 0.4, 0.7] : 0,
-              scale: isCarElectric ? [0.9, 1.05] : 0.8,
-            }}
-            transition={{ duration: 0.7, ease: 'easeOut' }}
-          />
+          {/* =================================================================== */}
+          {/* TRACES DE PNEUS AVEC ÉCLAIRS (FAÇON RETOUR VERS LE FUTUR)          */}
+          {/* Jaillissent derrière les deux roues arrière lors de l'accélération */}
+          {/* =================================================================== */}
+          <AnimatePresence>
+            {isCarElectric && (
+              <motion.g
+                id="bttf-lightning-tracks"
+                initial={{ opacity: 0, scaleY: 0.3 }}
+                animate={{ opacity: 1, scaleY: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.25 }}
+              >
+                {/* --- TRACE ROUE ARRIÈRE GAUCHE (x ≈ -19.25) --- */}
+                {/* 1. Halo d'ionisation / sillage néon bleu électrique */}
+                <motion.line
+                  x1="-19"
+                  y1="26"
+                  x2="-19"
+                  y2={departurePhase === 'zooming' ? "190" : "120"}
+                  stroke="#38bdf8"
+                  strokeWidth="11"
+                  strokeLinecap="round"
+                  filter="url(#lightningGlow)"
+                  animate={{ opacity: [0.65, 1, 0.7, 0.95, 0.65] }}
+                  transition={{ repeat: Infinity, duration: 0.15, ease: 'linear' }}
+                />
+                {/* 2. Cœur d'énergie intense blanc / cyan */}
+                <motion.line
+                  x1="-19"
+                  y1="26"
+                  x2="-19"
+                  y2={departurePhase === 'zooming' ? "190" : "120"}
+                  stroke="#e0f2fe"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  animate={{ opacity: [0.8, 1, 0.7, 1] }}
+                  transition={{ repeat: Infinity, duration: 0.1, ease: 'linear' }}
+                />
+                {/* 3. Éclair principal en zigzag (Arc électrique 1) */}
+                <motion.path
+                  d={departurePhase === 'zooming'
+                    ? "M -19,26 L -23,45 L -15,70 L -24,100 L -16,130 L -22,160 L -19,190"
+                    : "M -19,26 L -23,42 L -16,60 L -22,80 L -17,98 L -19,120"}
+                  stroke="#ffffff"
+                  strokeWidth="2.2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="url(#lightningGlow)"
+                  animate={{
+                    opacity: [1, 0.25, 0.95, 0.15, 1],
+                    strokeWidth: [2.2, 3.4, 1.8, 3.6, 2.2],
+                  }}
+                  transition={{ repeat: Infinity, duration: 0.12, ease: 'linear' }}
+                />
+                {/* 4. Éclair secondaire en zigzag alterné (Arc électrique 2) */}
+                <motion.path
+                  d={departurePhase === 'zooming'
+                    ? "M -19,26 L -15,40 L -23,65 L -16,92 L -23,122 L -15,155 L -19,188"
+                    : "M -19,26 L -16,38 L -23,55 L -15,75 L -22,92 L -18,118"}
+                  stroke="#67e8f9"
+                  strokeWidth="1.8"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  animate={{
+                    opacity: [0.2, 1, 0.35, 0.9, 0.15],
+                    strokeWidth: [1.8, 2.8, 1.5, 2.6, 1.7],
+                  }}
+                  transition={{ repeat: Infinity, duration: 0.14, ease: 'linear' }}
+                />
+                {/* 5. Arcs transversaux jaillissant sur les côtés */}
+                <motion.path
+                  d="M -19,42 L -28,48 M -19,65 L -10,70 M -19,88 L -27,95"
+                  stroke="#bae6fd"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  animate={{ opacity: [0, 1, 0.2, 0.9, 0] }}
+                  transition={{ repeat: Infinity, duration: 0.16, ease: 'linear' }}
+                />
 
-          {/* Fumée d'échappement arrière (active tant que la voiture est thermique) */}
+                {/* --- TRACE ROUE ARRIÈRE DROITE (x ≈ +19.25) --- */}
+                {/* 1. Halo d'ionisation / sillage néon bleu électrique */}
+                <motion.line
+                  x1="19"
+                  y1="26"
+                  x2="19"
+                  y2={departurePhase === 'zooming' ? "190" : "120"}
+                  stroke="#38bdf8"
+                  strokeWidth="11"
+                  strokeLinecap="round"
+                  filter="url(#lightningGlow)"
+                  animate={{ opacity: [0.7, 1, 0.55, 0.9, 0.7] }}
+                  transition={{ repeat: Infinity, duration: 0.15, ease: 'linear' }}
+                />
+                {/* 2. Cœur d'énergie intense blanc / cyan */}
+                <motion.line
+                  x1="19"
+                  y1="26"
+                  x2="19"
+                  y2={departurePhase === 'zooming' ? "190" : "120"}
+                  stroke="#e0f2fe"
+                  strokeWidth="3.5"
+                  strokeLinecap="round"
+                  animate={{ opacity: [1, 0.75, 1, 0.8] }}
+                  transition={{ repeat: Infinity, duration: 0.1, ease: 'linear' }}
+                />
+                {/* 3. Éclair principal en zigzag (Arc électrique 1) */}
+                <motion.path
+                  d={departurePhase === 'zooming'
+                    ? "M 19,26 L 23,45 L 15,70 L 24,100 L 16,130 L 22,160 L 19,190"
+                    : "M 19,26 L 23,42 L 16,60 L 22,80 L 17,98 L 19,120"}
+                  stroke="#ffffff"
+                  strokeWidth="2.2"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="url(#lightningGlow)"
+                  animate={{
+                    opacity: [0.25, 1, 0.2, 0.95, 1],
+                    strokeWidth: [2, 3.4, 1.8, 3.2, 2.2],
+                  }}
+                  transition={{ repeat: Infinity, duration: 0.13, ease: 'linear' }}
+                />
+                {/* 4. Éclair secondaire en zigzag alterné (Arc électrique 2) */}
+                <motion.path
+                  d={departurePhase === 'zooming'
+                    ? "M 19,26 L 15,40 L 23,65 L 16,92 L 23,122 L 15,155 L 19,188"
+                    : "M 19,26 L 15,38 L 23,55 L 15,75 L 22,92 L 18,118"}
+                  stroke="#67e8f9"
+                  strokeWidth="1.8"
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  animate={{
+                    opacity: [1, 0.2, 0.95, 0.3, 0.8],
+                    strokeWidth: [1.6, 2.6, 1.8, 2.9, 1.7],
+                  }}
+                  transition={{ repeat: Infinity, duration: 0.15, ease: 'linear' }}
+                />
+                {/* 5. Arcs transversaux jaillissant sur les côtés */}
+                <motion.path
+                  d="M 19,42 L 28,48 M 19,65 L 10,70 M 19,88 L 27,95"
+                  stroke="#bae6fd"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  animate={{ opacity: [0.2, 0.9, 0, 1, 0.1] }}
+                  transition={{ repeat: Infinity, duration: 0.17, ease: 'linear' }}
+                />
+
+                {/* Étincelles de plasma temporel propulsées vers l'arrière */}
+                <motion.circle
+                  cx="-19"
+                  cy="32"
+                  r="2"
+                  fill="#ffffff"
+                  animate={{ y: [0, 30, 60], opacity: [1, 0.8, 0], scale: [1, 1.4, 0.4] }}
+                  transition={{ repeat: Infinity, duration: 0.22, ease: 'easeOut' }}
+                />
+                <motion.circle
+                  cx="19"
+                  cy="32"
+                  r="2"
+                  fill="#ffffff"
+                  animate={{ y: [0, 30, 60], opacity: [1, 0.8, 0], scale: [1, 1.4, 0.4] }}
+                  transition={{ repeat: Infinity, duration: 0.2, ease: 'easeOut' }}
+                />
+                <motion.circle
+                  cx="-21"
+                  cy="45"
+                  r="1.6"
+                  fill="#67e8f9"
+                  animate={{ y: [0, 35], x: [0, -8], opacity: [1, 0] }}
+                  transition={{ repeat: Infinity, duration: 0.28, ease: 'easeOut' }}
+                />
+                <motion.circle
+                  cx="21"
+                  cy="45"
+                  r="1.6"
+                  fill="#67e8f9"
+                  animate={{ y: [0, 35], x: [0, 8], opacity: [1, 0] }}
+                  transition={{ repeat: Infinity, duration: 0.26, ease: 'easeOut' }}
+                />
+              </motion.g>
+            )}
+          </AnimatePresence>
+
+          {/* Fumée d'échappement arrière (active tant que la DeLorean roule en thermique) */}
           <AnimatePresence>
             {!isCarElectric && isCarMoving && (
               <motion.g
@@ -545,123 +781,152 @@ export const GameRoadCanvas: React.FC<GameRoadCanvasProps> = ({
             )}
           </AnimatePresence>
 
-          {/* Carrosserie vue du dessus (Top-Down Racing Car) */}
-          <g>
+          {/* =================================================================== */}
+          {/* CARROSSERIE DELOREAN DMC-12 VUE DU DESSUS                           */}
+          {/* Acier inoxydable brossé, lignes anguleuses et persiennes arrière     */}
+          {/* =================================================================== */}
+          <g id="delorean-car-body">
             {/* Ombre portée sur la route */}
-            <rect x="-19" y="-34" width="38" height="68" rx="10" fill="#000000" opacity="0.65" />
+            <rect x="-19" y="-34" width="38" height="68" rx="4" fill="#000000" opacity="0.7" />
 
-            {/* 4 Pneus noirs */}
-            <rect x="-22" y="-28" width="6" height="14" rx="2" fill="#09090b" stroke="#3f3f46" strokeWidth="0.8" />
-            <rect x="16" y="-28" width="6" height="14" rx="2" fill="#09090b" stroke="#3f3f46" strokeWidth="0.8" />
-            <rect x="-22" y="14" width="6" height="14" rx="2" fill="#09090b" stroke="#3f3f46" strokeWidth="0.8" />
-            <rect x="16" y="14" width="6" height="14" rx="2" fill="#09090b" stroke="#3f3f46" strokeWidth="0.8" />
+            {/* 4 Pneus noirs sportifs avec jantes turbine argent */}
+            {/* Roue avant gauche */}
+            <rect x="-22" y="-27" width="5.5" height="13" rx="1.5" fill="#18181b" stroke="#3f3f46" strokeWidth="0.8" />
+            <line x1="-19.25" y1="-24" x2="-19.25" y2="-17" stroke="#94a3b8" strokeWidth="1" />
+            {/* Roue avant droite */}
+            <rect x="16.5" y="-27" width="5.5" height="13" rx="1.5" fill="#18181b" stroke="#3f3f46" strokeWidth="0.8" />
+            <line x1="19.25" y1="-24" x2="19.25" y2="-17" stroke="#94a3b8" strokeWidth="1" />
+            {/* Roue arrière gauche (plus large) */}
+            <rect x="-22.5" y="12" width="6.5" height="15" rx="1.5" fill="#18181b" stroke="#3f3f46" strokeWidth="0.8" />
+            <line x1="-19.25" y1="15" x2="-19.25" y2="24" stroke="#94a3b8" strokeWidth="1.2" />
+            {/* Roue arrière droite (plus large) */}
+            <rect x="16" y="12" width="6.5" height="15" rx="1.5" fill="#18181b" stroke="#3f3f46" strokeWidth="0.8" />
+            <line x1="19.25" y1="15" x2="19.25" y2="24" stroke="#94a3b8" strokeWidth="1.2" />
 
-            {/* Carrosserie : Reste BLEU THERMIQUE jusqu'à disparition de la station, puis vert électrique */}
-            <motion.rect
-              x="-17"
-              y="-32"
-              width="34"
-              height="64"
-              rx="9"
-              animate={{
-                fill: isCarElectric
-                  ? ['#1e3a8a', '#0284c7', '#0d9488', '#059669']
-                  : '#1e3a8a',
-                stroke: isCarElectric
-                  ? ['#3b82f6', '#38bdf8', '#2dd4bf', '#34d399']
-                  : '#3b82f6',
-              }}
-              transition={{
-                duration: 0.75,
-                ease: 'easeInOut',
-              }}
-              strokeWidth="1.5"
+            {/* Carrosserie principale en acier inoxydable brossé (silhouette rectangulaire DeLorean) */}
+            <path
+              d="M -16,-33 L 16,-33 L 17.5,-12 L 18,31 L -18,31 L -17.5,-12 Z"
+              fill="url(#deloreanBodyGrad)"
+              stroke={isCarElectric ? '#7dd3fc' : '#475569'}
+              strokeWidth="1.2"
             />
 
-            {/* Pare-brise avant teinté */}
-            <motion.path
-              d="M-12,-12 Q0,-16 12,-12 L10,-3 Q0,-5 -10,-3 Z"
-              animate={{
-                fill: isCarElectric ? ['#38bdf8', '#5eead4', '#a7f3d0'] : '#38bdf8',
-              }}
-              transition={{ duration: 0.7 }}
-              opacity="0.95"
-            />
+            {/* Pare-chocs avant noir biseauté avec grille */}
+            <rect x="-16" y="-33.5" width="32" height="3.5" rx="1" fill="#09090b" stroke="#334155" strokeWidth="0.5" />
 
-            {/* Toit (Devient toit panoramique lors de la métamorphose) */}
-            <motion.rect
-              x="-11"
-              y="-1"
-              width="22"
-              height="20"
-              rx="3"
-              animate={{
-                fill: isCarElectric ? ['#0f172a', '#083344', '#064e3b'] : '#0f172a',
-                stroke: isCarElectric ? ['#3b82f6', '#2dd4bf', '#10b981'] : '#1e293b',
-              }}
-              transition={{ duration: 0.7 }}
+            {/* 4 Feux avant rectangulaires (Quad headlights DeLorean) */}
+            <rect x="-13" y="-33" width="3.5" height="2" rx="0.3" fill={isCarElectric ? "#e0f2fe" : "#fef08a"} />
+            <rect x="-8.5" y="-33" width="3.5" height="2" rx="0.3" fill={isCarElectric ? "#e0f2fe" : "#fef08a"} />
+            <rect x="5" y="-33" width="3.5" height="2" rx="0.3" fill={isCarElectric ? "#e0f2fe" : "#fef08a"} />
+            <rect x="9.5" y="-33" width="3.5" height="2" rx="0.3" fill={isCarElectric ? "#e0f2fe" : "#fef08a"} />
+            {/* Clignotants ambrés latéraux */}
+            <rect x="-15.5" y="-33" width="1.8" height="2" rx="0.3" fill="#f59e0b" />
+            <rect x="13.7" y="-33" width="1.8" height="2" rx="0.3" fill="#f59e0b" />
+
+            {/* Rétroviseurs extérieurs anguleux */}
+            <rect x="-17" y="-11" width="2.2" height="4" rx="0.5" fill="#475569" stroke="#334155" strokeWidth="0.4" />
+            <rect x="14.8" y="-11" width="2.2" height="4" rx="0.5" fill="#475569" stroke="#334155" strokeWidth="0.4" />
+
+            {/* Capot plat avec les rainures jumelles emblématiques de la DeLorean */}
+            <rect x="-14" y="-29.5" width="28" height="17" rx="0.5" fill="url(#deloreanHoodGrad)" stroke="#64748b" strokeWidth="0.6" />
+            {/* Rainures centrales du capot DMC */}
+            <line x1="-5.5" y1="-29.5" x2="-5.5" y2="-13" stroke="#475569" strokeWidth="0.8" />
+            <line x1="5.5" y1="-29.5" x2="5.5" y2="-13" stroke="#475569" strokeWidth="0.8" />
+            {/* Logo / Badge calandre argent */}
+            <rect x="-2" y="-31.5" width="4" height="1" rx="0.2" fill="#cbd5e1" />
+
+            {/* Pare-brise avant plat et teinté */}
+            <polygon
+              points="-13,-12 13,-12 11,-1 -11,-1"
+              fill="#09090b"
+              stroke="#334155"
               strokeWidth="0.8"
             />
-            {isCarElectric && (
-              <motion.line
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.85 }}
-                transition={{ duration: 0.4 }}
-                x1="0"
-                y1="-1"
-                x2="0"
-                y2="19"
-                stroke="#34d399"
-                strokeWidth="0.8"
-              />
-            )}
-
-            {/* Lunette arrière */}
-            <motion.path
-              d="M-10,21 Q0,23 10,21 L11,26 Q0,28 -11,26 Z"
-              animate={{
-                fill: isCarElectric ? ['#38bdf8', '#5eead4', '#a7f3d0'] : '#38bdf8',
-              }}
-              transition={{ duration: 0.7 }}
-              opacity="0.85"
+            <polygon
+              points="-11,-11.2 -1,-11.2 -3,-1.8 -9,-1.8"
+              fill={isCarElectric ? "#38bdf8" : "#94a3b8"}
+              opacity="0.3"
             />
 
-            {/* Phares avant LED */}
-            <motion.circle
-              cx="-12"
-              cy="-31"
-              r="2.5"
-              animate={{
-                fill: isCarElectric ? ['#fef08a', '#6ee7b7'] : '#fef08a',
-              }}
-              transition={{ duration: 0.5 }}
+            {/* Toit en acier inoxydable avec découpe des portières papillon (Gull-wing doors) */}
+            <rect x="-11" y="-1" width="22" height="12" rx="0.5" fill="url(#deloreanBodyGrad)" stroke="#475569" strokeWidth="0.8" />
+            {/* Lignes de découpe supérieures des portes papillon */}
+            <line x1="-11" y1="5" x2="-2.5" y2="5" stroke="#334155" strokeWidth="0.8" />
+            <line x1="2.5" y1="5" x2="11" y2="5" stroke="#334155" strokeWidth="0.8" />
+            <line x1="-2.5" y1="-1" x2="-2.5" y2="11" stroke="#334155" strokeWidth="0.8" />
+            <line x1="2.5" y1="-1" x2="2.5" y2="11" stroke="#334155" strokeWidth="0.8" />
+
+            {/* Vitres latérales avec petites sous-fenêtres caractéristiques */}
+            <rect x="-14.5" y="-1" width="2.5" height="12" fill="#09090b" opacity="0.9" />
+            <rect x="12" y="-1" width="2.5" height="12" fill="#09090b" opacity="0.9" />
+
+            {/* Persiennes arrière noires légendaires (Louvers sur lunette arrière) */}
+            <polygon
+              points="-12,11.5 12,11.5 13.5,23.5 -13.5,23.5"
+              fill="#050505"
+              stroke="#1e293b"
+              strokeWidth="0.6"
             />
-            <motion.circle
-              cx="12"
-              cy="-31"
-              r="2.5"
-              animate={{
-                fill: isCarElectric ? ['#fef08a', '#6ee7b7'] : '#fef08a',
-              }}
-              transition={{ duration: 0.5 }}
+            {/* Lamelles horizontales noires biseautées */}
+            <line x1="-11.8" y1="13.5" x2="11.8" y2="13.5" stroke="#27272a" strokeWidth="1.3" />
+            <line x1="-12.2" y1="16" x2="12.2" y2="16" stroke="#27272a" strokeWidth="1.3" />
+            <line x1="-12.6" y1="18.5" x2="12.6" y2="18.5" stroke="#27272a" strokeWidth="1.3" />
+            <line x1="-13" y1="21" x2="13" y2="21" stroke="#27272a" strokeWidth="1.3" />
+
+            {/* Évents et Réacteurs Temporels Doc Brown à l'arrière */}
+            <rect x="-15.5" y="24" width="31" height="5.5" fill="#334155" stroke="#1e293b" strokeWidth="0.5" />
+            {/* Réacteur temporel gauche */}
+            <rect
+              x="-13.5"
+              y="24.5"
+              width="7.5"
+              height="6"
+              rx="1"
+              fill="#18181b"
+              stroke={isCarElectric ? "#38bdf8" : "#64748b"}
+              strokeWidth="0.9"
+            />
+            <line x1="-13.5" y1="27.5" x2="-6" y2="27.5" stroke={isCarElectric ? "#7dd3fc" : "#475569"} strokeWidth="0.7" />
+            {/* Réacteur temporel droit */}
+            <rect
+              x="6"
+              y="24.5"
+              width="7.5"
+              height="6"
+              rx="1"
+              fill="#18181b"
+              stroke={isCarElectric ? "#38bdf8" : "#64748b"}
+              strokeWidth="0.9"
+            />
+            <line x1="6" y1="27.5" x2="13.5" y2="27.5" stroke={isCarElectric ? "#7dd3fc" : "#475569"} strokeWidth="0.7" />
+            {/* Convecteur temporel / Mr. Fusion central */}
+            <circle
+              cx="0"
+              cy="27.2"
+              r="2.2"
+              fill={isCarElectric ? "#e0f2fe" : "#e2e8f0"}
+              stroke={isCarElectric ? "#38bdf8" : "#09090b"}
+              strokeWidth="0.6"
             />
 
-            {/* Feux arrière rouges */}
-            <rect x="-14" y="30" width="5" height="2" rx="0.5" fill="#f43f5e" />
-            <rect x="9" y="30" width="5" height="2" rx="0.5" fill="#f43f5e" />
+            {/* Pare-chocs arrière et bandeau de feux segmentés DeLorean */}
+            <rect x="-17" y="30" width="34" height="2.8" rx="0.5" fill="#09090b" />
+            {/* Feux arrière segmentés : rouge / ambre */}
+            <rect x="-16" y="30.3" width="4.5" height="1.6" rx="0.2" fill="#ef4444" />
+            <rect x="-11" y="30.3" width="3" height="1.6" rx="0.2" fill="#f59e0b" />
+            <rect x="-7.5" y="30.3" width="15" height="1.6" rx="0.2" fill="#18181b" />
+            <rect x="8" y="30.3" width="3" height="1.6" rx="0.2" fill="#f59e0b" />
+            <rect x="11.5" y="30.3" width="4.5" height="1.6" rx="0.2" fill="#ef4444" />
 
-            {/* Éclair d'énergie électrique apparaissant sur le toit */}
+            {/* Étincelles temporelles subtiles sur la carrosserie en métal lors de l'accélération */}
             {isCarElectric && (
               <motion.path
-                initial={{ opacity: 0, scale: 0.5 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.4, delay: 0.2 }}
-                d="M1,4 L-2,10 L2,10 L-1,16"
-                stroke="#ffffff"
-                strokeWidth="1.2"
-                fill="none"
+                d="M -15,-8 L -12,-5 L -9,-7 M 15,-8 L 12,-5 L 9,-7"
+                stroke="#7dd3fc"
+                strokeWidth="0.9"
                 strokeLinecap="round"
-                strokeLinejoin="round"
+                animate={{ opacity: [0, 1, 0.2, 0.9, 0] }}
+                transition={{ repeat: Infinity, duration: 0.18, ease: 'linear' }}
               />
             )}
           </g>
