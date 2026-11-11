@@ -12,6 +12,10 @@ permissions:
   contents: write
   pull-requests: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   scrape-and-update:
     runs-on: ubuntu-latest
@@ -39,7 +43,7 @@ jobs:
       - name: 🎭 Installation de Playwright & Navigateurs
         run: |
           pip install -r scripts/scraper/requirements.txt
-          playwright install --with-deps chromium
+          playwright install chromium
 
       - name: 🚀 Collecte et Ingestion des Prix Marché
         run: |
